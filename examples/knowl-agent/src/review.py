@@ -178,7 +178,7 @@ def review_ontologies(domain):
             continue
         clear()
         header(f"本体评审 — {domain['dir']}")
-        print(f"\n  {bold(o['label'])}  {dim(o['name'])}")
+        print(f"\n  {bold(o['label'])}")
         print(f"  视角：{o.get('perspective', '')}")
         print(f"  描述：{o.get('description', '')}")
         if o.get("pattern"):
