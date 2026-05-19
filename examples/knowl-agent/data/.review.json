@@ -1,0 +1,22 @@
+{
+  "biz-ops:ontology:role-responsibility": {
+    "status": "通过",
+    "comment": "",
+    "updated": "2026-05-19T21:00:32.090975"
+  },
+  "biz-ops:ontology:service-process": {
+    "status": "通过",
+    "comment": "",
+    "updated": "2026-05-19T21:00:48.091113"
+  },
+  "biz-ops:ontology:risk-control": {
+    "status": "通过",
+    "comment": "",
+    "updated": "2026-05-19T21:00:53.729576"
+  },
+  "biz-ops:ontology:cognitive-sovereignty": {
+    "status": "通过",
+    "comment": "",
+    "updated": "2026-05-19T21:00:57.042715"
+  }
+}
