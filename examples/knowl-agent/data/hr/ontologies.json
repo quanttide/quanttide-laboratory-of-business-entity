@@ -2,7 +2,8 @@
   "ontologies": [
     {
       "id": "development-track",
-      "name": "发展通道",
+      "name": "development-track",
+      "label": "发展通道",
       "perspective": "人力资源管理",
       "description": "员工职业发展的双通道体系：专业序列与管理序列并行",
       "pattern": "员工先经历前置发展身份（实训生→实习生/培训生→正式员工），再进入双通道：专业序列（T序列，面向技术人才）和管理序列（M序列，面向管理人才）。两通道并行，员工可选择任一方向发展。见 rank-index 第三至十一条。",
@@ -10,7 +11,8 @@
     },
     {
       "id": "rank-level",
-      "name": "职级等级",
+      "name": "rank-level",
+      "label": "职级等级",
       "perspective": "人力资源管理",
       "description": "同一序列内表示资深程度的等级体系",
       "pattern": "专业序列设 L0（见习）、L1（初级）、L2（中级）、L3（高级）四个等级。管理序列设 M1（主管）、M2（总监）、M3（副总裁）、M4（总裁）、M5（董事）五个等级。数字从低到高递增，代表资深程度和能力水平。见 rank-index 第十二至十四条。",
@@ -18,7 +20,8 @@
     },
     {
       "id": "resignation-process",
-      "name": "离职流程",
+      "name": "resignation-process",
+      "label": "离职流程",
       "perspective": "人力资源管理",
       "description": "员工离职的完整管理流程，从启动到归档",
       "pattern": "七阶段流程：①启动与通知（30日提前通知）→ ②风险评估（数据流失/客户中断/团队波动/管理真空） → ③数据分析与复盘 → ④交接与承接（文件/权限/待办/实物） → ⑤答疑（不少于5个工作日） → ⑥确认（三方签署交接确认书） → ⑦归档。见 human-resignation 第五至十四条。",

@@ -178,7 +178,7 @@ def review_ontologies(domain):
             continue
         clear()
         header(f"本体评审 — {domain['dir']}")
-        print(f"\n  {bold(o['name'])}  {dim(o['id'])}")
+        print(f"\n  {bold(o['label'])}  {dim(o['name'])}")
         print(f"  视角：{o.get('perspective', '')}")
         print(f"  描述：{o.get('description', '')}")
         if o.get("pattern"):
@@ -209,8 +209,8 @@ def review_instances(domain):
             continue
         clear()
         header(f"实例评审 — {domain['dir']}")
-        onto_name = next((o["name"] for o in domain["ontologies"] if o["id"] == inst.get("ontology")), inst.get("ontology", ""))
-        print(f"\n  本体：{onto_name}")
+        onto_label = next((o.get("label", o["name"]) for o in domain["ontologies"] if o["id"] == inst.get("ontology")), inst.get("ontology", ""))
+        print(f"\n  本体：{onto_label}")
         print(f"  主题：{bold(inst.get('subject', ''))}")
         src = f"{inst.get('source', '')} {inst.get('article', '')}".strip()
         if src:
@@ -314,7 +314,7 @@ def view_review_summary(domains, reviews):
         for o in d["ontologies"]:
             key = f"{d['dir']}:ontology:{o['id']}"
             s, c = get_review_status(reviews, key)
-            print(f"  本体 {o['name']:20} {badge(s)}" + (f"  {dim(c)}" if c else ""))
+            print(f"  本体 {o.get('label', o['name']):20} {badge(s)}" + (f"  {dim(c)}" if c else ""))
         for inst in d["instances"]:
             key = f"{d['dir']}:instance:{inst['id']}"
             s, c = get_review_status(reviews, key)

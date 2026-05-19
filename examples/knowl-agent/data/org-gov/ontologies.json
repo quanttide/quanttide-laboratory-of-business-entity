@@ -2,7 +2,8 @@
   "ontologies": [
     {
       "id": "authority-responsibility",
-      "name": "权责结构",
+      "name": "authority-responsibility",
+      "label": "权责结构",
       "perspective": "组织管理",
       "description": "职权与职责成对出现的模式，每项职权对应一项职责",
       "pattern": "由「职务主体」「职权描述」「职责描述」三要素构成，职权与职责一一对应，遵循权责对等原则。见 basic-charter 第六条（治理机构职权）、company-representative 第六至十一条（代表五项职权与五项职责）、qtdata-org 第五至七条（各岗位职责与权限）。",
@@ -10,7 +11,8 @@
     },
     {
       "id": "hierarchy-system",
-      "name": "层级体系",
+      "name": "hierarchy-system",
+      "label": "层级体系",
       "perspective": "组织管理",
       "description": "章程或组织的层次结构，上层为效力/权力来源，下层为具体执行",
       "pattern": "典型三层结构：顶层为基本章程或最高管理层（效力最高），中间层为业务域章程或中层管理，基层为操作手册或执行层。上层效力高于下层，下层内容不得与上层冲突。见 basic-charter 第八至九条（章程三层级）、secretary 第十三至十四条（秘书三阶段渐进培养）。",
@@ -18,7 +20,8 @@
     },
     {
       "id": "deliberation-procedure",
-      "name": "议事程序",
+      "name": "deliberation-procedure",
+      "label": "议事程序",
       "perspective": "组织管理",
       "description": "会议或审议的完整流程：召集、讨论、表决、记录",
       "pattern": "标准流程：召集与通知 → 出席（须过半数） → 辩论与审议（议题聚焦、意见平衡、主持人中立） → 表决与决议（三分之二多数通过） → 记录与归档。涉及章程修订须提前五个工作日送达材料。见 basic-charter 第七条、company-representative 第十二至十五条。",
@@ -26,7 +29,8 @@
     },
     {
       "id": "qualification-condition",
-      "name": "资格-条件",
+      "name": "qualification-condition",
+      "label": "资格-条件",
       "perspective": "组织管理",
       "description": "担任某职务或行使某权利所需的资格条件",
       "pattern": "定义模式：明确主体 → 列出资格要求 → 指出排除情形 → 说明产生方式 → 规定终止条件。例如代表资格要求 L2 及以上职级或培训生身份，L0 不具有代表资格、L1 不具有被提名资格。见 company-representative 第四至五条、第十八至二十条。",
