@@ -1,0 +1,40 @@
+{
+  "ontologies": [
+    {
+      "id": "development-track",
+      "name": "发展通道",
+      "perspective": "人力资源管理",
+      "description": "员工职业发展的双通道体系：专业序列与管理序列并行",
+      "pattern": {
+        "tracks": ["专业序列（T序列）", "管理序列（M序列）"],
+        "stages_before_track": ["实训生→实习生/培训生→正式员工"],
+        "principle": "双通道并行，员工可选择任一通道发展"
+      },
+      "source_files": ["sample/rank-index.md"]
+    },
+    {
+      "id": "rank-level",
+      "name": "职级等级",
+      "perspective": "人力资源管理",
+      "description": "同一序列内表示资深程度的等级体系",
+      "pattern": {
+        "professional_series": ["L0（见习）", "L1（初级）", "L2（中级）", "L3（高级）"],
+        "management_series": ["M1（主管）", "M2（总监）", "M3（副总裁）", "M4（总裁）", "M5（董事）"],
+        "properties": ["数字从低到高递增", "等级代表资深程度和能力水平"]
+      },
+      "source_files": ["sample/rank-index.md"]
+    },
+    {
+      "id": "resignation-process",
+      "name": "离职流程",
+      "perspective": "人力资源管理",
+      "description": "员工离职的完整管理流程，从启动到归档",
+      "pattern": {
+        "stages": ["启动与通知", "风险评估", "数据分析与复盘", "交接与承接", "答疑", "确认", "归档"],
+        "key_artifacts": ["风险评估记录", "交接清单", "工作复盘报告", "交接确认书"],
+        "risks": ["数据流失", "客户信任中断", "团队心态波动", "管理真空"]
+      },
+      "source_files": ["sample/human-resignation.md"]
+    }
+  ]
+}

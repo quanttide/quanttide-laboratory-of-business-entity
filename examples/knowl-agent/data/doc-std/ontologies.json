@@ -1,0 +1,37 @@
+{
+  "ontologies": [
+    {
+      "id": "document-structure",
+      "name": "文档结构",
+      "perspective": "写作学",
+      "description": "工作章程的标准文档框架：总则→主体章节→附则",
+      "pattern": {
+        "sections": ["总则（制定依据、目的、适用范围、定义）", "主体章节（按业务逻辑组织）", "附则（章程效力、解释权）"],
+        "heading_levels": ["# 文档标题", "## 第X章 章节名", "**第X条 条名**"]
+      },
+      "source_files": ["sample/write-bylaw.md"]
+    },
+    {
+      "id": "format-rule",
+      "name": "格式规则",
+      "perspective": "写作学",
+      "description": "各类 Markdown 格式元素的使用规范与约束",
+      "pattern": {
+        "elements": ["标题", "列表", "表格", "分隔线", "代码块", "块引用", "加粗", "链接", "引号"],
+        "governing_principle": "格式克制：删、简、少、一"
+      },
+      "source_files": ["sample/docs-format.md"]
+    },
+    {
+      "id": "content-standard",
+      "name": "内容规范",
+      "perspective": "写作学",
+      "description": "章程内容的通用性、稳定性与领域划分原则",
+      "pattern": {
+        "principles": ["通用性原则（不记录具体人名、阶段性状态）", "稳定性原则（追求长期有效）", "按域分文件原则（每域一文件）"],
+        "language_requirements": ["正式书面语", "规范用语（应当/不得/可以/有权）", "定义用语格式"]
+      },
+      "source_files": ["sample/write-bylaw.md"]
+    }
+  ]
+}

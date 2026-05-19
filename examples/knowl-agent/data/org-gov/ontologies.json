@@ -1,0 +1,48 @@
+{
+  "ontologies": [
+    {
+      "id": "authority-responsibility",
+      "name": "权责结构",
+      "perspective": "组织管理",
+      "description": "职权与职责成对出现的模式，每项职权对应一项职责",
+      "pattern": {
+        "components": ["职务主体", "职权描述", "职责描述", "权责对等原则"],
+        "relation": "一一对应"
+      },
+      "source_files": ["sample/basic-charter.md", "sample/company-representative.md", "sample/qtdata-org.md"]
+    },
+    {
+      "id": "hierarchy-system",
+      "name": "层级体系",
+      "perspective": "组织管理",
+      "description": "章程或组织的层次结构，上层为效力/权力来源，下层为具体执行",
+      "pattern": {
+        "levels": ["顶层（基本章程/最高管理层）", "中间层（业务域章程/中层管理）", "基层（操作手册/执行层）"],
+        "relation": "上层效力高于下层，下层不得与上层冲突"
+      },
+      "source_files": ["sample/basic-charter.md", "sample/secretary.md"]
+    },
+    {
+      "id": "deliberation-procedure",
+      "name": "议事程序",
+      "perspective": "组织管理",
+      "description": "会议或审议的完整流程：召集、讨论、表决、记录",
+      "pattern": {
+        "stages": ["召集与通知", "出席与法定人数", "辩论与审议", "表决与决议", "记录与归档"],
+        "rules": ["过半数出席", "三分之二多数通过", "提前通知"]
+      },
+      "source_files": ["sample/basic-charter.md", "sample/company-representative.md"]
+    },
+    {
+      "id": "qualification-condition",
+      "name": "资格-条件",
+      "perspective": "组织管理",
+      "description": "担任某职务或行使某权利所需的资格条件",
+      "pattern": {
+        "components": ["主体", "资格要求", "排除情形", "产生方式", "终止条件"],
+        "examples": ["L2及以上职级具有代表资格", "L0成员不具有代表资格"]
+      },
+      "source_files": ["sample/company-representative.md", "sample/secretary.md"]
+    }
+  ]
+}
