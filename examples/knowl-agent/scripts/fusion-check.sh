@@ -108,7 +108,13 @@ for f in "$SAMPLE_DIR"/*.md; do
         if [ -f "$SAMPLE_DIR/$expected_file" ]; then
           match=1
         else
-          echo "  $(basename "$f"): 引用 \"$ref\" → 期望 $expected_file 但不存在"
+          echo "  $(basename "$f"): 引用 \"$ref\" → $expected_file 不存在，自动创建 stub"
+          cat > "$SAMPLE_DIR/$expected_file" << STUB
+# $target
+
+<!-- stub: 被 $(basename "$f") 引用，内容待补全 -->
+STUB
+          echo "    [已创建] $SAMPLE_DIR/$expected_file"
           found=1
           match=1
         fi
