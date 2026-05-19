@@ -45,6 +45,38 @@
       "duration": "服务终止后持续有效，直至进入公有领域",
       "exceptions": ["公知信息且非因接收方违约所致", "法律/监管强制要求披露"],
       "source": "第二十二~二十四条"
+    },
+    {
+      "id": "D-I-006",
+      "ontology": "D-O-002",
+      "file": "sample/qtdata-index.md",
+      "term": "工作订单",
+      "definition": "经双方签署的就具体服务项目、范围、交付物、期限、费用进行约定的书面文件",
+      "source": "第三条(一)"
+    },
+    {
+      "id": "D-I-007",
+      "ontology": "D-O-002",
+      "file": "sample/qtdata-index.md",
+      "term": "服务",
+      "definition": "依据工作订单向客户提供的数据处理及相关服务",
+      "source": "第三条(二)"
+    },
+    {
+      "id": "D-I-008",
+      "ontology": "D-O-002",
+      "file": "sample/qtdata-index.md",
+      "term": "数据",
+      "definition": "客户提供或为履行服务产生的所有数据",
+      "source": "第三条(三)"
+    },
+    {
+      "id": "D-I-009",
+      "ontology": "D-O-002",
+      "file": "sample/qtdata-index.md",
+      "term": "交付物",
+      "definition": "服务完成后向客户交付的数据处理结果、分析报告、源代码和相关文档",
+      "source": "第三条(五)"
     }
   ]
 }

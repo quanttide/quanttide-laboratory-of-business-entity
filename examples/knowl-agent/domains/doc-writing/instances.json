@@ -84,6 +84,22 @@
       "file": "sample/write-bylaw.md",
       "self_ref": "write-bylaw.md 本身遵循总则→主体→附则的标准框架",
       "note": "工作章程写作章程自身遵循其定义的文档模板"
+    },
+    {
+      "id": "W-I-011",
+      "ontology": "W-O-001",
+      "element": "格式元素",
+      "file": "sample/docs-format.md",
+      "definition": "用于组织或装饰文档内容的 Markdown 语法要素",
+      "source": "第四条(一)"
+    },
+    {
+      "id": "W-I-012",
+      "ontology": "W-O-001",
+      "element": "格式过度",
+      "file": "sample/docs-format.md",
+      "definition": "不必要地使用过多格式元素类型或频次的行为",
+      "source": "第四条(二)"
     }
   ]
 }

@@ -15,7 +15,7 @@ for domain in "$DOMAIN_DIR"/*/; do
   [ ! -f "$file" ] && continue
   while read -r term; do
     [ -n "$term" ] && defined_terms["$term"]=1
-  done < <(jq -r '.instances[].subject // .instances[].principle // .instances[].risk // .instances[].element // empty' "$file" 2>/dev/null)
+  done < <(jq -r '.instances[] | (.subject // .principle // .risk // .element // .term // empty)' "$file" 2>/dev/null)
   
   while read -r term; do
     [ -n "$term" ] && defined_terms["$term"]=1
@@ -30,6 +30,9 @@ for f in "$SAMPLE_DIR"/*.md; do
     [ -z "$term" ] && continue
     # 过滤条款编号和章节名
     echo "$term" | grep -qE '^第[一二三四五六七八九十]+条|^第[一二三四五六七八九十]+章' && continue
+    # 过滤模板占位符（<Xxx> / 第X条 / 条款标题词）
+    echo "$term" | grep -qE '^第X|^<|>$|^术语' && continue
+    echo "$term" | grep -qE '^(制定依据|目的|适用范围|定义|章程效力|解释权)$' && continue
     # 过滤纯数字和单字
     [ ${#term} -le 1 ] && continue
     

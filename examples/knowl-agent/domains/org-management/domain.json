@@ -8,7 +8,10 @@
     "sample/qtdata-index.md",
     "sample/write-bylaw.md",
     "sample/docs-format.md",
-    "sample/connect-index.md"
+    "sample/connect-index.md",
+    "sample/secretary.md",
+    "sample/qtdata-org.md",
+    "sample/basic-charter.md"
   ],
   "ontologies": [
     { "id": "O-001", "name": "权责" },
@@ -17,7 +20,10 @@
     { "id": "O-004", "name": "资格-条件" },
     { "id": "O-005", "name": "风险-控制" },
     { "id": "O-006", "name": "文件结构" },
-    { "id": "O-007", "name": "义务-例外" }
+    { "id": "O-007", "name": "义务-例外" },
+    { "id": "O-008", "name": "秘书三层架构" },
+    { "id": "O-009", "name": "人才培养路径" },
+    { "id": "O-010", "name": "职责-权限分离" }
   ],
   "relations": [
     { "id": "C-001", "name": "约束" },
@@ -30,6 +36,9 @@
   "vocabulary": [
     "权责", "职权", "职责", "流程", "风险", "控制",
     "资格", "条件", "原则", "例外", "章程", "附则",
-    "岗位", "角色", "义务"
+    "岗位", "角色", "义务",
+    "秘书", "秘书长", "秘书处", "部门秘书",
+    "培养路径", "权限", "负责人",
+    "治理机构", "效力层级"
   ]
 }

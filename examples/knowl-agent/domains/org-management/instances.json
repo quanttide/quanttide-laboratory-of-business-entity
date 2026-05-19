@@ -261,6 +261,38 @@
       "exception": "非正式记录（个人笔记、临时草稿）不受本章程约束",
       "marker": "不受约束",
       "source": "第三条"
+    },
+    {
+      "id": "I-029",
+      "ontology": "O-008",
+      "file": "sample/secretary.md",
+      "tiers": [
+        { "level": "部门秘书", "scope": "部门间协调", "source": "第四~六条" },
+        { "level": "秘书处", "scope": "公司级运营协调", "source": "第七~九条" },
+        { "level": "秘书长", "scope": "高级管理职务", "source": "第十~十二条" }
+      ]
+    },
+    {
+      "id": "I-030",
+      "ontology": "O-009",
+      "file": "sample/secretary.md",
+      "path": [
+        { "phase": 1, "role": "部门秘书", "focus": "熟悉跨部门协调与日常管理事务" },
+        { "phase": 2, "role": "秘书处成员", "focus": "参与公司级协调工作，扩展管理视野" },
+        { "phase": 3, "role": "秘书长", "focus": "主持日常运营，锻炼全局管理能力" }
+      ],
+      "source": "第十三条"
+    },
+    {
+      "id": "I-031",
+      "ontology": "O-010",
+      "file": "sample/qtdata-org.md",
+      "roles": [
+        { "name": "项目经理", "responsibilities": ["主接口人", "组织资源", "监控进度", "管理结算", "安全上报", "质量审核"], "authorities": ["调动资源", "审批初稿", "暂停作业", "驳回交付"], "source": "第五条" },
+        { "name": "商务经理", "responsibilities": ["审核商务条款", "处理合同争议", "保密提示", "违约预警"], "authorities": ["审核订单", "协商谈判"], "source": "第六条" },
+        { "name": "数据工程师", "responsibilities": ["数据处理", "遵守限制", "使用正版工具", "数据标记", "提供文档", "安全措施", "审核合规", "数据删除"], "authorities": ["使用授权资源", "申请接口权限", "要求合规指引", "独立监督权", "暂停作业"], "source": "第七条" }
+      ],
+      "note": "与 company-representative 的权责结构不同，此处显式区分职责和权限两个维度"
     }
   ]
 }

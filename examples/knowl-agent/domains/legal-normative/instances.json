@@ -193,6 +193,22 @@
       "citation": "若工作订单条款与本章程冲突，应以工作订单的明确书面约定为准",
       "note": "引用非章程类文件，且定义了冲突时的优先级",
       "source": "第五条"
+    },
+    {
+      "id": "L-I-022",
+      "ontology": "L-O-001",
+      "file": "sample/basic-charter.md",
+      "term": "公司治理机构",
+      "definition": "负责审议和批准公司规范性文件的常设机构，由最高管理层、各业务域负责人及法务代表组成",
+      "source": "第四条(一)"
+    },
+    {
+      "id": "L-I-023",
+      "ontology": "L-O-001",
+      "file": "sample/basic-charter.md",
+      "term": "章程体系",
+      "definition": "以基本章程为顶层，各业务域工作章程为下层的规范性文件层级结构",
+      "source": "第四条(二)"
     }
   ]
 }

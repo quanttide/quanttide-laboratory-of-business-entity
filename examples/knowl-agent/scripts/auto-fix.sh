@@ -21,9 +21,21 @@ for ((i=1; i<=MAX_ITER; i++)); do
       [ ! -f "$f" ] && continue
       if ! jq . "$f" > /dev/null 2>&1; then
         echo "  [修复] $name/$file JSON 格式"
-        # 尝试 jq 自修复
-        jq . "$f" > /tmp/fix.json 2>/dev/null && mv /tmp/fix.json "$f"
-        issues=$((issues + 1))
+        # 常见问题：对象间缺少逗号
+        python3 -c "
+import re, json
+with open('$f') as f:
+    c = f.read()
+# 跨行补逗号
+fixed = re.sub(r'}\n\s+{', '},\n{', c)
+try:
+    data = json.loads(fixed)
+    with open('/tmp/fix.json','w') as out:
+        json.dump(data, out, ensure_ascii=False, indent=2)
+    print('OK')
+except:
+    pass
+" 2>/dev/null | grep -q OK && mv /tmp/fix.json "$f" && issues=$((issues + 1))
       fi
     done
   done

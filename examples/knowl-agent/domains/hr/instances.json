@@ -78,6 +78,28 @@
         { "risk": "管理真空", "control": "答疑机制", "controlled": true }
       ],
       "source": "第四~十二条"
+    },
+    {
+      "id": "H-I-010",
+      "ontology": "H-O-005",
+      "file": "sample/rank-index.md",
+      "identities": [
+        { "name": "实训生", "level": "L0", "description": "前置准备阶段，实训期满可转实习生或培训生" },
+        { "name": "实习生", "level": null, "description": "学习实践为主，实习期满可转正式员工" },
+        { "name": "培训生", "level": null, "description": "系统培训后定级入职" },
+        { "name": "管培生", "level": null, "description": "跨部门轮岗，培养管理储备人才" }
+      ],
+      "source": "第四~八条"
+    },
+    {
+      "id": "H-I-011",
+      "ontology": "H-O-006",
+      "file": "sample/rank-index.md",
+      "tracks": [
+        { "name": "专业序列（T序列）", "levels": ["L0(见习)", "L1(初级)", "L2(中级)", "L3(高级)"] },
+        { "name": "管理序列（M序列）", "levels": ["M1(主管)", "M2(总监)", "M3(副总裁)", "M4(总裁)", "M5(董事)"] }
+      ],
+      "source": "第十三~十四条"
     }
   ]
 }
