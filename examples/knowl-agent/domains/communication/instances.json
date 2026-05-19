@@ -1,0 +1,40 @@
+{
+  "description": "沟通管理领域的具体实例",
+  "instances": [
+    {
+      "id": "C-I-001",
+      "ontology": "C-O-001",
+      "file": "sample/connect-index.md",
+      "principle": "认知主权原则",
+      "statement": "每位成员均拥有其专注力与理解力的认知主权，不容侵犯",
+      "implication": "信息必须经过精炼与总结的加工程序，方可提交至团队渠道",
+      "source": "第四条"
+    },
+    {
+      "id": "C-I-002",
+      "ontology": "C-O-002",
+      "file": "sample/connect-index.md",
+      "sender": "成员",
+      "obligation": "深度思考与信息提炼",
+      "tool_note": "AI工具为辅助手段，不应成为简化思考或推卸责任的借口",
+      "source": "第五条"
+    },
+    {
+      "id": "C-I-003",
+      "ontology": "C-O-002",
+      "file": "sample/connect-index.md",
+      "format": "五百字以内的摘要形式",
+      "forbidden": ["AI对话原文", "未经处理的原始信息原文"],
+      "source": "第六条"
+    },
+    {
+      "id": "C-I-004",
+      "ontology": "C-O-003",
+      "file": "sample/connect-index.md",
+      "violation": "信息倾泻",
+      "definition": "无节制地向团队渠道发送未经处理的原文信息",
+      "consequence": "构成对他人认知主权的侵犯",
+      "source": "第七条"
+    }
+  ]
+}

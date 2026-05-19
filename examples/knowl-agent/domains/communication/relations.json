@@ -1,0 +1,23 @@
+{
+  "description": "沟通管理领域的关系",
+  "relations": [
+    {
+      "id": "C-R-001",
+      "name": "侵犯（infringes）",
+      "pattern": "<行为> 侵犯 <权利>",
+      "instances": [
+        { "relation": "infringes", "behavior": "信息倾泻", "right": "认知主权", "source": "connect-index.md:26" },
+        { "relation": "infringes", "behavior": "未经处理的原始信息发送", "right": "认知主权", "source": "connect-index.md:26" }
+      ]
+    },
+    {
+      "id": "C-R-002",
+      "name": "约束（bounds）",
+      "pattern": "<原则> 约束 <行为> 边界",
+      "instances": [
+        { "relation": "bounds", "principle": "认知主权原则", "behavior": "信息传递行为", "source": "connect-index.md:15" },
+        { "relation": "bounds", "principle": "认知主权原则", "behavior": "团队沟通方式", "source": "connect-index.md:15" }
+      ]
+    }
+  ]
+}
