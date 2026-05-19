@@ -1,4 +1,5 @@
 #!/bin/bash
+# 依赖: bash 3+
 # 初始化新领域目录和骨架文件
 # Usage: ./scripts/init-domain.sh <domain-name> [--from-detect <file>]
 

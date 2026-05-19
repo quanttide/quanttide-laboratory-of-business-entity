@@ -1,5 +1,6 @@
 #!/bin/bash
-# 循环检测+自动修复已知问题，直到结果干净
+# 依赖: bash 3+, jq
+# 循环检测+自动修复已知问题（仅补缺失文件，不修 JSON 格式）
 # Usage: ./scripts/auto-fix.sh [domains/] [sample/]
 
 DOMAIN_DIR=${1:-domains}
@@ -20,22 +21,7 @@ for ((i=1; i<=MAX_ITER; i++)); do
       f="$domain$file"
       [ ! -f "$f" ] && continue
       if ! jq . "$f" > /dev/null 2>&1; then
-        echo "  [修复] $name/$file JSON 格式"
-        # 常见问题：对象间缺少逗号
-        python3 -c "
-import re, json
-with open('$f') as f:
-    c = f.read()
-# 跨行补逗号
-fixed = re.sub(r'}\n\s+{', '},\n{', c)
-try:
-    data = json.loads(fixed)
-    with open('/tmp/fix.json','w') as out:
-        json.dump(data, out, ensure_ascii=False, indent=2)
-    print('OK')
-except:
-    pass
-" 2>/dev/null | grep -q OK && mv /tmp/fix.json "$f" && issues=$((issues + 1))
+        echo "  [跳过] $name/$file JSON 格式错误 — 需 AI 手动修复"
       fi
     done
   done

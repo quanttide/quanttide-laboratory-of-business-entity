@@ -1,4 +1,5 @@
 #!/bin/bash
+# 依赖: bash 3+, jq, grep -P (PCRE)
 # 跨领域融合检测
 # 检测项：本体名称冲突、词汇交叉、引用断裂、效力声明不一致
 # Usage: ./scripts/fusion-check.sh [domains/] [sample/]
@@ -108,13 +109,7 @@ for f in "$SAMPLE_DIR"/*.md; do
         if [ -f "$SAMPLE_DIR/$expected_file" ]; then
           match=1
         else
-          echo "  $(basename "$f"): 引用 \"$ref\" → $expected_file 不存在，自动创建 stub"
-          cat > "$SAMPLE_DIR/$expected_file" << STUB
-# $target
-
-<!-- stub: 被 $(basename "$f") 引用，内容待补全 -->
-STUB
-          echo "    [已创建] $SAMPLE_DIR/$expected_file"
+          echo "  $(basename "$f"): 引用 \"$ref\" → 期望 $expected_file 但不存在"
           found=1
           match=1
         fi

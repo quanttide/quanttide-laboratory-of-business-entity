@@ -1,4 +1,5 @@
 #!/bin/bash
+# 依赖: bash 3+, jq, grep
 # 基于词汇匹配为新文件推荐所属领域
 # Usage: ./scripts/detect-domain.sh <file>
 
@@ -23,7 +24,7 @@ for domain in domains/*/; do
   while read -r term; do
     [ -z "$term" ] && continue
     total=$((total + 1))
-    count=$(grep -o "$term" "$FILE" | wc -l)
+    count=$(grep -oF "$term" "$FILE" | wc -l)
     score=$((score + count))
   done < <(jq -r '.vocabulary[]' "$file" 2>/dev/null)
   

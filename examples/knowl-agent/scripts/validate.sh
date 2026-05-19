@@ -1,4 +1,5 @@
 #!/bin/bash
+# 依赖: bash 3+, jq
 # 验证领域目录结构完整性
 # Usage: ./scripts/validate.sh [domains/]
 

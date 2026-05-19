@@ -1,4 +1,5 @@
 #!/bin/bash
+# 依赖: bash 3+, jq
 # 生成领域概况表
 # Usage: ./scripts/summary.sh [domains/]
 
