@@ -1,0 +1,99 @@
+{
+  "description": "范畴（关系）— 链接不同本体的跨领域关系",
+  "categories": [
+    {
+      "id": "C-001",
+      "name": "约束（regulated-by / governs）",
+      "pattern": "<约束者> 约束/管辖 <被约束者>",
+      "cross_ontology": true,
+      "instances": [
+        { "relation": "regulated-by", "subject": "公司代表章程", "object": "量潮科技基本章程", "source": "company-representative.md:6" },
+        { "relation": "regulated-by", "subject": "离职工作章程", "object": "量潮科技基本章程", "source": "human-resignation.md:6" },
+        { "relation": "regulated-by", "subject": "沟通管理章程", "object": "量潮科技基本章程", "source": "connect-index.md:6" },
+        { "relation": "governs", "subject": "权责对等原则", "object": "代表制度", "source": "company-representative.md:12" },
+        { "relation": "governs", "subject": "格式克制原则", "object": "文档写作", "source": "docs-format.md:24" },
+        { "relation": "governs", "subject": "认知主权原则", "object": "信息传递", "source": "connect-index.md:15" },
+        { "relation": "regulated-by", "subject": "项目经理", "object": "工作订单", "source": "qtdata-index.md:44" },
+        { "relation": "regulated-by", "subject": "数据工程师", "object": "客户书面要求", "source": "qtdata-index.md:105" }
+      ]
+    },
+    {
+      "id": "C-002",
+      "name": "组成（part-of / consists-of）",
+      "pattern": "<整体> 由 <部分> 组成；<部分> 属于 <整体>",
+      "cross_ontology": true,
+      "instances": [
+        { "relation": "part-of", "whole": "代表之职权", "part": "信息获取权", "source": "company-representative.md:29" },
+        { "relation": "part-of", "whole": "代表之职权", "part": "提案权", "source": "company-representative.md:29" },
+        { "relation": "part-of", "whole": "代表之职权", "part": "审议权", "source": "company-representative.md:29" },
+        { "relation": "part-of", "whole": "代表之职权", "part": "表决权", "source": "company-representative.md:29" },
+        { "relation": "part-of", "whole": "代表之职权", "part": "程序异议权", "source": "company-representative.md:29" },
+        { "relation": "part-of", "whole": "量潮数据业务线岗位", "part": "项目经理", "source": "qtdata-index.md:53" },
+        { "relation": "part-of", "whole": "量潮数据业务线岗位", "part": "商务经理", "source": "qtdata-index.md:54" },
+        { "relation": "part-of", "whole": "量潮数据业务线岗位", "part": "数据工程师", "source": "qtdata-index.md:55" },
+        { "relation": "part-of", "whole": "数据服务", "part": "数据采集与汇聚", "source": "qtdata-index.md:35" },
+        { "relation": "part-of", "whole": "数据服务", "part": "数据清洗", "source": "qtdata-index.md:36" },
+        { "relation": "part-of", "whole": "数据服务", "part": "数据脱敏", "source": "qtdata-index.md:37" },
+        { "relation": "part-of", "whole": "数据服务", "part": "数据标注", "source": "qtdata-index.md:38" },
+        { "relation": "part-of", "whole": "数据服务", "part": "数据分析/建模/可视化", "source": "qtdata-index.md:39" },
+        { "relation": "part-of", "whole": "数据服务", "part": "数据安全存储与托管", "source": "qtdata-index.md:40" },
+        { "relation": "consists-of", "whole": "离职流程", "part": "离职准备", "source": "human-resignation.md" },
+        { "relation": "consists-of", "whole": "离职流程", "part": "离职分析", "source": "human-resignation.md" },
+        { "relation": "consists-of", "whole": "离职流程", "part": "交接程序", "source": "human-resignation.md" },
+        { "relation": "consists-of", "whole": "数据服务流程", "part": "需求对接", "source": "qtdata-index.md" },
+        { "relation": "consists-of", "whole": "数据服务流程", "part": "报价签约", "source": "qtdata-index.md" },
+        { "relation": "consists-of", "whole": "数据服务流程", "part": "执行监控", "source": "qtdata-index.md" },
+        { "relation": "consists-of", "whole": "数据服务流程", "part": "验收交付", "source": "qtdata-index.md" },
+        { "relation": "consists-of", "whole": "数据服务流程", "part": "归档", "source": "qtdata-index.md" }
+      ]
+    },
+    {
+      "id": "C-003",
+      "name": "对应（corresponds-to / pairs-with）",
+      "pattern": "<A> 与 <B> 一一对应",
+      "cross_ontology": true,
+      "instances": [
+        { "relation": "corresponds-to", "subject": "信息获取权", "object": "信息合规与保密义务", "source": "company-representative.md:第七条" },
+        { "relation": "corresponds-to", "subject": "提案权", "object": "提案诚信义务", "source": "company-representative.md:第八条" },
+        { "relation": "corresponds-to", "subject": "审议权", "object": "审议勤勉义务", "source": "company-representative.md:第九条" },
+        { "relation": "corresponds-to", "subject": "表决权", "object": "独立与忠实义务", "source": "company-representative.md:第十条" },
+        { "relation": "corresponds-to", "subject": "程序异议权", "object": "程序善意义务", "source": "company-representative.md:第十一条" }
+      ]
+    },
+    {
+      "id": "C-004",
+      "name": "产出（produces）",
+      "pattern": "<执行者> 产出 <结果/产物>",
+      "cross_ontology": true,
+      "instances": [
+        { "relation": "produces", "subject": "项目经理", "object": "需求规格说明书", "source": "qtdata-index.md:88" },
+        { "relation": "produces", "subject": "离职人员", "object": "交接清单", "source": "human-resignation.md:67" },
+        { "relation": "produces", "subject": "人力资源部门", "object": "离职数据分析", "source": "human-resignation.md:49" },
+        { "relation": "produces", "subject": "离职人员", "object": "工作复盘报告", "source": "human-resignation.md:62" },
+        { "relation": "produces", "subject": "直接上级", "object": "风险评估报告", "source": "human-resignation.md:44" }
+      ]
+    },
+    {
+      "id": "C-005",
+      "name": "违反（violates / conflicts-with）",
+      "pattern": "<行为> 违反 <规则/原则>",
+      "cross_ontology": true,
+      "instances": [
+        { "relation": "violates", "subject": "信息倾泻", "object": "认知主权原则", "source": "connect-index.md:26" },
+        { "relation": "violates", "subject": "格式过度", "object": "格式克制原则", "source": "docs-format.md:31" }
+      ]
+    },
+    {
+      "id": "C-006",
+      "name": "位置（located-in / defined-in）",
+      "pattern": "<概念> 位于 <文件:位置>",
+      "cross_ontology": false,
+      "instances": [
+        { "relation": "defined-in", "subject": "格式元素", "object": "docs-format.md:17", "source": "docs-format.md" },
+        { "relation": "defined-in", "subject": "工作订单", "object": "qtdata-index.md:18", "source": "qtdata-index.md" },
+        { "relation": "defined-in", "subject": "公司代表", "object": "company-representative.md:9", "source": "company-representative.md" },
+        { "relation": "defined-in", "subject": "认知主权", "object": "connect-index.md:15", "source": "connect-index.md" }
+      ]
+    }
+  ]
+}
