@@ -1,10 +1,10 @@
 #!/bin/bash
 # 依赖: bash 4+ (declare -A), jq, grep -P (PCRE)
 # 扫描全库加粗术语，对比所有领域定义，找出未定义术语
-# Usage: ./scripts/find-undefined-terms.sh [sample/] [domains/]
+# Usage: ./scripts/find-undefined-terms.sh [sample/] [data/]
 
 SAMPLE_DIR=${1:-sample}
-DOMAIN_DIR=${2:-domains}
+DOMAIN_DIR=${2:-data}
 
 echo "=== 全库使用但未定义的术语 ==="
 echo ""

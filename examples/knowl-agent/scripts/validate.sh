@@ -1,9 +1,9 @@
 #!/bin/bash
 # 依赖: bash 3+, jq
 # 验证领域目录结构完整性
-# Usage: ./scripts/validate.sh [domains/]
+# Usage: ./scripts/validate.sh [data/]
 
-BASE=${1:-domains}
+BASE=${1:-data}
 ERRORS=0
 
 for domain in "$BASE"/*/; do

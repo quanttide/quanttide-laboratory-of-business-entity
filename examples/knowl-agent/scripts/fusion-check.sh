@@ -2,9 +2,9 @@
 # 依赖: bash 3+, jq, grep -P (PCRE)
 # 跨领域融合检测
 # 检测项：本体名称冲突、词汇交叉、引用断裂、效力声明不一致
-# Usage: ./scripts/fusion-check.sh [domains/] [sample/]
+# Usage: ./scripts/fusion-check.sh [data/] [sample/]
 
-DOMAIN_DIR=${1:-domains}
+DOMAIN_DIR=${1:-data}
 SAMPLE_DIR=${2:-sample}
 
 echo "========================================"

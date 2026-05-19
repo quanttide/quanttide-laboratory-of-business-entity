@@ -1,9 +1,9 @@
 #!/bin/bash
 # 依赖: bash 3+, jq
 # 循环检测+自动修复已知问题（仅补缺失文件，不修 JSON 格式）
-# Usage: ./scripts/auto-fix.sh [domains/] [sample/]
+# Usage: ./scripts/auto-fix.sh [data/] [sample/]
 
-DOMAIN_DIR=${1:-domains}
+DOMAIN_DIR=${1:-data}
 SAMPLE_DIR=${2:-sample}
 MAX_ITER=10
 

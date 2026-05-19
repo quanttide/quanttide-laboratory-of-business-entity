@@ -1,9 +1,9 @@
 #!/bin/bash
 # 依赖: bash 3+, jq
 # 生成领域概况表
-# Usage: ./scripts/summary.sh [domains/]
+# Usage: ./scripts/summary.sh [data/]
 
-BASE=${1:-domains}
+BASE=${1:-data}
 
 printf "%-24s %-10s %-10s %-10s %-10s\n" "领域" "本体" "实例" "关系" "文件数"
 printf "%.0s-" {1..64}

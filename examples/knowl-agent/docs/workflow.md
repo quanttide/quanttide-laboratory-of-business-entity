@@ -26,7 +26,7 @@
 
 基于词汇命中排序，推荐最匹配的领域。命中显著领先时规则引擎直接输出推荐；命中接近时智能体分析视角差异给人选。
 
-**产出**：`domains/<domain>/domain.json`（规则引擎通过 `init-domain.sh` 创建）
+**产出**：`data/<domain>/domain.json`（规则引擎通过 `init-domain.sh` 创建）
 
 ---
 
@@ -41,7 +41,7 @@
 - 视角决定看到什么本体，须显式声明
 - 同一事物在不同领域中有不同本体
 
-**产出**：`domains/<domain>/ontologies.json`
+**产出**：`data/<domain>/ontologies.json`
 
 ---
 
@@ -51,7 +51,7 @@
 
 **执行者**：智能体。阅读文件条款，判断每条内容归属的本体。
 
-**产出**：`domains/<domain>/instances.json`
+**产出**：`data/<domain>/instances.json`
 
 ---
 
@@ -61,7 +61,7 @@
 
 **执行者**：智能体。
 
-**产出**：`domains/<domain>/relations.json`
+**产出**：`data/<domain>/relations.json`
 
 ---
 
@@ -108,7 +108,7 @@
 ## 目录结构
 
 ```
-domains/<domain>/
+data/<domain>/
 ├── domain.json       # 领域清单
 ├── ontologies.json   # 本体（仅抽象模式）
 ├── instances.json    # 实例（映射到本体）

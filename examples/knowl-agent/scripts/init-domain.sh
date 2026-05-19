@@ -9,7 +9,7 @@ if [ -z "$1" ]; then
 fi
 
 DOMAIN=$1
-DIR="domains/$DOMAIN"
+DIR="data/$DOMAIN"
 mkdir -p "$DIR"
 
 if [ ! -f "$DIR/domain.json" ]; then

@@ -12,7 +12,7 @@ fi
 echo "文件: $FILE"
 echo ""
 
-for domain in domains/*/; do
+for domain in data/*/; do
   name=$(basename "$domain")
   file="$domain/domain.json"
   
