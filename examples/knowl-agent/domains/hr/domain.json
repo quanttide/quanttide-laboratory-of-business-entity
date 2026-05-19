@@ -1,0 +1,20 @@
+{
+  "id": "hr",
+  "name": "人力资源",
+  "perspective": "关注员工生命周期中的资格、离职、交接和岗位管理",
+  "files": [
+    "sample/human-resignation.md",
+    "sample/company-representative.md"
+  ],
+  "signatures": [
+    "human-resignation.md 定义完整的离职流程（准备→分析→交接→归档）",
+    "company-representative.md 定义代表资格条件（职级、培训生身份）和资格终止条件",
+    "两文件均涉及员工身份状态变更（入职/离职/降级）"
+  ],
+  "vocabulary": [
+    "离职", "辞职", "解雇", "劳动合同", "交接",
+    "资格", "职级", "培训生", "实习生", "实训生",
+    "选举权", "任期", "罢免", "归档",
+    "风险评估", "工作复盘"
+  ]
+}

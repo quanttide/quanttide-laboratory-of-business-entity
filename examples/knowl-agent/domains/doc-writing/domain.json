@@ -1,0 +1,19 @@
+{
+  "id": "doc-writing",
+  "name": "文档写作",
+  "perspective": "关注文档的格式规范、结构框架和排版标准",
+  "files": [
+    "sample/docs-format.md",
+    "sample/write-bylaw.md"
+  ],
+  "signatures": [
+    "docs-format.md 定义格式克制原则和排版要素规则",
+    "write-bylaw.md 定义标准文档框架（总则→主体→附则）",
+    "两份文件共同构成'元规则'——规定知识本身该怎么写"
+  ],
+  "vocabulary": [
+    "格式", "排版", "标题层级", "分隔线", "加粗",
+    "列表", "表格", "引用", "代码块", "规范",
+    "克制", "过度", "章程框架", "条款格式"
+  ]
+}
