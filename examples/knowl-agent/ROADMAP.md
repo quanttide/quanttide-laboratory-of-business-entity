@@ -9,7 +9,18 @@
 **步骤**：
 1. 遍历文件，根据词汇特征和内容主题判断涉及的领域
 2. 为每个领域声明视角（关注什么、忽略什么）
-3. 建立 `domains/<domain>/domain.json`
+3. 运行 `scripts/init-domain.sh <domain>` 创建 `data/<domain>/domain.json`
+
+**工具**：`scripts/detect-domain.sh`（基于词汇命中排序推荐领域）
+
+**当前已发现领域**：
+
+| 领域 | 视角 | 文件数 |
+|------|------|--------|
+| org-gov | 组织管理 | 4 |
+| hr | 人力资源管理 | 2 |
+| doc-std | 写作学 | 2 |
+| biz-ops | 业务管理 | 3 |
 
 ---
 
@@ -23,7 +34,9 @@
 - 一个领域下可发现多个本体
 - 视角决定看到什么本体，须显式声明当前视角
 
-**产出**：`domains/<domain>/ontologies.json`
+**执行者**：智能体
+
+**产出**：`data/<domain>/ontologies.json`
 
 ---
 
@@ -31,7 +44,9 @@
 
 将知识库中的具体内容映射到本体上。每条实例标注所属本体、来源文件和位置。
 
-**产出**：`domains/<domain>/instances.json`
+**执行者**：智能体
+
+**产出**：`data/<domain>/instances.json`
 
 ---
 
@@ -43,7 +58,9 @@
 - 关系不是第一等概念，是本体的附属
 - 同一关系类型可跨多个本体出现
 
-**产出**：`domains/<domain>/relations.json`
+**执行者**：智能体
+
+**产出**：`data/<domain>/relations.json`
 
 ---
 
@@ -51,34 +68,45 @@
 
 对比不同领域对同一术语的定义和处理，发现冲突和不一致。
 
-| 检查项 | 说明 |
-|--------|------|
-| 同名异义 | 同一术语在不同领域中定义不同 |
-| 异名同义 | 不同术语在不同领域中指向同一概念 |
-| 矛盾断言 | 对同一实体的同一属性在不同领域中有矛盾声明 |
-| 引用断裂 | 跨文件引用指向不存在的章节、条款或文件 |
+| 检查项 | 说明 | 工具 |
+|--------|------|------|
+| 同名异义 | 同一术语在不同领域中定义不同 | `scripts/fusion-check.sh` |
+| 异名同义 | 不同术语在不同领域中指向同一概念 | `scripts/fusion-check.sh` |
+| 引用断裂 | 跨文件引用指向不存在的条款或文件 | `scripts/fusion-check.sh` |
+| 效力主体不一致 | 章程效力声明主体不同 | `scripts/fusion-check.sh` |
 
-**产出**：`data/fusion-report.json`
+**产出**：`data/fusion-report.json`（规则引擎） + 智能体分析报告
+
+---
+
+### 第五阶段：反馈闭环
+
+| 工具 | 功能 |
+|------|------|
+| `scripts/validate.sh` | 验证领域目录结构完整性 |
+| `scripts/summary.sh` | 领域概况总览表 |
+| `scripts/find-undefined-terms.sh` | 找出全库使用但未定义的术语 |
+| `scripts/auto-fix.sh` | 循环检测+自动补缺失骨架文件 |
 
 ---
 
 ## 目录结构
 
 ```
-domains/
-├── <domain>/
-│   ├── domain.json       # 领域清单
-│   ├── ontologies.json   # 本体（仅抽象模式）
-│   ├── instances.json    # 实例（映射到本体）
-│   └── relations.json    # 关系（连接本体和实例）
-data/                     # 临时数据和融合报告
-scripts/                  # 脚本
-docs/                     # 文档
+data/<domain>/
+├── domain.json       # 领域清单（视角、词汇表、文件列表）
+├── ontologies.json   # 本体（仅抽象模式）
+├── instances.json    # 实例（映射到本体）
+└── relations.json    # 关系（连接本体和实例）
+data/                 # 临时数据和融合报告
+scripts/              # 规则引擎脚本
+docs/                 # 文档和执行报告
+sample/               # 样本知识库
 ```
 
 ## 不做什么
 
 - 不做格式级别的检测（标题层级、分隔线数量、用语规范）
 - 不做问题追踪和评分（那是人的工作）
-- 不将语言模态系统（应当/不得/可以）列为领域本体
-- 不将范畴作为独立概念管理（降级为关系）
+- 不将语言模态系统列为领域本体（应当/不得/可以是表达方式，不是概念结构）
+- 不试图统一不同领域的视角差异——差异本身就是发现
