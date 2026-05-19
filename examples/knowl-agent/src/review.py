@@ -181,23 +181,9 @@ def review_ontologies(domain):
         print(f"\n  {bold(o['name'])}  {dim(o['id'])}")
         print(f"  视角：{o.get('perspective', '')}")
         print(f"  描述：{o.get('description', '')}")
-        if "pattern" in o:
+        if o.get("pattern"):
             print(f"\n  {bold('模式：')}")
-            for k, v in o["pattern"].items():
-                if isinstance(v, list):
-                    print(f"    {k}:")
-                    for item in v:
-                        if isinstance(item, dict):
-                            for sk, sv in item.items():
-                                print(f"      {sk}: {sv}")
-                        else:
-                            print(f"    - {item}")
-                elif isinstance(v, dict):
-                    print(f"    {k}:")
-                    for sk, sv in v.items():
-                        print(f"      {sk}: {sv}")
-                else:
-                    print(f"    {k}: {v}")
+            print(f"    {o['pattern']}")
         if o.get("source_files"):
             print(f"\n  来源文件：{', '.join(o['source_files'])}")
         print(f"\n  {dim('---')}")
