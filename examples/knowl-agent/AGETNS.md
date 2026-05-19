@@ -47,15 +47,13 @@
 
 ## 样本说明
 
-本目录下的样本文件来自量潮科技章程体系的真实演化过程，展示了：
+本目录下的样本文件是从量潮科技章程体系直接复制的原始文件：
 
-- `01-structure-good.md` — 合规的章程结构（自洽的元规则示例）
-- `02-structure-bad.md` — 结构问题示例（缺乏元规则约束的早期状态）
-- `03-clause-style.md` — 规范用语对照（应当/不得/可以的示例与误例）
-- `04-format-issues.md` — 格式问题检测（AI 写作常见的格式过度）
-- `05-meta-evolution.md` — 元认知文件的演化（AGENTS.md 的前后对比）
-
-每个样本附有检测分析，说明知识工程智能体如何发现其中的质量问题。
+- `01-structure-good.md` — 工作章程写作章程（自洽的元规则示例）
+- `02-structure-bad.md` — AGENTS.md 旧版本（缺乏元规则约束的早期状态）
+- `03-clause-style.md` — 文档格式章程（规范用语与格式规则）
+- `04-format-issues.md` — AI 生成文档中的格式过度问题
+- `05-meta-evolution.md` — AGENTS.md 当前版本（元认知层升级后）
 
 ## 与 AGENTS.md 的关系
 
