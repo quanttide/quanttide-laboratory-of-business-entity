@@ -61,54 +61,54 @@
       "id": "L-I-007",
       "ontology": "L-O-002",
       "file": "sample/docs-format.md",
-      "authority": "公司最高权力机构",
+      "authority": "公司治理机构",
       "action": "审议通过",
-      "statement": "经公司最高权力机构审议通过后生效，修改亦同。已存在的文档与本章程不一致的，应逐步修订",
+      "statement": "经公司治理机构审议通过，自发布之日起生效。已存在的文档与本章程不一致的，应逐步修订",
       "source": "第二十条"
     },
     {
       "id": "L-I-008",
       "ontology": "L-O-002",
       "file": "sample/write-bylaw.md",
-      "authority": null,
-      "action": "自发布之日起生效",
-      "statement": "自发布之日起生效。已有章程与本章程不一致的，应逐步修订",
+      "authority": "公司治理机构",
+      "action": "审议通过",
+      "statement": "经公司治理机构审议通过，自发布之日起生效。已有章程与本章程不一致的，应逐步修订",
       "source": "第二十一条"
     },
     {
       "id": "L-I-009",
       "ontology": "L-O-002",
       "file": "sample/company-representative.md",
-      "authority": "公司最高权力机构",
+      "authority": "公司治理机构",
       "action": "审议通过",
-      "statement": "经公司最高权力机构审议通过后生效，修改亦同",
+      "statement": "经公司治理机构审议通过，自发布之日起生效",
       "source": "第二十二条"
     },
     {
       "id": "L-I-010",
       "ontology": "L-O-002",
       "file": "sample/human-resignation.md",
-      "authority": "公司最高权力机构",
+      "authority": "公司治理机构",
       "action": "审议通过",
-      "statement": "经公司最高权力机构审议通过后生效，修改亦同",
+      "statement": "经公司治理机构审议通过，自发布之日起生效",
       "source": "第十五条"
     },
     {
       "id": "L-I-011",
       "ontology": "L-O-002",
       "file": "sample/connect-index.md",
-      "authority": "公司最高权力机构",
+      "authority": "公司治理机构",
       "action": "审议通过",
-      "statement": "经公司最高权力机构审议通过后生效，修改亦同",
+      "statement": "经公司治理机构审议通过，自发布之日起生效",
       "source": "第八条"
     },
     {
       "id": "L-I-012",
       "ontology": "L-O-002",
       "file": "sample/qtdata-index.md",
-      "authority": "数据BU办公室（修订）",
-      "action": "自发布之日起生效",
-      "statement": "自发布之日起生效。当业务需求变化时，由数据BU办公室负责修订",
+      "authority": "公司治理机构",
+      "action": "审议通过",
+      "statement": "经公司治理机构审议通过，自发布之日起生效。当业务需求变化时，由数据BU办公室负责修订",
       "source": "第二十七条"
     },
     {

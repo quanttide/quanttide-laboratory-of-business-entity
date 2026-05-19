@@ -41,11 +41,10 @@
       "domains": ["org-management", "legal-normative"],
       "subject": "效力声明的主体",
       "details": [
-        { "source": "docs-format.md 第二十条", "statement": "经公司最高权力机构审议通过后生效" },
-        { "source": "write-bylaw.md 第二十一条", "statement": "自发布之日起生效（未指定机构）" },
-        { "source": "qtdata-index.md 第二十七条", "statement": "自发布之日起生效，由数据BU办公室负责修订" }
+        { "source": "原始状态", "statement": "四份用'最高权力机构'，两份用'自发布'（或BU办公室）" },
+        { "source": "修复后", "statement": "全部统一为'经公司治理机构审议通过，自发布之日起生效'" }
       ],
-      "verdict": "不一致。docs-format、company-representative、human-resignation、connect-index 声明'经最高权力机构审议通过'；write-bylaw 和 qtdata-index 仅'自发布之日起生效'。两类效力声明的权威层级不同"
+      "verdict": "原始状态存在效力层级不一致。融合报告暴露后，经人工介入统一修复。验证了反向检测的有效性"
     },
     {
       "type": "引用断裂",
