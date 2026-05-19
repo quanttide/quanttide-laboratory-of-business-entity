@@ -134,6 +134,35 @@
       "rule": "无节制发送未经处理的原文信息视为信息倾泻，构成对他人认知主权的侵犯",
       "source": "sample/connect-index.md",
       "article": "第七条"
+    },
+    {
+      "id": "inst-service-demand",
+      "ontology": "service-process",
+      "subject": "需求对接阶段",
+      "role": "项目经理",
+      "activities": [
+        "引导需求讨论，输出《需求规格说明书》"
+      ],
+      "input": "客户业务目标与场景描述",
+      "output": "需求规格说明书",
+      "gate": "客户确认签署后方可进入下一阶段",
+      "source": "sample/qtdata-index.md",
+      "article": "第十条"
+    },
+    {
+      "id": "inst-service-acceptance",
+      "ontology": "service-process",
+      "subject": "验收与交付阶段",
+      "role": "项目经理、数据工程师",
+      "activities": [
+        "内部质量审核",
+        "客户验收测试",
+        "尾款结清后正式交付"
+      ],
+      "output": "最终验收报告",
+      "gate": "尾款结清",
+      "source": "sample/qtdata-index.md",
+      "article": "第十三条"
     }
   ]
 }

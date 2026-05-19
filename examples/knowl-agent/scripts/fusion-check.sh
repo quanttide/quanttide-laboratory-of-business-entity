@@ -74,7 +74,8 @@ NAME_MAP["量潮科技公司代表章程"]="company-representative"
 NAME_MAP["量潮科技离职工作章程"]="human-resignation"
 NAME_MAP["量潮科技沟通管理章程"]="connect-index"
 NAME_MAP["量潮数据工作章程"]="qtdata-index"
-NAME_MAP["量潮数据项目岗位权责章程"]="qtdata-role-authority"
+NAME_MAP["量潮数据项目岗位权责章程"]="qtdata-org"
+NAME_MAP["量潮数据组织管理章程"]="qtdata-org"
 NAME_MAP["离职工作章程"]="human-resignation"
 NAME_MAP["沟通管理章程"]="connect-index"
 NAME_MAP["文档格式章程"]="docs-format"
@@ -82,7 +83,7 @@ NAME_MAP["工作章程写作章程"]="write-bylaw"
 NAME_MAP["基本章程"]="basic-charter"
 
 # 应被忽略的外部引用（法律、外部文件、通用商业概念）
-IGNORE_LIST=("中华人民共和国公司法" "中华人民共和国个人信息保护法" "劳动合同" "工作订单" "需求规格说明书" "最终验收报告" "交接确认书")
+IGNORE_LIST=("中华人民共和国公司法" "中华人民共和国个人信息保护法" "劳动合同" "工作订单" "需求规格说明书" "最终验收报告" "交接确认书" "数据处理服务框架协议")
 
 found=0
 for f in "$SAMPLE_DIR"/*.md; do

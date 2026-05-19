@@ -81,6 +81,21 @@
       },
       "source": "sample/write-bylaw.md",
       "article": "第十六条"
+    },
+    {
+      "id": "inst-doc-structure-chapter-order",
+      "ontology": "document-structure",
+      "subject": "主体章节排列顺序",
+      "principle": "从抽象到具体、从前置到后续",
+      "recommended_order": [
+        "业务范围或基本原则",
+        "组织架构或岗位职责",
+        "流程或程序",
+        "质量标准或约束条件",
+        "附则"
+      ],
+      "source": "sample/write-bylaw.md",
+      "article": "第十四条"
     }
   ]
 }

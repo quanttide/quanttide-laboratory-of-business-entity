@@ -54,6 +54,28 @@
       "target_instance": "inst-risk-confidentiality",
       "relation": "overlaps",
       "detail": "客户数据和交付物既是知识产权归属问题，也受保密义务保护"
+    },
+    {
+      "id": "rel-role-instance-of-authority",
+      "type": "cross-domain",
+      "description": "业务角色的职责权限定义是组织权责模式的具体实例",
+      "source_ontology": "role-responsibility",
+      "source_instance": "inst-role-pm",
+      "target_ontology": "org-gov:authority-responsibility",
+      "target_instance": "inst-gov-body-composition",
+      "relation": "instance-of",
+      "detail": "项目经理的'职责列表+权限列表'成对定义方式是组织治理中权责对等模式在业务层的实例化"
+    },
+    {
+      "id": "rel-process-intersects-resignation",
+      "type": "cross-domain",
+      "description": "服务流程中的项目交接与离职流程中的工作交接衔接",
+      "source_ontology": "service-process",
+      "source_instance": "inst-service-acceptance",
+      "target_ontology": "hr:resignation-process",
+      "target_instance": "inst-resignation-handover",
+      "relation": "intersects",
+      "detail": "项目归档阶段的文件资产整理与离职交接中的文件资产清单在内容上重叠，避免重复劳动"
     }
   ]
 }

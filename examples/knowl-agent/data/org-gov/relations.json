@@ -54,6 +54,28 @@
       "target_instance": "inst-rep-core-powers",
       "relation": "analogous",
       "detail": "秘书长与公司代表的权责定义模式一致，均采用'职权+职责'成对定义"
+    },
+    {
+      "id": "rel-qualification-references-rank",
+      "type": "cross-domain",
+      "description": "资格条件引用职级等级作为任职要求",
+      "source_ontology": "qualification-condition",
+      "source_instance": "inst-qualification-representative",
+      "target_ontology": "hr:rank-level",
+      "target_instance": "inst-professional-levels",
+      "relation": "references",
+      "detail": "代表资格要求'L2及以上职级'直接引用hr领域rank-level本体的等级定义"
+    },
+    {
+      "id": "rel-hierarchy-governs-structure",
+      "type": "cross-domain",
+      "description": "层级体系决定文档结构中效力说明的表述",
+      "source_ontology": "hierarchy-system",
+      "source_instance": "inst-hierarchy-charter",
+      "target_ontology": "doc-std:document-structure",
+      "target_instance": "inst-doc-structure-framework",
+      "relation": "governs",
+      "detail": "文档结构中'附则'部分的章程效力条款必须反映组织层级体系中上位章程效力高于下位的规定"
     }
   ]
 }

@@ -43,6 +43,28 @@
       "target_instance": "inst-resignation-handover",
       "relation": "precedes",
       "detail": "离职启动→风险评估→复盘→交接→归档的顺序流程"
+    },
+    {
+      "id": "rel-rank-defines-qualification",
+      "type": "cross-domain",
+      "description": "职级等级定义了资格条件中的等级要求",
+      "source_ontology": "rank-level",
+      "source_instance": "inst-professional-levels",
+      "target_ontology": "org-gov:qualification-condition",
+      "target_instance": "inst-qualification-representative",
+      "relation": "defines",
+      "detail": "代表资格要求的'L2及以上职级'直接引用职级等级体系中L0-L3的定义"
+    },
+    {
+      "id": "rel-resignation-intersects-process",
+      "type": "cross-domain",
+      "description": "离职交接与业务流程中项目交接在资产转移方面衔接",
+      "source_ontology": "resignation-process",
+      "source_instance": "inst-resignation-handover",
+      "target_ontology": "biz-ops:service-process",
+      "target_instance": "inst-service-acceptance",
+      "relation": "intersects",
+      "detail": "离职交接中的文件资产、系统权限等交接清单内容与项目归档阶段的交付物整理应保持一致"
     }
   ]
 }

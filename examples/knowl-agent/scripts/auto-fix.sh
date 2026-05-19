@@ -7,13 +7,13 @@ DOMAIN_DIR=${1:-data}
 SAMPLE_DIR=${2:-sample}
 MAX_ITER=10
 
-echo "自动修复开始"
+echo "骨架文件自动补全开始（不修复 JSON 格式错误）"
 echo ""
 
 for ((i=1; i<=MAX_ITER; i++)); do
   echo "--- 第 $i 轮 ---"
   
-  # 1. validate + 自动修 JSON
+  # 1. 报告 JSON 错误（不尝试自动修复）
   issues=0
   for domain in "$DOMAIN_DIR"/*/; do
     name=$(basename "$domain")
@@ -21,7 +21,8 @@ for ((i=1; i<=MAX_ITER; i++)); do
       f="$domain$file"
       [ ! -f "$f" ] && continue
       if ! jq . "$f" > /dev/null 2>&1; then
-        echo "  [跳过] $name/$file JSON 格式错误 — 需 AI 手动修复"
+        echo "  [错误] $name/$file JSON 格式错误 — 需手动修复"
+        issues=$((issues + 1))
       fi
     done
   done

@@ -24,7 +24,7 @@ for domain in data/*/; do
   while read -r term; do
     [ -z "$term" ] && continue
     total=$((total + 1))
-    count=$(grep -oF "$term" "$FILE" | wc -l)
+    count=$(grep -oF "$term" -- "$FILE" | wc -l)
     score=$((score + count))
   done < <(jq -r '.vocabulary[]' "$file" 2>/dev/null)
   

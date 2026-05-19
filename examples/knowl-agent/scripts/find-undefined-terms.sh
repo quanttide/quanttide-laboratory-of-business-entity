@@ -1,5 +1,5 @@
 #!/bin/bash
-# 依赖: bash 4+ (declare -A), jq, grep -P (PCRE)
+# 依赖: bash 3+, jq, grep -P (PCRE)
 # 扫描全库加粗术语，对比所有领域定义，找出未定义术语
 # Usage: ./scripts/find-undefined-terms.sh [sample/] [data/]
 
@@ -9,17 +9,17 @@ DOMAIN_DIR=${2:-data}
 echo "=== 全库使用但未定义的术语 ==="
 echo ""
 
-# 收集所有已定义术语
-declare -A defined_terms
+# 收集所有已定义术语（使用数组代替关联数组，兼容 bash 3）
+defined_terms=()
 for domain in "$DOMAIN_DIR"/*/; do
   file="$domain/instances.json"
   [ ! -f "$file" ] && continue
   while read -r term; do
-    [ -n "$term" ] && defined_terms["$term"]=1
+    [ -n "$term" ] && defined_terms[${#defined_terms[@]}]="$term"
   done < <(jq -r '.instances[] | (.subject // .principle // .risk // .element // .term // empty)' "$file" 2>/dev/null)
   
   while read -r term; do
-    [ -n "$term" ] && defined_terms["$term"]=1
+    [ -n "$term" ] && defined_terms[${#defined_terms[@]}]="$term"
   done < <(jq -r '.vocabulary[]' "$domain/domain.json" 2>/dev/null)
 done
 
@@ -37,21 +37,30 @@ for f in "$SAMPLE_DIR"/*.md; do
     # 过滤纯数字和单字
     [ ${#term} -le 1 ] && continue
     
-    if [ -z "${defined_terms[$term]}" ]; then
-      # 再模糊匹配一次（处理空格差异）
-      match=0
-      for d in "${!defined_terms[@]}"; do
+    # 精确匹配
+    matched=0
+    for d in "${defined_terms[@]}"; do
+      if [ "$d" = "$term" ]; then
+        matched=1
+        break
+      fi
+    done
+    
+    # 模糊匹配（处理空格差异）
+    if [ $matched -eq 0 ]; then
+      t_clean=$(echo "$term" | tr -d ' ')
+      for d in "${defined_terms[@]}"; do
         d_clean=$(echo "$d" | tr -d ' ')
-        t_clean=$(echo "$term" | tr -d ' ')
         if [ "$d_clean" = "$t_clean" ]; then
-          match=1
+          matched=1
           break
         fi
       done
-      if [ $match -eq 0 ]; then
-        echo "  $(basename "$f"): 使用了术语 \"$term\" 但未在任何 domain 中定义"
-        found=1
-      fi
+    fi
+    
+    if [ $matched -eq 0 ]; then
+      echo "  $(basename "$f"): 使用了术语 \"$term\" 但未在任何 domain 中定义"
+      found=1
     fi
   done < <(grep -oP '\*\*[^*]+\*\*' "$f" | sed 's/^\*\*//;s/\*\*$//' | sort -u)
 done

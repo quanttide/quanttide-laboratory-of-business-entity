@@ -43,6 +43,28 @@
       "target_instance": "inst-format-principle",
       "relation": "violates",
       "detail": "滥用分隔线、全程列表化、冗余修饰词等行为与'删、简、少、一'原则冲突"
+    },
+    {
+      "id": "rel-structure-governs-hierarchy",
+      "type": "cross-domain",
+      "description": "文档结构受组织层级对章程效力的规定约束",
+      "source_ontology": "document-structure",
+      "source_instance": "inst-doc-structure-framework",
+      "target_ontology": "org-gov:hierarchy-system",
+      "target_instance": "inst-hierarchy-charter",
+      "relation": "governs",
+      "detail": "文档结构中'效力与解释权'条款的内容由组织层级体系决定：上位章程效力高于下位"
+    },
+    {
+      "id": "rel-content-constrains-qualification",
+      "type": "cross-domain",
+      "description": "内容通用性原则约束资格条件的表述方式",
+      "source_ontology": "content-standard",
+      "source_instance": "inst-content-universality",
+      "target_ontology": "org-gov:qualification-condition",
+      "target_instance": "inst-qualification-representative",
+      "relation": "constrains",
+      "detail": "资格条件中不能出现具体人名、阶段性状态等时效性内容，须遵循通用性原则"
     }
   ]
 }

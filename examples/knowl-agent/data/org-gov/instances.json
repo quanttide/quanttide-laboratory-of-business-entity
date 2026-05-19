@@ -88,6 +88,40 @@
       "exclusions": ["实习生享有选举权", "实训生不具有选举权"],
       "source": "sample/company-representative.md",
       "article": "第五条"
+    },
+    {
+      "id": "inst-hierarchy-conflict",
+      "ontology": "hierarchy-system",
+      "subject": "层级冲突处理规则",
+      "rules": [
+        "不同层级冲突以上位层级为准",
+        "同层级冲突以专门章程优先于通用章程"
+      ],
+      "source": "sample/basic-charter.md",
+      "article": "第九条"
+    },
+    {
+      "id": "inst-deliberation-recall",
+      "ontology": "deliberation-procedure",
+      "subject": "代表罢免程序",
+      "triggers": [
+        "连续三次无故缺席审议与表决",
+        "严重违反忠实勤勉义务",
+        "利用代表职权谋取不正当利益",
+        "因故意或重大过失给公司造成重大损失"
+      ],
+      "procedure": "罢免提案须经下议院三分之一以上代表联名提出→审议→全体有选举权成员投票表决→获三分之二以上多数通过生效",
+      "source": "sample/company-representative.md",
+      "article": "第二十条"
+    },
+    {
+      "id": "inst-qualification-secretary",
+      "ontology": "qualification-condition",
+      "subject": "秘书选拔条件",
+      "criteria": "具备良好沟通能力与执行力，优先考虑有管理发展意向的人员",
+      "orientation": "以管理潜力和发展意愿为导向",
+      "source": "sample/secretary.md",
+      "article": "第六条、第十四条"
     }
   ]
 }
