@@ -1,5 +1,5 @@
 {
-  "description": "本体和范畴的具体实例 — 引用 ontologies.json 和 categories.json",
+  "description": "本体和关系的具体实例 — 引用 ontologies.json 和 relations.json",
   "instances": [
     {
       "id": "I-001",
@@ -15,7 +15,7 @@
         { "name": "程序异议权", "scope": "对程序违规提出异议" }
       ],
       "duties": ["信息合规与保密义务", "提案诚信义务", "审议勤勉义务", "独立与忠实义务", "程序善意义务"],
-      "categories": ["C-001", "C-002", "C-003"]
+      "relations": ["C-001", "C-002", "C-003"]
     },
     {
       "id": "I-002",
@@ -57,7 +57,7 @@
       "domain": "文档格式",
       "rules": ["删", "简", "少", "一"],
       "interpretation": "第二十一条：解释应遵循格式克制之基本原则",
-      "categories": ["C-001"]
+      "relations": ["C-001"]
     },
     {
       "id": "I-007",
@@ -67,7 +67,7 @@
       "domain": "代表制度",
       "rules": ["职权与职责在范围、强度上一一对应"],
       "interpretation": "第二十三条：解释应遵循权责对等之基本原则",
-      "categories": ["C-001"]
+      "relations": ["C-001"]
     },
     {
       "id": "I-008",
@@ -77,7 +77,7 @@
       "domain": "信息传递",
       "rules": ["信息必须经精炼与总结方可提交团队渠道"],
       "interpretation": "第九条：解释应遵循认知主权保护之基本原则",
-      "categories": ["C-001", "C-005"]
+      "relations": ["C-001", "C-005"]
     },
     {
       "id": "I-009",
@@ -85,7 +85,7 @@
       "file": "sample/qtdata-index.md",
       "process": "数据服务流程",
       "phases": ["需求对接", "报价签约", "执行监控", "验收交付", "归档"],
-      "categories": ["C-002", "C-004"]
+      "relations": ["C-002", "C-004"]
     },
     {
       "id": "I-010",
@@ -93,7 +93,7 @@
       "file": "sample/human-resignation.md",
       "process": "离职流程",
       "phases": ["离职准备", "离职分析", "交接程序", "归档"],
-      "categories": ["C-002", "C-004"]
+      "relations": ["C-002", "C-004"]
     },
     {
       "id": "I-011",

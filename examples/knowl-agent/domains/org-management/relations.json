@@ -1,6 +1,6 @@
 {
-  "description": "范畴（关系）— 链接不同本体的跨领域关系",
-  "categories": [
+  "description": "关系 — 链接不同本体的跨领域连接",
+  "relations": [
     {
       "id": "C-001",
       "name": "约束（regulated-by / governs）",
