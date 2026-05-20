@@ -2,13 +2,14 @@
 """领域概况统计"""
 
 import argparse
+from pathlib import Path
+from src.config import DATA_DIR
 from src.loader import load_all_domains
-from src.loader import load_json, DATA_DIR
 
 
 def run(data_dir=None):
     base = data_dir or DATA_DIR
-    domains = load_all_domains()
+    domains = load_all_domains(base)
     if not domains:
         print("未找到领域数据")
         return 1

@@ -4,7 +4,8 @@
 import re
 import argparse
 from pathlib import Path
-from src.loader import load_all_domains, DATA_DIR, SAMPLE_DIR
+from src.config import DATA_DIR, SAMPLE_DIR
+from src.loader import load_all_domains
 
 
 IGNORED_TERMS = {
@@ -15,9 +16,9 @@ IGNORED_PREFIXES = ("第", "第")
 IGNORED_CHAPTER_RE = re.compile(r"^第[一二三四五六七八九十]+条|^第[一二三四五六七八九十]+章")
 
 
-def collect_defined_terms():
+def collect_defined_terms(sample_dir, data_dir):
     terms = set()
-    for d, domain, ontologies, instances, relations in load_all_domains():
+    for d, domain, ontologies, instances, relations in load_all_domains(data_dir):
         for inst in instances:
             for val in [inst.subject, inst.data.get("principle"), inst.data.get("risk"),
                         inst.data.get("element"), inst.data.get("term")]:
@@ -35,7 +36,7 @@ def collect_defined_terms():
 
 def run(sample_dir=None, data_dir=None):
     sdir = Path(sample_dir) if sample_dir else SAMPLE_DIR
-    defined = collect_defined_terms()
+    defined = collect_defined_terms(sdir, data_dir)
     defined_clean = {t.replace(" ", "") for t in defined}
 
     print("=== 全库使用但未定义的术语 ===\n")

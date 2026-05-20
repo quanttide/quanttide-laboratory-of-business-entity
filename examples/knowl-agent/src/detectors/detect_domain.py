@@ -3,11 +3,13 @@
 
 import argparse
 from pathlib import Path
+from src.config import DATA_DIR
 from src.loader import load_all_domains
 
 
-def run(filepath: str):
+def run(filepath: str, data_dir=None):
     path = Path(filepath)
+    base = data_dir or DATA_DIR
     if not path.exists():
         print(f"文件不存在: {filepath}")
         return 1
@@ -16,7 +18,7 @@ def run(filepath: str):
     print(f"文件: {path.name}\n")
 
     results = []
-    for d, domain, ontologies, instances, relations in load_all_domains():
+    for d, domain, ontologies, instances, relations in load_all_domains(base):
         if not domain.vocabulary:
             continue
         score = 0

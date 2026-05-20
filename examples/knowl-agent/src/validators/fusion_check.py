@@ -4,7 +4,8 @@
 import re
 import argparse
 from pathlib import Path
-from src.loader import load_all_domains, load_json, DATA_DIR, SAMPLE_DIR
+from src.config import DATA_DIR, SAMPLE_DIR
+from src.loader import load_all_domains, load_json
 
 
 NAME_MAP = {
@@ -30,7 +31,7 @@ IGNORE_LIST = [
 ]
 
 
-def check_name_conflict():
+def check_name_conflict(data_dir):
     print("========================================")
     print("  1. 本体名称冲突（跨领域同名本体）")
     print("========================================\n")
@@ -38,7 +39,7 @@ def check_name_conflict():
     name_map = {}
     found = 0
 
-    for d, domain, ontologies, instances, relations in load_all_domains():
+    for d, domain, ontologies, instances, relations in load_all_domains(data_dir):
         for onto in ontologies:
             key = onto.label.replace(" ", "").lower() if onto.label else onto.name.replace(" ", "").lower()
             if key in name_map and name_map[key] != domain.id:
@@ -52,7 +53,7 @@ def check_name_conflict():
     print()
 
 
-def check_term_overlap():
+def check_term_overlap(data_dir):
     print("========================================")
     print("  2. 术语交叉引用（跨领域词汇重叠）")
     print("========================================\n")
@@ -60,7 +61,7 @@ def check_term_overlap():
     term_map = {}
     found = 0
 
-    for d, domain, ontologies, instances, relations in load_all_domains():
+    for d, domain, ontologies, instances, relations in load_all_domains(data_dir):
         for term in domain.vocabulary:
             if term in term_map and term_map[term] != domain.id:
                 print(f'  "{term}" 同时属于: {term_map[term]}, {domain.id}')
@@ -156,10 +157,12 @@ def check_effectiveness_consistency(sample_dir=None):
 
 
 def run(data_dir=None, sample_dir=None):
-    check_name_conflict()
-    check_term_overlap()
-    check_broken_references(sample_dir)
-    check_effectiveness_consistency(sample_dir)
+    ddir = Path(data_dir) if data_dir else DATA_DIR
+    sdir = Path(sample_dir) if sample_dir else SAMPLE_DIR
+    check_name_conflict(ddir)
+    check_term_overlap(ddir)
+    check_broken_references(sdir)
+    check_effectiveness_consistency(sdir)
     return 0
 
 

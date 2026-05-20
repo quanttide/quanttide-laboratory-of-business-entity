@@ -3,21 +3,15 @@ from pathlib import Path
 from src.models import Domain, Ontology, Instance, Relation
 
 
-BASE_DIR = Path(__file__).resolve().parent.parent
-FIXTURES_DIR = BASE_DIR / "tests" / "fixtures"
-DATA_DIR = FIXTURES_DIR / "output"
-SAMPLE_DIR = FIXTURES_DIR / "input"
-
-
 def load_json(path: Path) -> dict:
     with open(path, encoding="utf-8") as f:
         return json.load(f)
 
 
-def get_domain_dirs() -> list[Path]:
-    if not DATA_DIR.exists():
+def get_domain_dirs(data_dir: Path) -> list[Path]:
+    if not data_dir.exists():
         return []
-    return sorted(d for d in DATA_DIR.iterdir() if d.is_dir() and (d / "domain.json").exists())
+    return sorted(d for d in data_dir.iterdir() if d.is_dir() and (d / "domain.json").exists())
 
 
 def load_domain(domain_dir: Path) -> Domain:
@@ -79,9 +73,9 @@ def load_relations(domain_dir: Path) -> list[Relation]:
     ]
 
 
-def load_all_domains() -> list[tuple[Path, Domain, list[Ontology], list[Instance], list[Relation]]]:
+def load_all_domains(data_dir: Path) -> list[tuple[Path, Domain, list[Ontology], list[Instance], list[Relation]]]:
     result = []
-    for d in get_domain_dirs():
+    for d in get_domain_dirs(data_dir):
         domain = load_domain(d)
         ontologies = load_ontologies(d)
         instances = load_instances(d)

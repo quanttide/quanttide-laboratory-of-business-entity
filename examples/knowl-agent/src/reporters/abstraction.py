@@ -3,7 +3,8 @@
 
 import re
 import argparse
-from src.loader import load_all_domains, DATA_DIR
+from src.config import DATA_DIR
+from src.loader import load_all_domains
 
 
 SIGNAL_PATTERNS = [
@@ -21,7 +22,7 @@ def run(data_dir=None):
 
     print("====== 本体抽象度检测 ======\n")
 
-    for d, domain, ontologies, instances, relations in load_all_domains():
+    for d, domain, ontologies, instances, relations in load_all_domains(base):
         print(f"=== {domain.id} ===")
 
         for onto in ontologies:

@@ -2,12 +2,13 @@
 """统计每个领域的跨领域关系覆盖率"""
 
 import argparse
-from src.loader import load_all_domains, DATA_DIR
+from src.config import DATA_DIR
+from src.loader import load_all_domains
 
 
 def run(data_dir=None):
     base = data_dir or DATA_DIR
-    domains_data = load_all_domains()
+    domains_data = load_all_domains(base)
 
     print("====== 跨领域关系覆盖率报告 ======\n")
 

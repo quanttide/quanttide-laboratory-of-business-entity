@@ -53,8 +53,9 @@
 │   └── workflow.md              # 知识发现与建模流程
 ├── src/
 │   ├── cli.py              # 统一 CLI 入口
+│   ├── config.py            # 默认路径配置
 │   ├── models.py           # 数据模型
-│   ├── loader.py           # 数据加载
+│   ├── loader.py           # 数据加载（纯函数，无硬编码路径）
 │   ├── reporters/          # 报告生成
 │   ├── validators/         # 验证与检测
 │   ├── detectors/          # 领域检测与初始化
@@ -95,7 +96,7 @@
 
 ### 交互式评审
 
-`src/review.py` 提供 TUI 交互式逐项评审。
+通过 `python -m src.reviewers` 调用，支持逐项评审本体、实例、关系。
 
 ### 测试
 
@@ -123,4 +124,4 @@
 | `docs/workflow.md` | 知识发现与建模流程（五步） |
 | `docs/contract.md` | 人机权责分工 |
 | `docs/criteria.md` | 本体评审与验收标准 |
-| `docs/index.md` | AI 能力边界分析 |
+| `docs/index.md` | 智能体能力与分工 |
