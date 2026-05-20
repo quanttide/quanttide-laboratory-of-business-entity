@@ -2,7 +2,7 @@
 
 ## 三元分工
 
-参见 `docs/responsibility-matrix.md`：
+参见 `docs/contract.md`：
 
 | 角色 | 擅长 |
 |------|------|

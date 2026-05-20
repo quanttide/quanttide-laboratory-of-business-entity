@@ -47,9 +47,9 @@
 ├── ROADMAP.md              # 下一阶段路线图
 ├── STATUS.md               # 本文件：当前状态报告
 ├── docs/
-│   ├── acceptance-criteria.md   # 本体评审与验收标准
+│   ├── criteria.md     # 本体评审与验收标准
 │   ├── index.md                 # AI 能力边界分析
-│   ├── responsibility-matrix.md # 人机权责分工
+│   ├── contract.md     # 人机权责分工
 │   └── workflow.md              # 知识发现与建模流程
 ├── src/
 │   ├── cli.py              # 统一 CLI 入口
@@ -121,6 +121,6 @@
 | `CONTRIBUTING.md` | 贡献指南 |
 | `README.md` | 项目概览 |
 | `docs/workflow.md` | 知识发现与建模流程（五步） |
-| `docs/responsibility-matrix.md` | 人机权责分工 |
-| `docs/acceptance-criteria.md` | 本体评审与验收标准 |
+| `docs/contract.md` | 人机权责分工 |
+| `docs/criteria.md` | 本体评审与验收标准 |
 | `docs/index.md` | AI 能力边界分析 |

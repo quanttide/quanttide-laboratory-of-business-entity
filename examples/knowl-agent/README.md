@@ -11,7 +11,7 @@ knowl-agent/
 ├── CONTRIBUTING.md     # 工作方法：如何新增/修改检测维度
 ├── README.md           # 本文件：项目概览
 ├── docs/               # 文档（权责清单、工作流、报告）
-│   ├── responsibility-matrix.md
+│   ├── contract.md
 │   ├── workflow.md
 │   └── report.md              # 最近一次执行报告
 ├── src/                # Python 工具链
@@ -46,8 +46,8 @@ knowl-agent/
 
 1. 阅读 `AGENTS.md` 了解智能体定位
 2. 阅读 `docs/workflow.md` 了解完整执行流程
-3. 阅读 `docs/responsibility-matrix.md` 了解人机分工
-4. 阅读 `docs/report.md` 查看最近一次执行结果
+3. 阅读 `docs/contract.md` 了解人机分工
+4. 阅读 `docs/workflow.md` 了解完整执行流程
 
 ## 文件分工
 
@@ -56,9 +56,8 @@ knowl-agent/
 | AGENTS.md | 元认知文件 | 初次了解项目定位 |
 | ROADMAP.md | 执行方案 | 了解检测维度与阶段 |
 | CONTRIBUTING.md | 贡献指南 | 扩展检测维度时查阅 |
+| docs/contract.md | 权责清单 | 判断分工边界 |
 | docs/workflow.md | 操作手册 | 执行流程时查阅 |
-| docs/responsibility-matrix.md | 权责清单 | 判断分工边界 |
-| docs/report.md | 执行报告 | 查看最近一次结果 |
 | src/ | 工具链 | 自动执行检测 |
 | tests/fixtures/input/ | 检测对象 | 执行检测时作为输入 |
 | tests/fixtures/output/ | 检测产出 | 领域建模结果 |

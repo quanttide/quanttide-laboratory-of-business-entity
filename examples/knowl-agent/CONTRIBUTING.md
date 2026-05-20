@@ -41,7 +41,7 @@
 ### 模块规范
 
 - 使用 Python 模块，放在 `src/` 目录下对应的子包中
-- 遵循 `docs/responsibility-matrix.md` 的分工：有确定规则的操作归脚本，需要判断的归智能体
+- 遵循 `docs/contract.md` 的分工：有确定规则的操作归脚本，需要判断的归智能体
 - 每个模块应提供 `run()` 函数作为入口，接受参数并返回退出码
 - 模块可直接通过 `python -m src.cli <command>` 调用
 
