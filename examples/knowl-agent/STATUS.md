@@ -19,7 +19,7 @@
 
 ### ✅ 第一阶段：本体重构
 
-14 个 ontology pattern 已完成抽象重构，全部通过"换源测试"和"填空测试"。pattern 不再包含具体角色名、阶段名、等级值等具体值。
+14 个 ontology pattern 已完成抽象重构，全部通过 `check-abstraction.sh` 信号检测。pattern 不再包含具体角色名、阶段名、等级值等具体值。
 
 ### ✅ 第二阶段：实例归位
 
@@ -29,13 +29,45 @@
 
 建立 8 条跨领域关系，每领域均 ≥2 条。覆盖 org-gov↔hr、biz-ops↔org-gov、doc-std↔org-gov、hr↔biz-ops 四组连接。
 
-### ✅ 第四阶段：工具链升级 (Shell)
+### ✅ 第四阶段：Shell 工具链
 
-9 个 shell 脚本就绪：validate、auto-fix、summary、check-abstraction、detect-domain、find-undefined-terms、fusion-check、cross-domain-report、init-domain。全部已修复已知问题。
+9 个 shell 脚本全部修复已知问题后已删除，功能由 Python 工具链替代。
 
 ### ✅ 第五阶段：脚本重构 (Shell → Python)
 
-已完成，详见下方工具链状态。
+9 个 Python 模块全部实现，通过统一 CLI 调用。shell 脚本已移除。
+
+## 目录结构
+
+```
+├── AGENTS.md               # 智能体自描述、工作纪律、质量标准
+├── CHANGELOG.md            # 已完成阶段的变更记录
+├── CONTRIBUTING.md         # 贡献指南
+├── README.md               # 项目概览
+├── ROADMAP.md              # 下一阶段路线图
+├── STATUS.md               # 本文件：当前状态报告
+├── docs/
+│   ├── acceptance-criteria.md   # 本体评审与验收标准
+│   ├── index.md                 # AI 能力边界分析
+│   ├── responsibility-matrix.md # 人机权责分工
+│   └── workflow.md              # 知识发现与建模流程
+├── src/
+│   ├── cli.py              # 统一 CLI 入口
+│   ├── models.py           # 数据模型
+│   ├── loader.py           # 数据加载
+│   ├── review.py           # 交互式评审工具
+│   ├── reporters/          # 报告生成
+│   ├── validators/         # 验证与检测
+│   ├── detectors/          # 领域检测与初始化
+│   └── review/             # （待拆分）
+└── tests/
+    ├── fixtures/input/     # 原始知识库（10 份章程文档）
+    ├── fixtures/output/    # 领域建模结果（4 领域）
+    ├── test_abstraction.py
+    ├── test_loader.py
+    ├── test_summary.py
+    └── test_validate.py
+```
 
 ## 工具链状态
 
@@ -57,15 +89,11 @@
 
 ### 交互式评审
 
-`src/review.py` 提供 TUI 交互式逐项评审，已解除对 shell 脚本的 subprocess 依赖。
+`src/review.py` 提供 TUI 交互式逐项评审。
 
 ### 测试
 
 `tests/` 下 4 个测试文件、5 个用例，全部通过。
-
-### 旧脚本
-
-shell 脚本已归档至 `scripts/.deprecated/`，保留作为回退。
 
 ## 已知问题
 
@@ -74,20 +102,20 @@ shell 脚本已归档至 `scripts/.deprecated/`，保留作为回退。
 | `find-undefined-terms` 将模板术语（"第X条 定义"等）误报为未定义 | write-bylaw.md 检测结果含 8 个误报 | 需优化过滤规则 |
 | `fusion-check` 检测到 "交接" 一词同时属于 hr 和 org-gov | 术语重叠 1 处，需人工确认是否合理 | **【需人确认】** |
 | `fusion-check` 检测到 qtdata-index.md 引用 "量潮数据项目岗位权责章程" 无法匹配文件 | 引用断裂 1 处，可能缺少对应 sample 文件 | **【需人确认】** |
-| review.py 的 `review/` 子包尚未拆分 | 仍为单文件 `src/review.py`，未拆分为 review/ 子包 | 待下次重构 |
+| review.py 的 review/ 子包尚未拆分 | 仍为单文件 `src/review.py`，未拆分为 review/ 子包 | 待下次重构 |
+| 测试断言偏弱 | 仅验证返回值，未验证输出内容 | 待增强 |
 
 ## 文件索引
 
 | 文件 | 用途 |
 |------|------|
 | `AGENTS.md` | 智能体自描述、工作纪律、本体质量标准 |
-| `ROADMAP.md` | 下一阶段路线图（脚本重构已完成） |
+| `ROADMAP.md` | 下一阶段路线图 |
 | `STATUS.md` | 本文件：当前状态报告 |
 | `CHANGELOG.md` | 已完成阶段的变更记录 |
-| `CONTRIBUTING.md` | 贡献指南（Python 工具链版） |
+| `CONTRIBUTING.md` | 贡献指南 |
 | `README.md` | 项目概览 |
-| `docs/workflow.md` | 五步执行流程 |
+| `docs/workflow.md` | 知识发现与建模流程（五步） |
 | `docs/responsibility-matrix.md` | 人机权责分工 |
-| `docs/report.md` | 最近一次执行报告 |
-| `tests/fixtures/input/` | 原始知识库（10 份章程文档） |
-| `tests/fixtures/output/` | 领域建模结果（4 领域） |
+| `docs/acceptance-criteria.md` | 本体评审与验收标准 |
+| `docs/index.md` | AI 能力边界分析 |
