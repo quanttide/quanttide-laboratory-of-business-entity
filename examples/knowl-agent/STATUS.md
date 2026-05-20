@@ -55,11 +55,16 @@
 │   ├── cli.py              # 统一 CLI 入口
 │   ├── models.py           # 数据模型
 │   ├── loader.py           # 数据加载
-│   ├── review.py           # 交互式评审工具
+│   ├── review.py           # 交互式评审入口（薄委托层）
 │   ├── reporters/          # 报告生成
 │   ├── validators/         # 验证与检测
 │   ├── detectors/          # 领域检测与初始化
-│   └── review/             # （待拆分）
+│   └── review/             # 交互式评审子包
+│       ├── ui.py           # 终端 UI 工具
+│       ├── data.py         # 数据加载与评审持久化
+│       ├── ontology_review.py
+│       ├── instance_review.py
+│       └── relation_review.py
 └── tests/
     ├── fixtures/input/     # 原始知识库（10 份章程文档）
     ├── fixtures/output/    # 领域建模结果（4 领域）
@@ -102,7 +107,6 @@
 | `find-undefined-terms` 将模板术语（"第X条 定义"等）误报为未定义 | write-bylaw.md 检测结果含 8 个误报 | 需优化过滤规则 |
 | `fusion-check` 检测到 "交接" 一词同时属于 hr 和 org-gov | 术语重叠 1 处，需人工确认是否合理 | **【需人确认】** |
 | `fusion-check` 检测到 qtdata-index.md 引用 "量潮数据项目岗位权责章程" 无法匹配文件 | 引用断裂 1 处，可能缺少对应 sample 文件 | **【需人确认】** |
-| review.py 的 review/ 子包尚未拆分 | 仍为单文件 `src/review.py`，未拆分为 review/ 子包 | 待下次重构 |
 | 测试断言偏弱 | 仅验证返回值，未验证输出内容 | 待增强 |
 
 ## 文件索引
