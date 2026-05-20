@@ -4,11 +4,12 @@
 
 ### 新增检测维度
 
-1. 在 `scripts/` 下新建 shell 脚本，遵循统一的输入输出约定：
+1. 在 `src/` 下新建 Python 模块，遵循统一的输入输出约定：
    - 输入：`sample/` 目录下的原始知识库文件
    - 输出：结构化文本结果，打印到标准输出
-2. 在 `docs/workflow.md` 中补充对应的检测子流程
-3. 如需将检测结果持久化，输出到 `data/` 目录下的 JSON 文件
+2. 在 `src/cli.py` 中注册新命令
+3. 在 `docs/workflow.md` 中补充对应的检测子流程
+4. 如需将检测结果持久化，输出到 `data/` 目录下的 JSON 文件
 
 ### 新增领域
 
@@ -24,12 +25,12 @@
 }
 ```
 
-1. 运行 `scripts/init-domain.sh <domain-id>` 创建骨架
+1. 运行 `python -m src.cli init-domain <domain-id>` 创建骨架
 2. 编辑 `domain.json`：填写名称、视角声明、文件列表、词汇表
 3. 编辑 `ontologies.json`：发现该视角下的本体模式
 4. 编辑 `instances.json`：将文件内容映射到本体
 5. 编辑 `relations.json`：描述跨本体或跨实例的连接
-6. 运行 `scripts/validate.sh` 验证 JSON 合法性
+6. 运行 `python -m src.cli validate` 验证 JSON 合法性
 
 ### 修改检测逻辑
 
@@ -37,15 +38,43 @@
 - 每个问题项应包含：**位置**（文件路径）、**描述**、**建议**
 - 不得在检测逻辑中修改原始知识库
 
-### 脚本规范
+### 模块规范
 
-- 使用 bash 脚本，放在 `scripts/` 目录
-- 运行时依赖声明在脚本开头的注释中
+- 使用 Python 模块，放在 `src/` 目录下对应的子包中
 - 遵循 `docs/responsibility-matrix.md` 的分工：有确定规则的操作归脚本，需要判断的归智能体
+- 每个模块应提供 `run()` 函数作为入口，接受参数并返回退出码
+- 模块可直接通过 `python -m src.cli <command>` 调用
+
+### `src/` 目录结构
+
+```
+src/
+├── cli.py              # 统一 CLI 入口
+├── models.py            # 数据模型
+├── loader.py            # 数据加载与持久化
+├── reporters/           # 报告生成
+│   ├── summary.py
+│   ├── abstraction.py
+│   └── cross_domain.py
+├── validators/          # 验证与检测
+│   ├── validate.py
+│   ├── auto_fix.py
+│   ├── fusion_check.py
+│   └── find_undefined.py
+├── detectors/           # 领域检测与初始化
+│   ├── detect_domain.py
+│   └── init_domain.py
+└── review/              # 交互式评审
+    ├── ui.py
+    ├── ontology_review.py
+    ├── instance_review.py
+    └── relation_review.py
+```
 
 ### 测试要求
 
-- 每个检测脚本至少有一个正例（应触发的）和一个反例（不应触发的）
+- 每个检测模块至少有一个正例（应触发的）和一个反例（不应触发的）
+- 测试放在 `tests/` 目录下，使用 `pytest`
 - 测试数据放在 `sample/` 目录下
 
 ## 提交规范

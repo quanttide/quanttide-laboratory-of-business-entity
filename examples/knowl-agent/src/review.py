@@ -3,16 +3,17 @@
 
 import json
 import os
-import subprocess
 import shutil
+import sys
 from pathlib import Path
 from datetime import datetime
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 DATA_DIR = BASE_DIR / "data"
 SAMPLE_DIR = BASE_DIR / "sample"
-SCRIPTS_DIR = BASE_DIR / "scripts"
 REVIEW_FILE = DATA_DIR / ".review.json"
+
+sys.path.insert(0, str(BASE_DIR))
 
 
 # ── 数据加载 ──────────────────────────────────────────────
@@ -326,20 +327,20 @@ def view_review_summary(domains, reviews):
     wait()
 
 
-# ── 运行脚本 ──────────────────────────────────────────────
+# ── 运行检测 ──────────────────────────────────────────────
 
-def run_script(name, title):
+def run_detection(module_path, title):
     clear()
     header(title)
-    print(f"  运行 {dim(f'scripts/{name}')} ...\n")
-    result = subprocess.run(
-        ["bash", str(SCRIPTS_DIR / name)],
-        capture_output=True, text=True, cwd=BASE_DIR
-    )
-    if result.stdout:
-        print(result.stdout.rstrip())
-    if result.stderr:
-        print(yellow(result.stderr))
+    print(f"  运行 {dim(module_path)} ...\n")
+    try:
+        import importlib
+        mod = importlib.import_module(module_path)
+        result = mod.run()
+        if result:
+            print(yellow(f"退出码: {result}"))
+    except Exception as e:
+        print(red(f"错误: {e}"))
     wait()
 
 
@@ -363,8 +364,8 @@ def main():
         print(f"  {bold('4.')} 查看评审汇总")
         print(f"  {bold('5.')} 重置评审记录")
         print(f"  {'─' * 30}")
-        print(f"  {bold('6.')} 运行跨领域融合检测  {dim('(fusion-check.sh)')}")
-        print(f"  {bold('7.')} 运行未定义术语检查  {dim('(find-undefined-terms.sh)')}")
+        print(f"  {bold('6.')} 运行跨领域融合检测  {dim('(fusion_check)')}")
+        print(f"  {bold('7.')} 运行未定义术语检查  {dim('(find_undefined)')}")
         print(f"  {'─' * 30}")
         print(f"  {bold('0.')} 退出")
         choice = input(dim("\n  请选择: ")).strip()
@@ -408,9 +409,9 @@ def main():
                 print("  已重置")
                 wait()
         elif choice == "6":
-            run_script("fusion-check.sh", "跨领域融合检测")
+            run_detection("src.validators.fusion_check", "跨领域融合检测")
         elif choice == "7":
-            run_script("find-undefined-terms.sh", "未定义术语检查")
+            run_detection("src.validators.find_undefined", "未定义术语检查")
         elif choice == "0":
             clear()
             print("再见。")
