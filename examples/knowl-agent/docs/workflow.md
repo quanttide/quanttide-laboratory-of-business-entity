@@ -92,27 +92,6 @@ python -m src.cli auto-fix              # 补缺失骨架文件
 
 迭代模式：智能体修 → 跑规则引擎验证 → 再修 → 直到 validate 全部通过。
 
-## 目录结构
-
-```
-tests/fixtures/output/<domain>/
-  domain.json         # 领域清单
-  ontologies.json     # 本体（仅抽象模式）
-  instances.json      # 实例（映射到本体）
-  relations.json      # 关系（连接本体和实例）
-tests/fixtures/input/ # 原始知识库文件
-src/
-  cli.py              # 统一 CLI 入口
-  models.py           # 数据模型
-  loader.py           # 数据加载
-  reporters/          # 报告生成
-  validators/         # 验证检测
-  detectors/          # 领域操作
-  review/             # 交互式评审
-tests/                # 单元测试
-docs/                 # 文档
-```
-
 ## 不做什么
 
 - 不做格式级别的检测（标题层级、分隔线数量、用语规范）

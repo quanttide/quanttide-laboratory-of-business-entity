@@ -64,7 +64,7 @@ src/
 ├── detectors/           # 领域检测与初始化
 │   ├── detect_domain.py
 │   └── init_domain.py
-└── review/              # 交互式评审
+└── reviewers/           # 交互式评审
     ├── ui.py
     ├── ontology_review.py
     ├── instance_review.py
