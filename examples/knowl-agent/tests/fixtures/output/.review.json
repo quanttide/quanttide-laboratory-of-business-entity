@@ -1,0 +1,417 @@
+{
+  "biz-ops:ontology:role-responsibility": {
+    "status": "通过",
+    "comment": "本体重构完成，通过抽象度检测",
+    "updated": "2026-05-19T21:33:09.691447"
+  },
+  "biz-ops:ontology:service-process": {
+    "status": "通过",
+    "comment": "本体重构完成，通过抽象度检测",
+    "updated": "2026-05-19T21:33:09.691457"
+  },
+  "biz-ops:ontology:risk-control": {
+    "status": "通过",
+    "comment": "本体重构完成，通过抽象度检测",
+    "updated": "2026-05-19T21:33:09.691459"
+  },
+  "biz-ops:ontology:cognitive-sovereignty": {
+    "status": "通过",
+    "comment": "本体重构完成，通过抽象度检测",
+    "updated": "2026-05-19T21:33:09.691461"
+  },
+  "biz-ops:instance:inst-role-pm": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691597"
+  },
+  "biz-ops:instance:inst-role-bm": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691599"
+  },
+  "biz-ops:instance:inst-role-de": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691602"
+  },
+  "biz-ops:instance:inst-service-full-cycle": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691604"
+  },
+  "biz-ops:instance:inst-risk-data-security": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691605"
+  },
+  "biz-ops:instance:inst-risk-ip": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691606"
+  },
+  "biz-ops:instance:inst-risk-confidentiality": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691608"
+  },
+  "biz-ops:instance:inst-cognitive-info-duty": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691609"
+  },
+  "biz-ops:instance:inst-cognitive-summary": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691610"
+  },
+  "biz-ops:instance:inst-cognitive-violation": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691611"
+  },
+  "biz-ops:instance:inst-service-demand": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691613"
+  },
+  "biz-ops:instance:inst-service-acceptance": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691614"
+  },
+  "biz-ops:relation:rel-role-executes-process": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.691666"
+  },
+  "biz-ops:relation:rel-risk-constrains-process": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.691668"
+  },
+  "biz-ops:relation:rel-cognitive-governs-communication": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.691670"
+  },
+  "biz-ops:relation:rel-role-responsible-for-risk": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.691671"
+  },
+  "biz-ops:relation:rel-ip-relates-to-confidentiality": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.691673"
+  },
+  "biz-ops:relation:rel-role-instance-of-authority": {
+    "status": "通过",
+    "comment": "关系定义正确，跨域关系已建立",
+    "updated": "2026-05-19T21:33:09.691674"
+  },
+  "biz-ops:relation:rel-process-intersects-resignation": {
+    "status": "通过",
+    "comment": "关系定义正确，跨域关系已建立",
+    "updated": "2026-05-19T21:33:09.691676"
+  },
+  "doc-std:ontology:document-structure": {
+    "status": "通过",
+    "comment": "本体重构完成，通过抽象度检测",
+    "updated": "2026-05-19T21:33:09.691716"
+  },
+  "doc-std:ontology:format-rule": {
+    "status": "通过",
+    "comment": "本体重构完成，通过抽象度检测",
+    "updated": "2026-05-19T21:33:09.691718"
+  },
+  "doc-std:ontology:content-standard": {
+    "status": "通过",
+    "comment": "本体重构完成，通过抽象度检测",
+    "updated": "2026-05-19T21:33:09.691719"
+  },
+  "doc-std:instance:inst-doc-structure-framework": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691776"
+  },
+  "doc-std:instance:inst-doc-structure-heading": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691777"
+  },
+  "doc-std:instance:inst-format-principle": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691779"
+  },
+  "doc-std:instance:inst-format-overuse": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691780"
+  },
+  "doc-std:instance:inst-format-list": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691781"
+  },
+  "doc-std:instance:inst-content-universality": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691782"
+  },
+  "doc-std:instance:inst-content-stability": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691783"
+  },
+  "doc-std:instance:inst-content-language": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691785"
+  },
+  "doc-std:instance:inst-doc-structure-chapter-order": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691786"
+  },
+  "doc-std:relation:rel-structure-governs-format": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.691824"
+  },
+  "doc-std:relation:rel-format-realizes-content": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.691825"
+  },
+  "doc-std:relation:rel-content-constrains-structure": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.691827"
+  },
+  "doc-std:relation:rel-format-overuse-violates-principle": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.691828"
+  },
+  "doc-std:relation:rel-structure-governs-hierarchy": {
+    "status": "通过",
+    "comment": "关系定义正确，跨域关系已建立",
+    "updated": "2026-05-19T21:33:09.691829"
+  },
+  "doc-std:relation:rel-content-constrains-qualification": {
+    "status": "通过",
+    "comment": "关系定义正确，跨域关系已建立",
+    "updated": "2026-05-19T21:33:09.691830"
+  },
+  "hr:ontology:development-track": {
+    "status": "通过",
+    "comment": "本体重构完成，通过抽象度检测",
+    "updated": "2026-05-19T21:33:09.691862"
+  },
+  "hr:ontology:rank-level": {
+    "status": "通过",
+    "comment": "本体重构完成，通过抽象度检测",
+    "updated": "2026-05-19T21:33:09.691864"
+  },
+  "hr:ontology:resignation-process": {
+    "status": "通过",
+    "comment": "本体重构完成，通过抽象度检测",
+    "updated": "2026-05-19T21:33:09.691865"
+  },
+  "hr:instance:inst-development-identities": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691910"
+  },
+  "hr:instance:inst-dual-track": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691912"
+  },
+  "hr:instance:inst-professional-levels": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691913"
+  },
+  "hr:instance:inst-management-levels": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691914"
+  },
+  "hr:instance:inst-resignation-trigger": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691915"
+  },
+  "hr:instance:inst-resignation-risk-assessment": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691917"
+  },
+  "hr:instance:inst-resignation-handover": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691918"
+  },
+  "hr:instance:inst-development-preparatory": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691919"
+  },
+  "hr:instance:inst-level-principles": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.691920"
+  },
+  "hr:relation:rel-development-feeds-rank": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.691955"
+  },
+  "hr:relation:rel-rank-affects-resignation": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.691956"
+  },
+  "hr:relation:rel-track-duality": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.691958"
+  },
+  "hr:relation:rel-resignation-process-stages": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.691959"
+  },
+  "hr:relation:rel-rank-defines-qualification": {
+    "status": "通过",
+    "comment": "关系定义正确，跨域关系已建立",
+    "updated": "2026-05-19T21:33:09.691960"
+  },
+  "hr:relation:rel-resignation-intersects-process": {
+    "status": "通过",
+    "comment": "关系定义正确，跨域关系已建立",
+    "updated": "2026-05-19T21:33:09.691962"
+  },
+  "org-gov:ontology:authority-responsibility": {
+    "status": "通过",
+    "comment": "本体重构完成，通过抽象度检测",
+    "updated": "2026-05-19T21:33:09.691994"
+  },
+  "org-gov:ontology:hierarchy-system": {
+    "status": "通过",
+    "comment": "本体重构完成，通过抽象度检测",
+    "updated": "2026-05-19T21:33:09.691996"
+  },
+  "org-gov:ontology:deliberation-procedure": {
+    "status": "通过",
+    "comment": "本体重构完成，通过抽象度检测",
+    "updated": "2026-05-19T21:33:09.691997"
+  },
+  "org-gov:ontology:qualification-condition": {
+    "status": "通过",
+    "comment": "本体重构完成，通过抽象度检测",
+    "updated": "2026-05-19T21:33:09.691998"
+  },
+  "org-gov:instance:inst-gov-body-composition": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.692048"
+  },
+  "org-gov:instance:inst-rep-core-powers": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.692049"
+  },
+  "org-gov:instance:inst-pm-authority": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.692050"
+  },
+  "org-gov:instance:inst-secretary-general-authority": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.692051"
+  },
+  "org-gov:instance:inst-hierarchy-charter": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.692053"
+  },
+  "org-gov:instance:inst-hierarchy-secretary": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.692054"
+  },
+  "org-gov:instance:inst-deliberation-gov-body": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.692055"
+  },
+  "org-gov:instance:inst-deliberation-debate": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.692056"
+  },
+  "org-gov:instance:inst-qualification-representative": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.692057"
+  },
+  "org-gov:instance:inst-qualification-election": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.692059"
+  },
+  "org-gov:instance:inst-hierarchy-conflict": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.692060"
+  },
+  "org-gov:instance:inst-deliberation-recall": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.692061"
+  },
+  "org-gov:instance:inst-qualification-secretary": {
+    "status": "通过",
+    "comment": "实例归位完成，映射正确",
+    "updated": "2026-05-19T21:33:09.692062"
+  },
+  "org-gov:relation:rel-authority-responsibility-mapping": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.692100"
+  },
+  "org-gov:relation:rel-hierarchy-governs-deliberation": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.692101"
+  },
+  "org-gov:relation:rel-qualification-precedes-authority": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.692102"
+  },
+  "org-gov:relation:rel-secretary-hierarchy": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.692104"
+  },
+  "org-gov:relation:rel-secretary-general-authority": {
+    "status": "通过",
+    "comment": "通过",
+    "updated": "2026-05-19T21:33:09.692105"
+  },
+  "org-gov:relation:rel-qualification-references-rank": {
+    "status": "通过",
+    "comment": "关系定义正确，跨域关系已建立",
+    "updated": "2026-05-19T21:33:09.692107"
+  },
+  "org-gov:relation:rel-hierarchy-governs-structure": {
+    "status": "通过",
+    "comment": "关系定义正确，跨域关系已建立",
+    "updated": "2026-05-19T21:33:09.692108"
+  }
+}

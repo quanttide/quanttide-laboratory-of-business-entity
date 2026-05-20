@@ -1,0 +1,101 @@
+{
+  "instances": [
+    {
+      "id": "inst-doc-structure-framework",
+      "ontology": "document-structure",
+      "subject": "标准章程框架",
+      "sections": [
+        {"name": "总则", "required_articles": ["制定依据", "目的", "适用范围", "定义（可选）"]},
+        {"name": "主体章节", "order": "从抽象到具体、从前置到后续"},
+        {"name": "附则", "required_articles": ["章程效力", "解释权"]}
+      ],
+      "source": "sample/write-bylaw.md",
+      "article": "第五条"
+    },
+    {
+      "id": "inst-doc-structure-heading",
+      "ontology": "document-structure",
+      "subject": "标题层级规范",
+      "rules": [
+        "最多使用三级标题",
+        "一级标题仅文档主标题使用一次",
+        "标题应简洁，避免标点符号",
+        "标题与正文间以空行分隔"
+      ],
+      "source": "sample/docs-format.md",
+      "article": "第八条"
+    },
+    {
+      "id": "inst-format-principle",
+      "ontology": "format-rule",
+      "subject": "格式克制原则",
+      "principles": ["删：删除不必要的格式元素", "简：能用列表即不使用表格", "少：格式元素控制在最小范围", "一：同一概念全程使用相同名称"],
+      "source": "sample/docs-format.md",
+      "article": "第五条"
+    },
+    {
+      "id": "inst-format-overuse",
+      "ontology": "format-rule",
+      "subject": "格式过度认定",
+      "violations": ["滥用分隔线装饰章节间隔", "任何内容均以列表或表格形式组织", "使用冗余修饰词"],
+      "source": "sample/docs-format.md",
+      "article": "第六条"
+    },
+    {
+      "id": "inst-format-list",
+      "ontology": "format-rule",
+      "subject": "列表使用规则",
+      "unordered_rules": ["使用 - 标记", "适用于并列要点", "嵌套不超过两级"],
+      "ordered_rules": ["使用 1. 标记", "适用于有顺序的步骤"],
+      "restrictions": ["单一事物不用列表", "超过两行改用段落", "逻辑承接关系用段落"],
+      "source": "sample/docs-format.md",
+      "article": "第十一条至第十三条"
+    },
+    {
+      "id": "inst-content-universality",
+      "ontology": "content-standard",
+      "subject": "通用性原则",
+      "exclusions": ["具体人名、团队名称", "阶段性推进状态", "尚未确定的计划或意向", "时效性表述"],
+      "source": "sample/write-bylaw.md",
+      "article": "第九条"
+    },
+    {
+      "id": "inst-content-stability",
+      "ontology": "content-standard",
+      "subject": "稳定性原则",
+      "exclusions": ["临时性或一次性安排", "可能频繁变更的操作细节", "依赖特定技术或工具的流程"],
+      "principle": "操作层面的内容归入操作手册而非章程",
+      "source": "sample/write-bylaw.md",
+      "article": "第十条"
+    },
+    {
+      "id": "inst-content-language",
+      "ontology": "content-standard",
+      "subject": "规范用语",
+      "terms": {
+        "强制义务": "应当/须/必须",
+        "禁止行为": "不得/禁止",
+        "授权允许": "可以/有权",
+        "推荐非强制": "宜/建议",
+        "条件假设": "的/时/情况下"
+      },
+      "source": "sample/write-bylaw.md",
+      "article": "第十六条"
+    },
+    {
+      "id": "inst-doc-structure-chapter-order",
+      "ontology": "document-structure",
+      "subject": "主体章节排列顺序",
+      "principle": "从抽象到具体、从前置到后续",
+      "recommended_order": [
+        "业务范围或基本原则",
+        "组织架构或岗位职责",
+        "流程或程序",
+        "质量标准或约束条件",
+        "附则"
+      ],
+      "source": "sample/write-bylaw.md",
+      "article": "第十四条"
+    }
+  ]
+}

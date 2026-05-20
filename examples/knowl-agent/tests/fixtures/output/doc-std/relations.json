@@ -1,0 +1,70 @@
+{
+  "relations": [
+    {
+      "id": "rel-structure-governs-format",
+      "type": "constrains",
+      "description": "文档结构约束格式规则的使用",
+      "source_ontology": "document-structure",
+      "source_instance": "inst-doc-structure-framework",
+      "target_ontology": "format-rule",
+      "target_instance": "inst-format-principle",
+      "relation": "governs",
+      "detail": "文档结构（总则→主体→附则）决定了格式元素在何处使用"
+    },
+    {
+      "id": "rel-format-realizes-content",
+      "type": "implements",
+      "description": "格式规则是内容规范的具体实现",
+      "source_ontology": "content-standard",
+      "source_instance": "inst-content-language",
+      "target_ontology": "format-rule",
+      "target_instance": "inst-format-list",
+      "relation": "implements",
+      "detail": "规范用语和定义格式通过列表、加粗等格式元素实现"
+    },
+    {
+      "id": "rel-content-constrains-structure",
+      "type": "constrains",
+      "description": "内容规范约束文档结构的设计",
+      "source_ontology": "content-standard",
+      "source_instance": "inst-content-universality",
+      "target_ontology": "document-structure",
+      "target_instance": "inst-doc-structure-framework",
+      "relation": "constrains",
+      "detail": "通用性原则决定了主体章节不能包含具体人名、阶段性状态等内容"
+    },
+    {
+      "id": "rel-format-overuse-violates-principle",
+      "type": "violates",
+      "description": "格式过度违反了格式克制原则",
+      "source_ontology": "format-rule",
+      "source_instance": "inst-format-overuse",
+      "target_ontology": "format-rule",
+      "target_instance": "inst-format-principle",
+      "relation": "violates",
+      "detail": "滥用分隔线、全程列表化、冗余修饰词等行为与'删、简、少、一'原则冲突"
+    },
+    {
+      "id": "rel-structure-governs-hierarchy",
+      "type": "cross-domain",
+      "description": "文档结构受组织层级对章程效力的规定约束",
+      "source_ontology": "document-structure",
+      "source_instance": "inst-doc-structure-framework",
+      "target_ontology": "org-gov:hierarchy-system",
+      "target_instance": "inst-hierarchy-charter",
+      "relation": "governs",
+      "detail": "文档结构中'效力与解释权'条款的内容由组织层级体系决定：上位章程效力高于下位"
+    },
+    {
+      "id": "rel-content-constrains-qualification",
+      "type": "cross-domain",
+      "description": "内容通用性原则约束资格条件的表述方式",
+      "source_ontology": "content-standard",
+      "source_instance": "inst-content-universality",
+      "target_ontology": "org-gov:qualification-condition",
+      "target_instance": "inst-qualification-representative",
+      "relation": "constrains",
+      "detail": "资格条件中不能出现具体人名、阶段性状态等时效性内容，须遵循通用性原则"
+    }
+  ]
+}

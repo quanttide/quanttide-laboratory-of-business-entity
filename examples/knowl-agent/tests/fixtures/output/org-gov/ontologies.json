@@ -1,0 +1,36 @@
+{
+  "ontologies": [
+    {
+      "id": "authority-responsibility",
+      "name": "authority-responsibility",
+      "label": "权责结构",
+      "perspective": "组织管理",
+      "description": "职权与职责成对出现的模式，每项职权对应一项职责",
+      "pattern": "权责结构由「职务主体」「职权描述」「职责描述」三要素构成。职权与职责一一对应，遵循权责对等原则：每项职权对应一项职责，职权范围不超出职责所需。同一职务主体的职权与职责构成不可分割的完整定义。"
+    },
+    {
+      "id": "hierarchy-system",
+      "name": "hierarchy-system",
+      "label": "层级体系",
+      "perspective": "组织管理",
+      "description": "章程或组织的层次结构，上层为效力/权力来源，下层为具体执行",
+      "pattern": "层级体系按抽象程度自上而下排列。上层定义原则性框架，下层细化执行规则。上层效力高于下层：下层内容不得与上层冲突，上层可覆盖下层的决定。层级数量与组织复杂度正相关。"
+    },
+    {
+      "id": "deliberation-procedure",
+      "name": "deliberation-procedure",
+      "label": "议事程序",
+      "perspective": "组织管理",
+      "description": "会议或审议的完整流程：召集、讨论、表决、记录",
+      "pattern": "审议流程按序执行：召集与通知 → 出席（须达到最低法定人数） → 辩论与审议（议题聚焦、意见平衡、主持人中立） → 表决与决议（须达到规定多数） → 记录与归档。重要事项的审议须提前足够时间送达相关材料。"
+    },
+    {
+      "id": "qualification-condition",
+      "name": "qualification-condition",
+      "label": "资格-条件",
+      "perspective": "组织管理",
+      "description": "担任某职务或行使某权利所需的资格条件",
+      "pattern": "资格条件由五要素定义：主体 → 正向资格要求 → 排除情形 → 产生方式 → 终止条件。资格有正向列表（满足即具备）和反向列表（存在即排除）两种界定方式。资格可分级授予，不同层级对应不同权利范围。"
+    }
+  ]
+}

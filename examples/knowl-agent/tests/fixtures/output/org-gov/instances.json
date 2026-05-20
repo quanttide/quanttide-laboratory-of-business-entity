@@ -1,0 +1,127 @@
+{
+  "instances": [
+    {
+      "id": "inst-gov-body-composition",
+      "ontology": "authority-responsibility",
+      "subject": "公司治理机构",
+      "authority": "审议和批准各业务域工作章程的新增与修订；审议和批准跨业务域的通用规范；协调各章程之间的冲突与重叠；监督章程的执行情况",
+      "responsibility": "按议事规则行使其职权",
+      "source": "sample/basic-charter.md",
+      "article": "第六条"
+    },
+    {
+      "id": "inst-rep-core-powers",
+      "ontology": "authority-responsibility",
+      "subject": "公司代表",
+      "authority": "信息获取权、提案权、审议权、表决权、程序异议权",
+      "responsibility": "信息合规与保密、提案诚信、审议勤勉、独立与忠实、程序善意",
+      "source": "sample/company-representative.md",
+      "article": "第六条至第十一条"
+    },
+    {
+      "id": "inst-pm-authority",
+      "ontology": "authority-responsibility",
+      "subject": "项目经理",
+      "authority": "调动项目所需人员与技术资源；审批内部服务交付物初稿；暂停不符合质量或安全要求的作业；驳回不符合质量要求的交付物",
+      "responsibility": "作为甲方指定联系人的主接口人；组织内部资源；监控服务进度与质量；管理项目费用结算；发生安全事件时启动上报；对交付物进行内部质量审核",
+      "source": "sample/qtdata-org.md",
+      "article": "第五条"
+    },
+    {
+      "id": "inst-secretary-general-authority",
+      "ontology": "authority-responsibility",
+      "subject": "秘书长",
+      "authority": "统筹秘书处日常工作；代表秘书处参加公司级会议；协调跨部门争议事项；对秘书处成员的选拔、考核与培养提出建议",
+      "responsibility": "确保秘书处高效运转；维护公司信息流转的通畅性；培养秘书处成员的管理意识；定期向高管汇报运营状况",
+      "source": "sample/secretary.md",
+      "article": "第十一条、第十二条"
+    },
+    {
+      "id": "inst-hierarchy-charter",
+      "ontology": "hierarchy-system",
+      "subject": "章程体系层级",
+      "levels": ["第一层：基本章程", "第二层：业务域工作章程", "第三层：操作手册与细则"],
+      "rule": "不同层级冲突以上位层级为准；同层级冲突以专门章程优先于通用章程",
+      "source": "sample/basic-charter.md",
+      "article": "第八条、第九条"
+    },
+    {
+      "id": "inst-hierarchy-secretary",
+      "ontology": "hierarchy-system",
+      "subject": "秘书制度层级",
+      "levels": ["部门秘书（基层协调）", "秘书处（中层中枢）", "秘书长（高级管理）"],
+      "rule": "从执行者到管理者的渐进培养路径",
+      "source": "sample/secretary.md",
+      "article": "第十三条"
+    },
+    {
+      "id": "inst-deliberation-gov-body",
+      "ontology": "deliberation-procedure",
+      "subject": "公司治理机构议事",
+      "stages": ["会议召集", "出席（过半数）", "审议", "表决（三分之二通过）"],
+      "rule": "涉及章程修订须提前五个工作日送达全部成员",
+      "source": "sample/basic-charter.md",
+      "article": "第七条"
+    },
+    {
+      "id": "inst-deliberation-debate",
+      "ontology": "deliberation-procedure",
+      "subject": "辩论组织原则",
+      "rules": ["议题聚焦原则", "意见平衡原则", "主持人中立原则"],
+      "source": "sample/company-representative.md",
+      "article": "第十二条"
+    },
+    {
+      "id": "inst-qualification-representative",
+      "ontology": "qualification-condition",
+      "subject": "代表资格",
+      "requirements": ["L2及以上职级", "具有培训生身份"],
+      "exclusions": ["L0级成员不具有代表资格", "L1级成员不具有被提名为代表的资格"],
+      "source": "sample/company-representative.md",
+      "article": "第四条"
+    },
+    {
+      "id": "inst-qualification-election",
+      "ontology": "qualification-condition",
+      "subject": "选举权资格",
+      "requirements": ["公司全体L1及以上成员享有选举权"],
+      "exclusions": ["实习生享有选举权", "实训生不具有选举权"],
+      "source": "sample/company-representative.md",
+      "article": "第五条"
+    },
+    {
+      "id": "inst-hierarchy-conflict",
+      "ontology": "hierarchy-system",
+      "subject": "层级冲突处理规则",
+      "rules": [
+        "不同层级冲突以上位层级为准",
+        "同层级冲突以专门章程优先于通用章程"
+      ],
+      "source": "sample/basic-charter.md",
+      "article": "第九条"
+    },
+    {
+      "id": "inst-deliberation-recall",
+      "ontology": "deliberation-procedure",
+      "subject": "代表罢免程序",
+      "triggers": [
+        "连续三次无故缺席审议与表决",
+        "严重违反忠实勤勉义务",
+        "利用代表职权谋取不正当利益",
+        "因故意或重大过失给公司造成重大损失"
+      ],
+      "procedure": "罢免提案须经下议院三分之一以上代表联名提出→审议→全体有选举权成员投票表决→获三分之二以上多数通过生效",
+      "source": "sample/company-representative.md",
+      "article": "第二十条"
+    },
+    {
+      "id": "inst-qualification-secretary",
+      "ontology": "qualification-condition",
+      "subject": "秘书选拔条件",
+      "criteria": "具备良好沟通能力与执行力，优先考虑有管理发展意向的人员",
+      "orientation": "以管理潜力和发展意愿为导向",
+      "source": "sample/secretary.md",
+      "article": "第六条、第十四条"
+    }
+  ]
+}
