@@ -18,15 +18,15 @@
 
 扫描知识库，识别所涵盖的知识领域。每个领域代表一个观察视角。
 
-**工具** → `scripts/detect-domain.sh`
+**工具** → `python -m src.cli detect-domain`
 
 ```
-./scripts/detect-domain.sh sample/<file>
+python -m src.cli detect-domain sample/<file>
 ```
 
 基于词汇命中排序，推荐最匹配的领域。命中显著领先时规则引擎直接输出推荐；命中接近时智能体分析视角差异给人选。
 
-**产出**：`data/<domain>/domain.json`（规则引擎通过 `init-domain.sh` 创建）
+**产出**：`data/<domain>/domain.json`（规则引擎通过 `python -m src.cli init-domain` 创建）
 
 ---
 
@@ -87,10 +87,10 @@
 
 对比不同领域对同一术语的定义和处理，暴露冲突和不一致。
 
-**工具** → `scripts/fusion-check.sh`
+**工具** → `python -m src.cli fusion-check`
 
 ```
-./scripts/fusion-check.sh
+python -m src.cli fusion-check
 ```
 
 自动检测：同名本体冲突、词汇交叉、引用断裂、效力主体一致性。
@@ -113,10 +113,10 @@
 **辅助工具**：
 
 ```
-./scripts/validate.sh      # 检查结构完整性
-./scripts/summary.sh       # 概况总览
-./scripts/find-undefined-terms.sh  # 找出未定义术语
-./scripts/auto-fix.sh      # 补缺失骨架文件
+python -m src.cli validate              # 检查结构完整性
+python -m src.cli summary               # 概况总览
+python -m src.cli find-undefined-terms  # 找出未定义术语
+python -m src.cli auto-fix              # 补缺失骨架文件
 ```
 
 **迭代模式**：智能体修 → 跑规则引擎验证 → 再修 → 直到 validate 全部通过。
@@ -131,15 +131,15 @@ data/<domain>/
 ├── ontologies.json   # 本体（仅抽象模式）
 ├── instances.json    # 实例（映射到本体）
 └── relations.json    # 关系（连接本体和实例）
-scripts/
-├── validate.sh       # 结构完整性验证
-├── summary.sh        # 概况总览表
-├── fusion-check.sh   # 跨领域冲突检测
-├── detect-domain.sh  # 新文件领域推荐
-├── init-domain.sh    # 创建新领域骨架
-├── find-undefined-terms.sh  # 未定义术语查找
-└── auto-fix.sh       # 循环修复
-data/                 # 临时数据和融合报告
+src/
+├── cli.py            # 统一 CLI 入口
+├── models.py         # 数据模型
+├── loader.py         # 数据加载
+├── reporters/        # 报告生成（summary, abstraction, cross_domain）
+├── validators/       # 验证检测（validate, auto_fix, fusion_check, find_undefined）
+└── detectors/        # 领域操作（detect_domain, init_domain）
+tests/                # 单元测试
+data/                 # 领域数据和融合报告
 docs/                 # 文档
 ```
 
