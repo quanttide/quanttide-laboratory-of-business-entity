@@ -5,37 +5,41 @@
 ```
 knowl-agent/
 ├── AGENTS.md           # 智能体自描述：定位与工作纪律
-├── ROADMAP.md          # 执行方案：检测维度、阶段流程与质量报告
+├── ROADMAP.md          # 执行方案
+├── CHANGELOG.md        # 变更记录
+├── STATUS.md           # 当前状态报告
 ├── CONTRIBUTING.md     # 工作方法：如何新增/修改检测维度
 ├── README.md           # 本文件：项目概览
 ├── docs/               # 文档（权责清单、工作流、报告）
 │   ├── responsibility-matrix.md
 │   ├── workflow.md
 │   └── report.md              # 最近一次执行报告
-├── scripts/            # 规则引擎脚本
-│   ├── validate.sh
-│   ├── summary.sh
-│   ├── fusion-check.sh
-│   ├── detect-domain.sh
-│   ├── init-domain.sh
-│   ├── find-undefined-terms.sh
-│   └── auto-fix.sh
-├── data/               # 领域数据（按领域划分）
-│   ├── org-gov/
-│   ├── hr/
-│   ├── doc-std/
-│   └── biz-ops/
-└── sample/             # 样本知识库：用于检测的原始知识文件
-    ├── basic-charter.md            # 基本章程
-    ├── company-representative.md   # 公司代表章程
-    ├── connect-index.md            # 沟通管理章程
-    ├── docs-format.md              # 文档格式章程
-    ├── human-resignation.md        # 离职工作章程
-    ├── qtdata-index.md             # 量潮数据工作章程
-    ├── qtdata-org.md               # 量潮数据组织管理章程
-    ├── rank-index.md               # 职级管理章程
-    ├── secretary.md                # 公司秘书章程
-    └── write-bylaw.md              # 工作章程写作章程
+├── src/                # Python 工具链
+│   ├── cli.py          # 统一 CLI 入口
+│   ├── models.py       # 数据模型
+│   ├── loader.py       # 数据加载
+│   ├── reporters/      # 报告生成
+│   ├── validators/     # 验证检测
+│   └── detectors/      # 领域操作
+├── tests/
+│   ├── fixtures/       # 测试数据
+│   │   ├── output/     # 领域建模产出（按领域划分）
+│   │   │   ├── org-gov/
+│   │   │   ├── hr/
+│   │   │   ├── doc-std/
+│   │   │   └── biz-ops/
+│   │   └── input/      # 原始知识库文件
+│   │       ├── basic-charter.md
+│   │       ├── company-representative.md
+│   │       ├── connect-index.md
+│   │       ├── docs-format.md
+│   │       ├── human-resignation.md
+│   │       ├── qtdata-index.md
+│   │       ├── qtdata-org.md
+│   │       ├── rank-index.md
+│   │       ├── secretary.md
+│   │       └── write-bylaw.md
+│   └── test_*.py       # 单元测试
 ```
 
 ## 快速开始
@@ -55,6 +59,6 @@ knowl-agent/
 | docs/workflow.md | 操作手册 | 执行流程时查阅 |
 | docs/responsibility-matrix.md | 权责清单 | 判断分工边界 |
 | docs/report.md | 执行报告 | 查看最近一次结果 |
-| scripts/ | 规则引擎 | 自动执行检测 |
-| sample/ | 检测对象 | 执行检测时作为输入 |
-| data/ | 检测产出 | 领域建模结果 |
+| src/ | 工具链 | 自动执行检测 |
+| tests/fixtures/input/ | 检测对象 | 执行检测时作为输入 |
+| tests/fixtures/output/ | 检测产出 | 领域建模结果 |

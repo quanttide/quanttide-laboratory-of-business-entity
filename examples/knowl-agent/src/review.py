@@ -9,8 +9,8 @@ from pathlib import Path
 from datetime import datetime
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data"
-SAMPLE_DIR = BASE_DIR / "sample"
+DATA_DIR = BASE_DIR / "tests" / "fixtures" / "output"
+SAMPLE_DIR = BASE_DIR / "tests" / "fixtures" / "input"
 REVIEW_FILE = DATA_DIR / ".review.json"
 
 sys.path.insert(0, str(BASE_DIR))

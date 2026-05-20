@@ -5,22 +5,22 @@
 ### 新增检测维度
 
 1. 在 `src/` 下新建 Python 模块，遵循统一的输入输出约定：
-   - 输入：`sample/` 目录下的原始知识库文件
-   - 输出：结构化文本结果，打印到标准输出
+    - 输入：`tests/fixtures/input/` 目录下的原始知识库文件
+    - 输出：结构化文本结果，打印到标准输出
 2. 在 `src/cli.py` 中注册新命令
 3. 在 `docs/workflow.md` 中补充对应的检测子流程
-4. 如需将检测结果持久化，输出到 `data/` 目录下的 JSON 文件
+4. 如需将检测结果持久化，输出到 `tests/fixtures/output/` 目录下的 JSON 文件
 
 ### 新增领域
 
-`data/<domain>/domain.json` 结构：
+`tests/fixtures/output/<domain>/domain.json` 结构：
 
 ```json
 {
   "id": "<domain-id>",
   "name": "<领域名称>",
   "perspective": "<视角声明>",
-  "files": ["sample/<file>.md"],
+  "files": ["tests/fixtures/input/<file>.md"],
   "vocabulary": ["术语1", "术语2"]
 }
 ```
@@ -34,7 +34,7 @@
 
 ### 修改检测逻辑
 
-- 脚本的输入始终是 `sample/` 下的原始知识库文本，输出是打印到标准输出的检测结果
+- 脚本的输入始终是 `tests/fixtures/input/` 下的原始知识库文本，输出是打印到标准输出的检测结果
 - 每个问题项应包含：**位置**（文件路径）、**描述**、**建议**
 - 不得在检测逻辑中修改原始知识库
 
@@ -75,7 +75,7 @@ src/
 
 - 每个检测模块至少有一个正例（应触发的）和一个反例（不应触发的）
 - 测试放在 `tests/` 目录下，使用 `pytest`
-- 测试数据放在 `sample/` 目录下
+- 测试数据放在 `tests/fixtures/input/` 目录下
 
 ## 提交规范
 

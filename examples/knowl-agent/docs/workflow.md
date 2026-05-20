@@ -126,11 +126,12 @@ python -m src.cli auto-fix              # 补缺失骨架文件
 ## 目录结构
 
 ```
-data/<domain>/
+tests/fixtures/output/<domain>/
 ├── domain.json       # 领域清单
 ├── ontologies.json   # 本体（仅抽象模式）
 ├── instances.json    # 实例（映射到本体）
 └── relations.json    # 关系（连接本体和实例）
+tests/fixtures/input/ # 原始知识库文件
 src/
 ├── cli.py            # 统一 CLI 入口
 ├── models.py         # 数据模型
@@ -139,7 +140,6 @@ src/
 ├── validators/       # 验证检测（validate, auto_fix, fusion_check, find_undefined）
 └── detectors/        # 领域操作（detect_domain, init_domain）
 tests/                # 单元测试
-data/                 # 领域数据和融合报告
 docs/                 # 文档
 ```
 

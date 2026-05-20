@@ -89,3 +89,5 @@ shell 脚本已归档至 `scripts/.deprecated/`，保留作为回退。
 | `docs/workflow.md` | 五步执行流程 |
 | `docs/responsibility-matrix.md` | 人机权责分工 |
 | `docs/report.md` | 最近一次执行报告 |
+| `tests/fixtures/input/` | 原始知识库（10 份章程文档） |
+| `tests/fixtures/output/` | 领域建模结果（4 领域） |

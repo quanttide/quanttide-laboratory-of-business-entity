@@ -26,7 +26,7 @@ def run(domain_name: str, from_detect_file: str = None):
                 "id": domain_name,
                 "name": "",
                 "perspective": "",
-                "files": [f"sample/{filename}"],
+                "files": [f"tests/fixtures/input/{filename}"],
                 "vocabulary": [],
             }
             print(f"  [创建] {domain_json_path}（基于 {filename}）")

@@ -4,8 +4,9 @@ from src.models import Domain, Ontology, Instance, Relation
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
-DATA_DIR = BASE_DIR / "data"
-SAMPLE_DIR = BASE_DIR / "sample"
+FIXTURES_DIR = BASE_DIR / "tests" / "fixtures"
+DATA_DIR = FIXTURES_DIR / "output"
+SAMPLE_DIR = FIXTURES_DIR / "input"
 
 
 def load_json(path: Path) -> dict:
