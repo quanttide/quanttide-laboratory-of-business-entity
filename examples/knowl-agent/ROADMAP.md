@@ -1,101 +1,82 @@
-# 知识发现与建模平台路线图
+# ROADMAP
 
-## 现状总结
+## 现状
 
-`data/` 目录已建立 4 个领域，覆盖业务运营、文档规范、人力资源、组织治理。脚本工具链基本就绪。核心瓶颈不在工具，在**本体抽象质量**。
+已完成前四阶段重构（详见 CHANGELOG.md），当前工具链由 9 个 shell 脚本和 1 个 Python 脚本混合组成。下一阶段目标是统一为 Python 工具链。
 
-**已确认的底层问题**：
-- 本体 pattern 是单文件摘要，不是跨文件抽象模式
-- 实例内容（具体角色名、阶段名、等级值）写在本体层
-- pattern 中变量和常量不分，无可复用性
-- `source_files` 放在本体层而不是实例层，进一步证明本体未抽象
-- 跨领域关系几乎空白
+## 下一阶段：脚本重构 — Shell → Python
 
-ROADMAP 聚焦于解决"本体不会抽象"这个根本问题。工具功能为辅助线，不单独列。
+**目标**：将 `scripts/` 下的 shell 脚本逐步重构为 Python 脚本，统一归入 `src/`，提升可维护性、跨平台兼容性和可测试性。
 
----
+### 动机
 
-## 第一阶段：本体重构
+当前工具链由 10 个 shell 脚本（`.sh`）和 1 个 Python 脚本（`review.py`）混合组成。Shell 脚本存在以下问题：
 
-**目标**：将现有 14 个"文件摘要"改造成真正的抽象本体
-
-完成后，每个本体 pattern 应满足：**去掉所有源文件引用和具体值后，pattern 通顺且有信息量。**
+- **依赖外部工具**：`jq`、`grep -P`（PCRE）、`bash 3+`，不同环境表现不一致
+- **数据结构处理能力弱**：JSON 的复杂查询和变换在 shell 中极为笨拙
+- **不可测试**：无单元测试、无模块化、无错误处理链
+- **`review.py` 硬耦合**：通过 `subprocess.run(["bash", ...])` 调用 shell 脚本，层间耦合紧
 
 ### 重构清单
 
-| 领域 | 本体 | 当前问题 | 抽象方向 |
-|------|------|---------|---------|
-| biz-ops | role-responsibility | 写了三个具体岗位名 | 抽象为「角色以职责+权限成对定义」 |
-| biz-ops | service-process | 写了五个具体阶段名 | 抽象为「流程由阶段序列组成，每阶段含执行者/输入/活动/输出/关卡」 |
-| biz-ops | risk-control | 写了四个具体风险领域 | 抽象为「风险领域→控制措施集→措施分类（预防/检测/纠正）」 |
-| biz-ops | cognitive-sovereignty | 写了三条具体规则 | 抽象为「原则约束行为边界，违规由特定模式认定」 |
-| doc-std | document-structure | 写了一个具体框架 | 抽象为「文档由元信息+引言+主体+结尾构成」 |
-| doc-std | format-rule | 列举了具体格式元素 | 抽象为「格式要素有允许使用和禁止使用两种边界」 |
-| doc-std | content-standard | 写了三条具体原则 | 抽象为「内容受通用性/稳定性/域分离约束」 |
-| hr | development-track | 写了具体身份序列 | 抽象为「职业发展经历预备阶段后进入并行通道」 |
-| hr | rank-level | 写了 L0-L3/M1-M5 | 抽象为「等级递增表示资深程度，等级与权责正相关」 |
-| hr | resignation-process | 写了七个具体阶段 | 抽象为「离职流程：触发→评估→交接→确认→归档」 |
-| org-gov | authority-responsibility | 尚可，但混入实例 | 清理 pattern 中的具体引用 |
-| org-gov | hierarchy-system | 写了三层结构 | 抽象为「层级中上层效力高于下层，下层不得与上层冲突」 |
-| org-gov | deliberation-procedure | 写了具体议事流程 | 抽象为「审议流程：召集→出席→辩论→表决→记录」 |
-| org-gov | qualification-condition | 相对最好 | 清理末尾的具体例子 |
+| Shell 脚本 | Python 模块 | 功能 |
+|-----------|------------|------|
+| `validate.sh` | `src/validate.py` | 领域目录结构完整性验证 |
+| `auto-fix.sh` | `src/auto_fix.py` | 骨架文件自动补全 |
+| `summary.sh` | `src/summary.py` | 领域概况统计 |
+| `check-abstraction.sh` | `src/check_abstraction.py` | 本体抽象度检测 |
+| `detect-domain.sh` | `src/detect_domain.py` | 基于词汇匹配推荐领域 |
+| `find-undefined-terms.sh` | `src/find_undefined_terms.py` | 未定义术语扫描 |
+| `fusion-check.sh` | `src/fusion_check.py` | 跨领域融合检测 |
+| `cross-domain-report.sh` | `src/cross_domain_report.py` | 跨域关系覆盖率报告 |
+| `init-domain.sh` | `src/init_domain.py` | 新领域目录初始化 |
 
-### 判断标准
+### 模块化设计
 
-重构完成后，用以下测试验证：
+重构后 `src/` 采用分层结构：
 
-- **换源测试**：如果换一套完全不同的章程文档，这个本体 pattern 是否仍然适用？如果必须改，说明抽象不够。
-- **填空测试**：能否用 `<变量>` 标记 pattern 中应抽取为实例的部分？如果能标出 3 个以上变量，说明抽象成功。
+```
+src/
+├── __init__.py
+├── cli.py              # 统一 CLI 入口，替代 review.py 的主菜单
+├── models.py            # 数据模型（Domain, Ontology, Instance, Relation）
+├── loader.py            # 数据加载与持久化
+├── reporters/           # 报告生成
+│   ├── __init__.py
+│   ├── summary.py
+│   ├── abstraction.py
+│   └── cross_domain.py
+├── validators/          # 验证与检测
+│   ├── __init__.py
+│   ├── validate.py
+│   ├── auto_fix.py
+│   ├── fusion_check.py
+│   └── find_undefined.py
+├── detectors/           # 领域检测与初始化
+│   ├── __init__.py
+│   ├── detect_domain.py
+│   └── init_domain.py
+└── review/              # 交互式评审（现有 review.py 拆分）
+    ├── __init__.py
+    ├── ui.py
+    ├── ontology_review.py
+    ├── instance_review.py
+    └── relation_review.py
+```
 
----
+### 迁移策略
 
-## 第二阶段：实例归位
+1. **保持兼容**：每个 Python 模块实现后，保留对应 shell 脚本作为 fallback，通过 `scripts/.deprecated` 标记
+2. **先易后难**：先迁移无外部依赖的脚本（summary.sh → summary.py），再迁移逻辑复杂的脚本（fusion-check.sh → fusion_check.py）
+3. **review.py 解耦**：将 shell 调用替换为 Python 模块直接调用，消除 `subprocess` 依赖
+4. **增测试**：每个模块附带对应测试文件 `tests/test_*.py`
 
-**目标**：把混在本体中的具体值迁移到 instances.json，建立本体→实例的干净映射
+### 完成标准
 
-### 工作内容
-
-- 从现有 ontology pattern 中提取所有具体值（角色名、阶段名、等级名、原则语句），归类到对应实例
-- 为每个本体补充对应的实例（当前很多本体只有 1-2 个实例，覆盖率不足）
-- 删除 ontology 中的 `source_files` 字段，把源文件引用移到实例层
-
-### 判断标准
-
-- 本体的 `pattern` 字段不再包含 `《》` 引用、不再出现具体文件名、不再出现任何只在一个文档中成立的具体值
-- 每个本体至少有 3 个实例来自不同源文件
-
----
-
-## 第三阶段：跨领域关系网
-
-**目标**：建立跨领域关系，反映本体的真实连接
-
-### 已知需要连接的跨领域关系
-
-| 源领域 | 源概念 | 目标领域 | 目标概念 | 关系类型 |
-|--------|--------|---------|---------|---------|
-| org-gov | 资格-条件（代表要求 L2+） | hr | 职级等级（L0-L3 定义） | references |
-| biz-ops | 角色-职责（PM职责） | org-gov | 权责结构（职权+职责配对） | instance-of |
-| doc-std | 文档结构（章程框架） | org-gov | 层级体系（章程效力层级） | governs |
-| hr | 离职流程 | biz-ops | 服务流程（项目交接衔接） | intersects |
-
-### 判断标准
-
-- 每个领域至少有 2 条指向其他领域的关系
-- 关系应连接不同本体的实例，而非重复本体内部已有的连接
-
----
-
-## 第四阶段：工具链升级
-
-**目标**：脚本能力与模型成熟度匹配
-
-### 工作内容
-
-- **本体抽象度检测**：新增脚本扫描 ontology pattern 中是否包含具体文件名、具体角色名等"未抽象信号"
-- **换源测试工具**：支持传入第二套样本，自动对比 ontology 是否可复用
-- **跨领域关系覆盖率报告**：统计每个领域与其他领域的连接数
-- 修复已知脚本问题（参考 `retrospective.md`）
+- `scripts/` 下不再有活跃的 shell 脚本（`.deprecated` 目录中的可保留）
+- `src/cli.py` 提供统一 CLI，覆盖原有 shell 脚本全部功能
+- 测试覆盖率达到 80%+（核心逻辑）
+- `review.py` 不再引用 shell 脚本
 
 ---
 
@@ -103,7 +84,4 @@ ROADMAP 聚焦于解决"本体不会抽象"这个根本问题。工具功能为�
 
 | 阶段 | 预期产出 | 验证方式 |
 |------|---------|---------|
-| 一：本体重构 | 14 个本体 pattern 重写完成 | 换源测试 + 填空测试 |
-| 二：实例归位 | source_files 移至实例层，覆盖率达标 | 每个本体≥3 个实例 |
-| 三：跨领域关系 | 关系网络覆盖 4 个领域 | 每领域≥2 条跨域关系 |
-| 四：工具升级 | 抽象度检测 + 换源测试脚本 | 脚本通过测试 |
+| 脚本重构 | Shell → Python 全部迁移完成，统一 CLI | 测试覆盖率 80%+，review.py 解耦 |
