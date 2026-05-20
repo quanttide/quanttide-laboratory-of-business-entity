@@ -58,9 +58,9 @@
 │   ├── reporters/          # 报告生成
 │   ├── validators/         # 验证与检测
 │   ├── detectors/          # 领域检测与初始化
-│   └── review/             # 交互式评审子包（python -m src.review）
+│   └── reviewers/          # 交互式评审子包（python -m src.reviewers）
 │       ├── __init__.py     # 主菜单与协调逻辑
-│       ├── __main__.py     # 入口（python -m src.review）
+│       ├── __main__.py     # 入口（python -m src.reviewers）
 │       ├── ui.py           # 终端 UI 工具
 │       ├── data.py         # 数据加载与评审持久化
 │       ├── ontology_review.py

@@ -1,5 +1,5 @@
-from src.review.ui import clear, header, bold, dim, ask_comment
-from src.review.data import load_reviews, get_review_status, set_review_status, save_reviews
+from src.reviewers.ui import clear, header, bold, dim, ask_comment
+from src.reviewers.data import load_reviews, get_review_status, set_review_status, save_reviews
 
 
 def run(domain):
