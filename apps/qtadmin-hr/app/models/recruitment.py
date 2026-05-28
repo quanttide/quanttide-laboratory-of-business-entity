@@ -20,4 +20,4 @@ class Recruitment(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 
     plan: Mapped["Plan"] = relationship(back_populates="recruitments")
-    applicants: Mapped[list["Applicant"]] = relationship(back_populates="recruitment", cascade="all, delete-orphan")
+    talents: Mapped[list["Talent"]] = relationship(back_populates="recruitment", cascade="all, delete-orphan")

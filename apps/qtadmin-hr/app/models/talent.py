@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
 
-class ApplicantStage(str, enum.Enum):
+class TalentStage(str, enum.Enum):
     NEW = "new"
     CONTACTED = "contacted"
     EXAM_SENT = "exam_sent"
@@ -19,19 +19,19 @@ class ApplicantStage(str, enum.Enum):
 
 
 STAGE_TRANSITIONS = {
-    ApplicantStage.NEW: [ApplicantStage.CONTACTED, ApplicantStage.CLOSED],
-    ApplicantStage.CONTACTED: [ApplicantStage.EXAM_SENT, ApplicantStage.CLOSED],
-    ApplicantStage.EXAM_SENT: [ApplicantStage.EXAM_RECEIVED, ApplicantStage.CLOSED],
-    ApplicantStage.EXAM_RECEIVED: [ApplicantStage.EVALUATING, ApplicantStage.CLOSED],
-    ApplicantStage.EVALUATING: [ApplicantStage.INTERVIEW, ApplicantStage.EXAM_SENT, ApplicantStage.CLOSED],
-    ApplicantStage.INTERVIEW: [ApplicantStage.OFFER, ApplicantStage.CLOSED],
-    ApplicantStage.OFFER: [ApplicantStage.CLOSED],
-    ApplicantStage.CLOSED: [],
+    TalentStage.NEW: [TalentStage.CONTACTED, TalentStage.CLOSED],
+    TalentStage.CONTACTED: [TalentStage.EXAM_SENT, TalentStage.CLOSED],
+    TalentStage.EXAM_SENT: [TalentStage.EXAM_RECEIVED, TalentStage.CLOSED],
+    TalentStage.EXAM_RECEIVED: [TalentStage.EVALUATING, TalentStage.CLOSED],
+    TalentStage.EVALUATING: [TalentStage.INTERVIEW, TalentStage.EXAM_SENT, TalentStage.CLOSED],
+    TalentStage.INTERVIEW: [TalentStage.OFFER, TalentStage.CLOSED],
+    TalentStage.OFFER: [TalentStage.CLOSED],
+    TalentStage.CLOSED: [],
 }
 
 
-class Applicant(Base):
-    __tablename__ = "applicants"
+class Talent(Base):
+    __tablename__ = "talents"
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     recruitment_id: Mapped[int] = mapped_column(ForeignKey("recruitments.id"), index=True)
@@ -43,7 +43,7 @@ class Applicant(Base):
     major: Mapped[str | None] = mapped_column(String(200))
     resume_url: Mapped[str | None] = mapped_column(Text)
 
-    stage: Mapped[ApplicantStage] = mapped_column(Enum(ApplicantStage), default=ApplicantStage.NEW, index=True)
+    stage: Mapped[TalentStage] = mapped_column(Enum(TalentStage), default=TalentStage.NEW, index=True)
     stage_history: Mapped[str | None] = mapped_column(Text)
     assigned_to: Mapped[str | None] = mapped_column(String(200))
     source: Mapped[str | None] = mapped_column(String(100))
@@ -52,4 +52,5 @@ class Applicant(Base):
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 
-    recruitment: Mapped["Recruitment"] = relationship(back_populates="applicants")
+    recruitment: Mapped["Recruitment"] = relationship(back_populates="talents")
+

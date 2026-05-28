@@ -1,49 +1,51 @@
 from sqlalchemy.orm import Session
 
-from app.models.applicant import Applicant, ApplicantStage
+from sqlalchemy.orm import Session
+
+from app.models.talent import Talent, TalentStage
 
 
 def get_pipeline(db: Session) -> dict:
     stages = {}
     total = 0
-    for stage in ApplicantStage:
-        apps = (
-            db.query(Applicant)
-            .filter(Applicant.stage == stage)
-            .order_by(Applicant.updated_at.desc())
+    for stage in TalentStage:
+        talents = (
+            db.query(Talent)
+            .filter(Talent.stage == stage)
+            .order_by(Talent.updated_at.desc())
             .all()
         )
-        stages[stage.value] = [_applicant_to_card(a) for a in apps]
-        total += len(apps)
+        stages[stage.value] = [_talent_to_card(t) for t in talents]
+        total += len(talents)
 
     need_attention = len(stages.get("exam_received", [])) + len(stages.get("evaluating", []))
     return {
         "stages": stages,
         "summary": {
             "total": total,
-            "by_stage": {s.value: len(stages.get(s.value, [])) for s in ApplicantStage},
+            "by_stage": {s.value: len(stages.get(s.value, [])) for s in TalentStage},
             "need_attention": need_attention,
         },
     }
 
 
-def _applicant_to_card(a: Applicant) -> dict:
+def _talent_to_card(t: Talent) -> dict:
     return {
-        "id": a.id,
-        "name": a.name,
-        "email": a.email,
-        "school": a.school,
-        "recruitment_id": a.recruitment_id,
+        "id": t.id,
+        "name": t.name,
+        "email": t.email,
+        "school": t.school,
+        "recruitment_id": t.recruitment_id,
         "recruitment": {
-            "id": a.recruitment.id,
-            "name": a.recruitment.name,
-            "plan_id": a.recruitment.plan_id,
+            "id": t.recruitment.id,
+            "name": t.recruitment.name,
+            "plan_id": t.recruitment.plan_id,
         },
-        "stage": a.stage.value,
-        "assigned_to": a.assigned_to,
-        "source": a.source,
-        "created_at": a.created_at.isoformat(),
-        "updated_at": a.updated_at.isoformat(),
+        "stage": t.stage.value,
+        "assigned_to": t.assigned_to,
+        "source": t.source,
+        "created_at": t.created_at.isoformat(),
+        "updated_at": t.updated_at.isoformat(),
     }
 
 
@@ -51,8 +53,8 @@ def get_stage_counts(db: Session) -> list[dict]:
     from sqlalchemy import func
 
     rows = (
-        db.query(Applicant.stage, func.count(Applicant.id))
-        .group_by(Applicant.stage)
+        db.query(Talent.stage, func.count(Talent.id))
+        .group_by(Talent.stage)
         .all()
     )
     return [{"stage": stage.value, "count": count} for stage, count in rows]
