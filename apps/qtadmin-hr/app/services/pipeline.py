@@ -1,8 +1,7 @@
 from sqlalchemy.orm import Session
 
-from sqlalchemy.orm import Session
-
 from app.models.talent import Talent, TalentStage
+from app.services.auth_client import get_user_profile
 
 
 def get_pipeline(db: Session) -> dict:
@@ -30,11 +29,14 @@ def get_pipeline(db: Session) -> dict:
 
 
 def _talent_to_card(t: Talent) -> dict:
+    profile = get_user_profile(t.user_profile_id)
     return {
         "id": t.id,
-        "real_name": t.real_name,
-        "email": t.email,
-        "school": t.school,
+        "user_profile_id": t.user_profile_id,
+        "profile": {
+            "real_name": profile["real_name"] if profile else None,
+            "email": profile["email"] if profile else None,
+        },
         "recruitment_id": t.recruitment_id,
         "recruitment": {
             "id": t.recruitment.id,

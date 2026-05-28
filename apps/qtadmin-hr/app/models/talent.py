@@ -35,13 +35,7 @@ class Talent(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     recruitment_id: Mapped[int] = mapped_column(ForeignKey("recruitments.id"), index=True)
-
-    real_name: Mapped[str] = mapped_column(String(100), index=True)
-    email: Mapped[str] = mapped_column(String(200), index=True)
-    phone: Mapped[str | None] = mapped_column(String(50))
-    school: Mapped[str | None] = mapped_column(String(200))
-    major: Mapped[str | None] = mapped_column(String(200))
-    resume_url: Mapped[str | None] = mapped_column(Text)
+    user_profile_id: Mapped[int] = mapped_column(Integer, index=True, comment="引用 Auth 系统 UserProfile.id")
 
     stage: Mapped[TalentStage] = mapped_column(Enum(TalentStage), default=TalentStage.NEW, index=True)
     stage_history: Mapped[str | None] = mapped_column(Text)
@@ -53,4 +47,3 @@ class Talent(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 
     recruitment: Mapped["Recruitment"] = relationship(back_populates="talents")
-

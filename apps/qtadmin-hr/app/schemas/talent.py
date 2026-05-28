@@ -6,12 +6,7 @@ from app.models.talent import TalentStage
 
 
 class TalentCreate(BaseModel):
-    real_name: str
-    email: str
-    phone: str | None = None
-    school: str | None = None
-    major: str | None = None
-    resume_url: str | None = None
+    user_profile_id: int
     stage: TalentStage = TalentStage.NEW
     assigned_to: str | None = None
     source: str | None = None
@@ -19,12 +14,7 @@ class TalentCreate(BaseModel):
 
 
 class TalentUpdate(BaseModel):
-    real_name: str | None = None
-    email: str | None = None
-    phone: str | None = None
-    school: str | None = None
-    major: str | None = None
-    resume_url: str | None = None
+    stage: TalentStage | None = None
     assigned_to: str | None = None
     source: str | None = None
     tags: str | None = None
@@ -37,12 +27,7 @@ class TalentTransition(BaseModel):
 class TalentRead(BaseModel):
     id: int
     recruitment_id: int
-    real_name: str
-    email: str
-    phone: str | None
-    school: str | None
-    major: str | None
-    resume_url: str | None
+    user_profile_id: int
     stage: TalentStage
     stage_history: str | None
     assigned_to: str | None

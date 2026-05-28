@@ -102,6 +102,10 @@ def create_talent(recruitment_id: int, data: TalentCreate, db: Session = Depends
     recruitment = db.query(Recruitment).filter(Recruitment.id == recruitment_id).first()
     if not recruitment:
         raise HTTPException(404, "Recruitment not found")
+    from app.services.auth_client import get_user_profile
+    profile = get_user_profile(data.user_profile_id)
+    if not profile:
+        raise HTTPException(400, f"UserProfile {data.user_profile_id} not found in Auth system")
     t = Talent(recruitment_id=recruitment_id, **data.model_dump())
     db.add(t)
     db.commit()
