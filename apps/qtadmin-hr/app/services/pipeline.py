@@ -10,7 +10,7 @@ def get_pipeline(db: Session) -> dict:
         talents = (
             db.query(Talent)
             .filter(Talent.status == status)
-            .order_by(Talent.created_at.desc())
+            .order_by(Talent.updated_at.desc())
             .all()
         )
         stages[status.value] = [_talent_to_card(t) for t in talents]

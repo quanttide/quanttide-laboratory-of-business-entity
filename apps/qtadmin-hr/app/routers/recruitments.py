@@ -5,7 +5,7 @@ from app.database import get_db
 from app.models.talent import STATUS_TRANSITIONS, Talent, TalentStatus
 from app.models.recruitment import Recruitment
 from app.schemas.talent import TalentCreate, TalentRead, TalentTransition, TalentUpdate
-from app.schemas.recruitment import RecruitmentCreate, RecruitmentRead
+from app.schemas.recruitment import RecruitmentRead
 
 router = APIRouter(prefix="/recruitments", tags=["recruitments"])
 
@@ -56,7 +56,7 @@ def list_talents(
     qb = db.query(Talent).filter(Talent.recruitment_id == recruitment_id)
     if status:
         qb = qb.filter(Talent.status == status)
-    return qb.order_by(Talent.created_at.desc()).offset(skip).limit(limit).all()
+    return qb.order_by(Talent.updated_at.desc()).offset(skip).limit(limit).all()
 
 
 @router.get("/{recruitment_id}/talents/{talent_id}", response_model=TalentRead)

@@ -11,7 +11,7 @@ class TalentCreate(BaseModel):
 
 
 class TalentUpdate(BaseModel):
-    status: TalentStatus | None = None
+    pass
 
 
 class TalentTransition(BaseModel):
