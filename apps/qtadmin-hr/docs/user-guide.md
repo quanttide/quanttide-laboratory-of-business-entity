@@ -1,19 +1,20 @@
 # QtCloud HR 用户手册
 
-> 写给 HR 同事的操作指南。系统将 hr@quanttide.com 邮件中的招聘流程，变成可视化的看板和可追踪的记录。
+> 写给 HR 同事的操作指南。系统将招聘邮件中的流程，变成可视化的看板和可追踪的记录。
 
 ---
 
 ## 一、核心概念
 
 ```
-候选人 ──→ 申请 ──→ 岗位
-         (一条管道)
+Org 系统                   HR 系统
+岗位定义 ───→ 招聘需求 ───→ 申请 ─── 候选人
 ```
 
+- **岗位（Position）**：公司在 Org 系统中定义的正式岗位（技术实习生、新媒体运营等）
+- **招聘需求（Requisition）**：HR 系统中一次招聘活动，引用 Org 岗位，设定招聘人数和原因
 - **候选人**：投递者（一个候选人可以投递多个岗位）
-- **岗位**：招聘职位（如"技术实习生""新媒体运营"）
-- **申请**：候选人在某个岗位上的进度记录，包含当前阶段和流转历史
+- **申请**：候选人在某个招聘需求上的进度记录
 
 ---
 
@@ -21,28 +22,39 @@
 
 ### 启动系统
 
+需要同时启动 Org 和 HR 两个服务：
+
 ```bash
+# 终端 1：启动 Org（端口 8001）
+cd ../qtadmin-org
 pip install -r requirements.txt
-uvicorn app.main:app --reload
+uvicorn app.main:app --reload --port 8001
+
+# 终端 2：启动 HR（端口 8000）
+cd ../qtadmin-hr
+pip install -r requirements.txt
+uvicorn app.main:app --reload --port 8000
 ```
 
-打开 http://127.0.0.1:8000/docs 查看所有可用功能。
+HR 访问 http://127.0.0.1:8000/docs，Org 访问 http://127.0.0.1:8001/docs。
 
-### 第一次使用：先创建岗位
+### 第一次使用：先在 Org 中创建岗位
 
-你需要先录入当前正在招聘的岗位，然后才能把候选人关联到对应的岗位上。
+岗位定义属于组织架构，不归 HR 管。
 
 ```bash
-curl -X POST http://127.0.0.1:8000/positions \
+curl -X POST http://127.0.0.1:8001/positions \
   -H 'Content-Type: application/json' \
-  -d '{"name":"技术实习生","type":"技术","headcount":5}'
+  -d '{"name":"技术实习生","department":"技术部","level":"实习"}'
 ```
 
 其他岗位同理：
 
 ```bash
-curl -X POST ... -d '{"name":"新媒体运营","type":"运营","headcount":2}'
-curl -X POST ... -d '{"name":"PM实习生","type":"产品","headcount":1}'
+curl -X POST http://127.0.0.1:8001/positions \
+  -d '{"name":"新媒体运营","department":"市场部"}'
+curl -X POST http://127.0.0.1:8001/positions \
+  -d '{"name":"PM实习生","department":"产品部"}'
 ```
 
 ### 录入候选人：两种方式
@@ -53,14 +65,14 @@ curl -X POST ... -d '{"name":"PM实习生","type":"产品","headcount":1}'
 curl -X POST http://127.0.0.1:8000/applications/quick \
   -H 'Content-Type: application/json' \
   -d '{
-    "candidate_name": "陈忠洋",
-    "candidate_email": "czy@test.com",
-    "candidate_school": "东南大学",
-    "position_name": "技术实习生"
+    "candidate_name": "张三",
+    "candidate_email": "zhangsan@test.com",
+    "candidate_school": "某大学",
+    "org_position_name": "技术实习生"
   }'
 ```
 
-系统会自动创建候选人并关联到指定岗位。`position_name` 必须是已在系统中创建的岗位名称。
+系统会自动查询 Org 系统获取岗位信息，创建招聘需求（Requisition）并关联申请。`org_position_name` 必须是 Org 系统中已存在的岗位名称。
 
 **方式二：批量导入（整理完一批邮件后一次性导入）**
 
@@ -68,9 +80,9 @@ curl -X POST http://127.0.0.1:8000/applications/quick \
 
 ```csv
 name,email,school,major,position,stage
-陈忠洋,czy@test.com,东南大学,计算机,技术实习生,new
-孙雨馨,syx@test.com,山东大学,新闻,新媒体运营,contacted
-赵娅兰,zyl@test.com,西安交通大学,软件工程,技术实习生,exam_sent
+张三,zhangsan@test.com,某大学,计算机,技术实习生,new
+李四,lisi@test.com,某大学,新闻,新媒体运营,contacted
+王五,wangwu@test.com,某理工大学,软件工程,技术实习生,exam_sent
 ```
 
 然后上传：
@@ -263,4 +275,8 @@ for st, cnt in s['by_stage'].items():
 
 **Q: CSV 导入时说岗位不存在？**
 
-需要先通过 `POST /positions` 创建岗位，CSV 中的岗位名称必须与系统中创建的完全一致。
+需要先在 Org 系统（`:8001`）中通过 `POST /positions` 创建岗位，CSV 中的岗位名称必须与 Org 系统中完全一致。
+
+**Q: 为什么需要启动两个服务？**
+
+岗位定义（Position）属于组织架构数据，Org 系统是权威数据源。HR 系统通过 HTTP 查询 Org 获取岗位信息，不会在本地重复存储。这种拆分保证了数据一致性——岗位改名，所有招聘需求跟着变。

@@ -46,7 +46,7 @@ class Application(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     candidate_id: Mapped[int] = mapped_column(ForeignKey("candidates.id"), index=True)
-    position_id: Mapped[int] = mapped_column(ForeignKey("positions.id"), index=True)
+    requisition_id: Mapped[int] = mapped_column(ForeignKey("requisitions.id"), index=True)
     stage: Mapped[ApplicationStage] = mapped_column(Enum(ApplicationStage), default=ApplicationStage.NEW, index=True)
     stage_history: Mapped[str | None] = mapped_column(Text)
     assigned_to: Mapped[str | None] = mapped_column(String(500))
@@ -54,4 +54,4 @@ class Application(Base):
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 
     candidate: Mapped["Candidate"] = relationship(back_populates="applications")
-    position: Mapped["Position"] = relationship(back_populates="applications")
+    requisition: Mapped["Requisition"] = relationship(back_populates="applications")

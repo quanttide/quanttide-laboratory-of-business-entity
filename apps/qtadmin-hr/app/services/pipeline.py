@@ -39,7 +39,7 @@ def _app_to_card(app: Application) -> dict:
     return {
         "id": app.id,
         "candidate": {"id": app.candidate.id, "name": app.candidate.name, "email": app.candidate.email, "school": app.candidate.school},
-        "position": {"id": app.position.id, "name": app.position.name, "type": app.position.type},
+        "requisition": {"id": app.requisition.id, "org_position_id": app.requisition.org_position_id, "org_position_name": app.requisition.org_position_name},
         "stage": app.stage.value,
         "assigned_to": app.assigned_to,
         "created_at": app.created_at.isoformat(),

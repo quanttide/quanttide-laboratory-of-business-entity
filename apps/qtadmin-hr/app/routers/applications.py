@@ -7,6 +7,8 @@ from sqlalchemy.orm import Session
 
 from app.database import get_db
 from app.models.application import Application, ApplicationStage
+from app.models.candidate import Candidate
+from app.models.requisition import Requisition
 from app.schemas.application import (
     ApplicationCreate,
     ApplicationQuickCreate,
@@ -14,6 +16,7 @@ from app.schemas.application import (
     ApplicationUpdate,
     StageTransition,
 )
+from app.services.org_client import get_org_position_by_name
 from app.services.pipeline import get_stage_counts, transition_stage
 
 router = APIRouter(prefix="/applications", tags=["applications"])
@@ -23,7 +26,7 @@ router = APIRouter(prefix="/applications", tags=["applications"])
 def list_applications(
     stage: ApplicationStage | None = None,
     candidate_id: int | None = None,
-    position_id: int | None = None,
+    requisition_id: int | None = None,
     assigned_to: str | None = None,
     date_from: datetime | None = None,
     date_to: datetime | None = None,
@@ -36,8 +39,8 @@ def list_applications(
         qb = qb.filter(Application.stage == stage)
     if candidate_id:
         qb = qb.filter(Application.candidate_id == candidate_id)
-    if position_id:
-        qb = qb.filter(Application.position_id == position_id)
+    if requisition_id:
+        qb = qb.filter(Application.requisition_id == requisition_id)
     if assigned_to:
         qb = qb.filter(Application.assigned_to.ilike(f"%{assigned_to}%"))
     if date_from:
@@ -49,9 +52,6 @@ def list_applications(
 
 @router.post("/import-csv", status_code=201)
 def import_applications_csv(file: UploadFile, db: Session = Depends(get_db)):
-    from app.models.candidate import Candidate
-    from app.models.position import Position
-
     if not file.filename or not file.filename.endswith(".csv"):
         raise HTTPException(400, "Only .csv files accepted")
 
@@ -75,11 +75,17 @@ def import_applications_csv(file: UploadFile, db: Session = Depends(get_db)):
             db.add(candidate)
             db.flush()
 
-        position = db.query(Position).filter(Position.name == position_name).first()
-        if not position:
+        org_pos = get_org_position_by_name(position_name)
+        if not org_pos:
             continue
 
-        a = Application(candidate_id=candidate.id, position_id=position.id, stage=stage)
+        requisition = db.query(Requisition).filter(Requisition.org_position_id == org_pos["id"], Requisition.status == "open").first()
+        if not requisition:
+            requisition = Requisition(org_position_id=org_pos["id"], org_position_name=org_pos["name"])
+            db.add(requisition)
+            db.flush()
+
+        a = Application(candidate_id=candidate.id, requisition_id=requisition.id, stage=stage)
         db.add(a)
         db.flush()
         created.append({"name": name, "email": email, "position": position_name, "stage": stage.value, "application_id": a.id})
@@ -112,9 +118,6 @@ def create_application(data: ApplicationCreate, db: Session = Depends(get_db)):
 
 @router.post("/quick", response_model=ApplicationRead, status_code=201)
 def create_application_quick(data: ApplicationQuickCreate, db: Session = Depends(get_db)):
-    from app.models.candidate import Candidate
-    from app.models.position import Position
-
     candidate = db.query(Candidate).filter(Candidate.email == data.candidate_email).first()
     if not candidate:
         candidate = Candidate(
@@ -127,11 +130,17 @@ def create_application_quick(data: ApplicationQuickCreate, db: Session = Depends
         db.add(candidate)
         db.flush()
 
-    position = db.query(Position).filter(Position.name == data.position_name).first()
-    if not position:
-        raise HTTPException(400, f"Position '{data.position_name}' not found. Create it first via POST /positions")
+    org_pos = get_org_position_by_name(data.org_position_name)
+    if not org_pos:
+        raise HTTPException(400, f"Position '{data.org_position_name}' not found in Org system")
 
-    a = Application(candidate_id=candidate.id, position_id=position.id, assigned_to=data.assigned_to)
+    requisition = db.query(Requisition).filter(Requisition.org_position_id == org_pos["id"], Requisition.status == "open").first()
+    if not requisition:
+        requisition = Requisition(org_position_id=org_pos["id"], org_position_name=org_pos["name"])
+        db.add(requisition)
+        db.flush()
+
+    a = Application(candidate_id=candidate.id, requisition_id=requisition.id, assigned_to=data.assigned_to)
     db.add(a)
     db.commit()
     db.refresh(a)
@@ -139,9 +148,7 @@ def create_application_quick(data: ApplicationQuickCreate, db: Session = Depends
 
 
 @router.patch("/{application_id}", response_model=ApplicationRead)
-def update_application(
-    application_id: int, data: ApplicationUpdate, db: Session = Depends(get_db)
-):
+def update_application(application_id: int, data: ApplicationUpdate, db: Session = Depends(get_db)):
     a = db.query(Application).filter(Application.id == application_id).first()
     if not a:
         raise HTTPException(404, "Application not found")
@@ -153,9 +160,7 @@ def update_application(
 
 
 @router.post("/{application_id}/transition", response_model=ApplicationRead)
-def transition(
-    application_id: int, data: StageTransition, db: Session = Depends(get_db)
-):
+def transition(application_id: int, data: StageTransition, db: Session = Depends(get_db)):
     a = db.query(Application).filter(Application.id == application_id).first()
     if not a:
         raise HTTPException(404, "Application not found")

@@ -7,7 +7,7 @@ from app.models.application import ApplicationStage
 
 class ApplicationCreate(BaseModel):
     candidate_id: int
-    position_id: int
+    requisition_id: int
     assigned_to: str | None = None
 
 
@@ -16,7 +16,7 @@ class ApplicationQuickCreate(BaseModel):
     candidate_email: str
     candidate_school: str | None = None
     candidate_major: str | None = None
-    position_name: str
+    org_position_name: str
     assigned_to: str | None = None
 
 
@@ -31,7 +31,7 @@ class StageTransition(BaseModel):
 class ApplicationRead(BaseModel):
     id: int
     candidate_id: int
-    position_id: int
+    requisition_id: int
     stage: ApplicationStage
     stage_history: str | None
     assigned_to: str | None

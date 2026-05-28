@@ -3,7 +3,7 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 
 from app.database import Base, engine, settings
-from app.routers import applications, candidates, pipeline, positions
+from app.routers import applications, candidates, pipeline, requisitions
 
 
 @asynccontextmanager
@@ -20,7 +20,7 @@ app = FastAPI(
 )
 
 app.include_router(candidates.router)
-app.include_router(positions.router)
+app.include_router(requisitions.router)
 app.include_router(applications.router)
 app.include_router(pipeline.router)
 
