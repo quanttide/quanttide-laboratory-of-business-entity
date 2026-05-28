@@ -1,8 +1,8 @@
 import enum
 from datetime import datetime
 
-from sqlalchemy import DateTime, Enum, ForeignKey, Integer, String, Text, func
-from sqlalchemy.orm import Mapped, mapped_column, relationship
+from sqlalchemy import DateTime, Enum, ForeignKey, String, func
+from sqlalchemy.orm import Mapped, mapped_column
 
 from app.database import Base
 
@@ -35,15 +35,12 @@ class Talent(Base):
 
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     recruitment_id: Mapped[int] = mapped_column(ForeignKey("recruitments.id"), index=True)
-    user_profile_id: Mapped[int] = mapped_column(Integer, index=True, comment="引用 Auth 系统 UserProfile.id")
+    email: Mapped[str] = mapped_column(String(200))
+    real_name: Mapped[str] = mapped_column(String(100))
 
     status: Mapped[TalentStatus] = mapped_column(Enum(TalentStatus), default=TalentStatus.NEW, index=True)
-    status_history: Mapped[str | None] = mapped_column(Text)
-    assigned_to: Mapped[str | None] = mapped_column(String(200))
-    source: Mapped[str | None] = mapped_column(String(100))
-    tags: Mapped[str | None] = mapped_column(String(500))
 
     created_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
     updated_at: Mapped[datetime] = mapped_column(DateTime, server_default=func.now(), onupdate=func.now())
 
-    recruitment: Mapped["Recruitment"] = relationship(back_populates="talents")
+

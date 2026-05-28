@@ -1,6 +1,3 @@
-import json
-from datetime import datetime
-
 from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
@@ -8,27 +5,18 @@ from app.database import get_db
 from app.models.talent import STATUS_TRANSITIONS, Talent, TalentStatus
 from app.models.recruitment import Recruitment
 from app.schemas.talent import TalentCreate, TalentRead, TalentTransition, TalentUpdate
-from app.schemas.recruitment import RecruitmentCreate, RecruitmentRead, RecruitmentUpdate
+from app.schemas.recruitment import RecruitmentCreate, RecruitmentRead
 
 router = APIRouter(prefix="/recruitments", tags=["recruitments"])
 
 
-# ── Recruitment CRUD ──
-
 @router.get("", response_model=list[RecruitmentRead])
 def list_recruitments(
-    org_position_id: int | None = None,
-    status: str | None = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
     db: Session = Depends(get_db),
 ):
-    qb = db.query(Recruitment)
-    if org_position_id:
-        qb = qb.filter(Recruitment.org_position_id == org_position_id)
-    if status:
-        qb = qb.filter(Recruitment.status == status)
-    return qb.order_by(Recruitment.created_at.desc()).offset(skip).limit(limit).all()
+    return db.query(Recruitment).order_by(Recruitment.created_at.desc()).offset(skip).limit(limit).all()
 
 
 @router.get("/{recruitment_id}", response_model=RecruitmentRead)
@@ -40,30 +28,9 @@ def get_recruitment(recruitment_id: int, db: Session = Depends(get_db)):
 
 
 @router.post("", response_model=RecruitmentRead, status_code=201)
-def create_recruitment(data: RecruitmentCreate, db: Session = Depends(get_db)):
-    from app.services.org_client import get_org_position_by_id
-    org_pos = get_org_position_by_id(data.org_position_id)
-    r = Recruitment(
-        org_position_id=data.org_position_id,
-        org_position_name=org_pos["name"] if org_pos else None,
-        name=data.name,
-        recruiter=data.recruiter,
-        target_date=data.target_date,
-        description=data.description,
-    )
+def create_recruitment(db: Session = Depends(get_db)):
+    r = Recruitment()
     db.add(r)
-    db.commit()
-    db.refresh(r)
-    return r
-
-
-@router.patch("/{recruitment_id}", response_model=RecruitmentRead)
-def update_recruitment(recruitment_id: int, data: RecruitmentUpdate, db: Session = Depends(get_db)):
-    r = db.query(Recruitment).filter(Recruitment.id == recruitment_id).first()
-    if not r:
-        raise HTTPException(404, "Recruitment not found")
-    for k, v in data.model_dump(exclude_unset=True).items():
-        setattr(r, k, v)
     db.commit()
     db.refresh(r)
     return r
@@ -78,8 +45,6 @@ def delete_recruitment(recruitment_id: int, db: Session = Depends(get_db)):
     db.commit()
 
 
-# ── Talent 子路由 ──
-
 @router.get("/{recruitment_id}/talents", response_model=list[TalentRead])
 def list_talents(
     recruitment_id: int,
@@ -91,7 +56,7 @@ def list_talents(
     qb = db.query(Talent).filter(Talent.recruitment_id == recruitment_id)
     if status:
         qb = qb.filter(Talent.status == status)
-    return qb.order_by(Talent.updated_at.desc()).offset(skip).limit(limit).all()
+    return qb.order_by(Talent.created_at.desc()).offset(skip).limit(limit).all()
 
 
 @router.get("/{recruitment_id}/talents/{talent_id}", response_model=TalentRead)
@@ -107,11 +72,7 @@ def create_talent(recruitment_id: int, data: TalentCreate, db: Session = Depends
     recruitment = db.query(Recruitment).filter(Recruitment.id == recruitment_id).first()
     if not recruitment:
         raise HTTPException(404, "Recruitment not found")
-    from app.services.auth_client import get_user_profile
-    profile = get_user_profile(data.user_profile_id)
-    if not profile:
-        raise HTTPException(400, f"UserProfile {data.user_profile_id} not found in Auth system")
-    t = Talent(recruitment_id=recruitment_id, **data.model_dump())
+    t = Talent(recruitment_id=recruitment_id, email=data.email, real_name=data.real_name)
     db.add(t)
     db.commit()
     db.refresh(t)
@@ -140,13 +101,7 @@ def transition_talent(recruitment_id: int, talent_id: int, data: TalentTransitio
     if target not in STATUS_TRANSITIONS.get(t.status, []):
         raise HTTPException(400, f"Cannot transition from {t.status.value} to {target.value}")
 
-    history = []
-    if t.status_history:
-        history = json.loads(t.status_history)
-    history.append({"from": t.status.value, "to": target.value, "at": datetime.utcnow().isoformat()})
-
     t.status = target
-    t.status_history = json.dumps(history)
     db.commit()
     db.refresh(t)
     return t
