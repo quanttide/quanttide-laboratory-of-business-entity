@@ -1,5 +1,5 @@
-from app.models.candidate import Candidate
-from app.models.requisition import Requisition
-from app.models.application import Application, ApplicationStage
+from app.models.plan import Plan
+from app.models.recruitment import Recruitment
+from app.models.applicant import Applicant, ApplicantStage
 
-__all__ = ["Candidate", "Requisition", "Application", "ApplicationStage"]
+__all__ = ["Plan", "Recruitment", "Applicant", "ApplicantStage"]

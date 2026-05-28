@@ -1,42 +1,50 @@
 # QtCloud HR — 招聘系统 MVP
 
-基于 FastAPI + SQLite 的招聘申请者管道管理。
+基于 FastAPI + SQLite 的招聘管理系统。
 
-岗位定义来自 **QtCloud Org** 系统（`../qtadmin-org`）。HR 系统通过 `Requisition`（招聘需求）引用 Org 的 `Position`（岗位定义）。
+岗位定义来自 **QtCloud Org** 系统（`../qtadmin-org`）。
+
+## 数据模型
+
+```
+Org:   Position ── 岗位定义
+
+HR:    Plan ── 招聘计划（headcount, period, status）
+         │
+         Recruitment ── 招聘活动（recruiter, target_date, status）
+           │
+           Applicant ── 申请者（stage, school, email, assigned_to）
+```
+
+- **Plan**：聚合根，针对一个 Org Position 的招聘计划
+- **Recruitment**：聚合根，一次具体的招聘活动
+- **Applicant**：子实体，属于 Recruitment，记录申请者信息和进度
 
 ## 快速开始
 
-需要同时启动 Org 和 HR 两个服务：
-
 ```bash
-# 终端 1：启动 Org 系统
+# 终端 1：Org
 cd ../qtadmin-org
 pip install -r requirements.txt
 uvicorn app.main:app --reload --port 8001
 
-# 终端 2：启动 HR 系统
+# 终端 2：HR
 cd ../qtadmin-hr
-pip install -r requirements.txt
-uvicorn app.main:app --reload --port 8000
+QTCLOUD_HR_ORG_API_URL=http://127.0.0.1:8001 uvicorn app.main:app --reload --port 8000
 ```
-
-HR 访问 http://127.0.0.1:8000/docs，Org 访问 http://127.0.0.1:8001/docs。
 
 ## API 概览
 
 | 端点 | 方法 | 说明 |
 |------|------|------|
-| `/candidates` | GET/POST | 列出（支持 q/school/source/degree/tag/date 过滤）/创建 |
-| `/candidates/{id}` | GET/PATCH/DELETE | 详情/更新/删除 |
-| `/requisitions` | GET/POST | 列出/创建招聘需求（需先有 Org Position） |
-| `/requisitions/{id}` | GET/PATCH/DELETE | 详情/更新/删除 |
-| `/applications` | GET/POST | 列出（支持 stage/candidate/requisition/assigned_to/date 过滤）/创建 |
-| `/applications/quick` | POST | 按姓名+邮箱+Org 岗位名称直接创建 |
-| `/applications/import-csv` | POST | 上传 CSV 批量导入（岗位名自动查询 Org） |
-| `/applications/stats` | GET | 各阶段人数统计 |
-| `/applications/{id}` | GET/PATCH/DELETE | 详情/更新/删除 |
-| `/applications/{id}/transition` | POST | 推进阶段状态 |
-| `/pipeline` | GET | 看板视图（含 summary） |
+| `/plans` | GET/POST | 计划列表/创建 |
+| `/plans/{id}` | GET/PATCH/DELETE | 计划详情/更新/删除 |
+| `/recruitments` | GET/POST | 活动列表/创建 |
+| `/recruitments/{id}` | GET/PATCH/DELETE | 活动详情/更新/删除 |
+| `/recruitments/{id}/applicants` | GET/POST | 活动的申请者列表/创建 |
+| `/recruitments/{id}/applicants/{aid}` | GET/PATCH/DELETE | 申请者详情/更新/删除 |
+| `/recruitments/{id}/applicants/{aid}/transition` | POST | 推进阶段 |
+| `/pipeline` | GET | 看板（按 Applicant.stage 聚合） |
 
 ## 状态流转
 
@@ -44,23 +52,18 @@ HR 访问 http://127.0.0.1:8000/docs，Org 访问 http://127.0.0.1:8001/docs。
 new → contacted → exam_sent → exam_received → evaluating → interview → offer → closed
 ```
 
-## CSV 导入格式
+## 一站式创建
 
-```csv
-name,email,school,major,position,stage
-张三,zhangsan@test.com,某理工大学,计算机,技术实习生,contacted
-```
+```bash
+# 1. Org 创建岗位
+curl -X POST http://127.0.0.1:8001/positions -d '{"name":"技术实习生","department":"技术部"}'
 
-`position` 列是 Org 系统中的岗位名称。列名支持中文。
+# 2. HR 创建计划
+curl -X POST http://127.0.0.1:8000/plans -d '{"org_position_id":1,"headcount":3,"period":"2026 Q2"}'
 
-## 数据模型
+# 3. HR 创建招聘活动
+curl -X POST http://127.0.0.1:8000/recruitments -d '{"plan_id":1,"name":"5月招聘","recruiter":"刘婧怡"}'
 
-```
-Org:   Position (1) ── 岗位定义
-                      │
-HR:    Requisition (N) ── 招聘需求
-                      │
-       Application (N) ── 申请流程
-                      │
-       Candidate (1)  ── 候选人
+# 4. 添加申请者
+curl -X POST http://127.0.0.1:8000/recruitments/1/applicants -d '{"name":"张三","email":"zs@test.com","school":"某大学"}'
 ```

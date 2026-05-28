@@ -1,10 +1,9 @@
-from app.schemas.candidate import CandidateCreate, CandidateRead, CandidateUpdate
-from app.schemas.requisition import RequisitionCreate, RequisitionRead, RequisitionUpdate
-from app.schemas.application import ApplicationCreate, ApplicationQuickCreate, ApplicationRead, ApplicationUpdate, StageTransition
+from app.schemas.plan import PlanCreate, PlanRead, PlanUpdate
+from app.schemas.recruitment import RecruitmentCreate, RecruitmentRead, RecruitmentUpdate
+from app.schemas.applicant import ApplicantCreate, ApplicantRead, ApplicantUpdate, ApplicantTransition
 
 __all__ = [
-    "CandidateCreate", "CandidateRead", "CandidateUpdate",
-    "RequisitionCreate", "RequisitionRead", "RequisitionUpdate",
-    "ApplicationCreate", "ApplicationQuickCreate", "ApplicationRead", "ApplicationUpdate",
-    "StageTransition",
+    "PlanCreate", "PlanRead", "PlanUpdate",
+    "RecruitmentCreate", "RecruitmentRead", "RecruitmentUpdate",
+    "ApplicantCreate", "ApplicantRead", "ApplicantUpdate", "ApplicantTransition",
 ]
