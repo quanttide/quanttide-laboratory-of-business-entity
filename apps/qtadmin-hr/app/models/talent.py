@@ -7,7 +7,7 @@ from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.database import Base
 
 
-class TalentStage(str, enum.Enum):
+class TalentStatus(str, enum.Enum):
     NEW = "new"
     CONTACTED = "contacted"
     EXAM_SENT = "exam_sent"
@@ -18,15 +18,15 @@ class TalentStage(str, enum.Enum):
     CLOSED = "closed"
 
 
-STAGE_TRANSITIONS = {
-    TalentStage.NEW: [TalentStage.CONTACTED, TalentStage.CLOSED],
-    TalentStage.CONTACTED: [TalentStage.EXAM_SENT, TalentStage.CLOSED],
-    TalentStage.EXAM_SENT: [TalentStage.EXAM_RECEIVED, TalentStage.CLOSED],
-    TalentStage.EXAM_RECEIVED: [TalentStage.EVALUATING, TalentStage.CLOSED],
-    TalentStage.EVALUATING: [TalentStage.INTERVIEW, TalentStage.EXAM_SENT, TalentStage.CLOSED],
-    TalentStage.INTERVIEW: [TalentStage.OFFER, TalentStage.CLOSED],
-    TalentStage.OFFER: [TalentStage.CLOSED],
-    TalentStage.CLOSED: [],
+STATUS_TRANSITIONS = {
+    TalentStatus.NEW: [TalentStatus.CONTACTED, TalentStatus.CLOSED],
+    TalentStatus.CONTACTED: [TalentStatus.EXAM_SENT, TalentStatus.CLOSED],
+    TalentStatus.EXAM_SENT: [TalentStatus.EXAM_RECEIVED, TalentStatus.CLOSED],
+    TalentStatus.EXAM_RECEIVED: [TalentStatus.EVALUATING, TalentStatus.CLOSED],
+    TalentStatus.EVALUATING: [TalentStatus.INTERVIEW, TalentStatus.EXAM_SENT, TalentStatus.CLOSED],
+    TalentStatus.INTERVIEW: [TalentStatus.OFFER, TalentStatus.CLOSED],
+    TalentStatus.OFFER: [TalentStatus.CLOSED],
+    TalentStatus.CLOSED: [],
 }
 
 
@@ -37,8 +37,8 @@ class Talent(Base):
     recruitment_id: Mapped[int] = mapped_column(ForeignKey("recruitments.id"), index=True)
     user_profile_id: Mapped[int] = mapped_column(Integer, index=True, comment="引用 Auth 系统 UserProfile.id")
 
-    stage: Mapped[TalentStage] = mapped_column(Enum(TalentStage), default=TalentStage.NEW, index=True)
-    stage_history: Mapped[str | None] = mapped_column(Text)
+    status: Mapped[TalentStatus] = mapped_column(Enum(TalentStatus), default=TalentStatus.NEW, index=True)
+    status_history: Mapped[str | None] = mapped_column(Text)
     assigned_to: Mapped[str | None] = mapped_column(String(200))
     source: Mapped[str | None] = mapped_column(String(100))
     tags: Mapped[str | None] = mapped_column(String(500))

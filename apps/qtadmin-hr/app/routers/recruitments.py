@@ -5,8 +5,7 @@ from fastapi import APIRouter, Depends, HTTPException, Query
 from sqlalchemy.orm import Session
 
 from app.database import get_db
-from app.models.talent import STAGE_TRANSITIONS, Talent, TalentStage
-from app.models.plan import Plan
+from app.models.talent import STATUS_TRANSITIONS, Talent, TalentStatus
 from app.models.recruitment import Recruitment
 from app.schemas.talent import TalentCreate, TalentRead, TalentTransition, TalentUpdate
 from app.schemas.recruitment import RecruitmentCreate, RecruitmentRead, RecruitmentUpdate
@@ -18,15 +17,15 @@ router = APIRouter(prefix="/recruitments", tags=["recruitments"])
 
 @router.get("", response_model=list[RecruitmentRead])
 def list_recruitments(
-    plan_id: int | None = None,
+    org_position_id: int | None = None,
     status: str | None = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
     db: Session = Depends(get_db),
 ):
     qb = db.query(Recruitment)
-    if plan_id:
-        qb = qb.filter(Recruitment.plan_id == plan_id)
+    if org_position_id:
+        qb = qb.filter(Recruitment.org_position_id == org_position_id)
     if status:
         qb = qb.filter(Recruitment.status == status)
     return qb.order_by(Recruitment.created_at.desc()).offset(skip).limit(limit).all()
@@ -42,10 +41,16 @@ def get_recruitment(recruitment_id: int, db: Session = Depends(get_db)):
 
 @router.post("", response_model=RecruitmentRead, status_code=201)
 def create_recruitment(data: RecruitmentCreate, db: Session = Depends(get_db)):
-    plan = db.query(Plan).filter(Plan.id == data.plan_id).first()
-    if not plan:
-        raise HTTPException(400, "Plan not found")
-    r = Recruitment(**data.model_dump())
+    from app.services.org_client import get_org_position_by_id
+    org_pos = get_org_position_by_id(data.org_position_id)
+    r = Recruitment(
+        org_position_id=data.org_position_id,
+        org_position_name=org_pos["name"] if org_pos else None,
+        name=data.name,
+        recruiter=data.recruiter,
+        target_date=data.target_date,
+        description=data.description,
+    )
     db.add(r)
     db.commit()
     db.refresh(r)
@@ -78,14 +83,14 @@ def delete_recruitment(recruitment_id: int, db: Session = Depends(get_db)):
 @router.get("/{recruitment_id}/talents", response_model=list[TalentRead])
 def list_talents(
     recruitment_id: int,
-    stage: TalentStage | None = None,
+    status: TalentStatus | None = None,
     skip: int = Query(0, ge=0),
     limit: int = Query(100, ge=1, le=500),
     db: Session = Depends(get_db),
 ):
     qb = db.query(Talent).filter(Talent.recruitment_id == recruitment_id)
-    if stage:
-        qb = qb.filter(Talent.stage == stage)
+    if status:
+        qb = qb.filter(Talent.status == status)
     return qb.order_by(Talent.updated_at.desc()).offset(skip).limit(limit).all()
 
 
@@ -131,17 +136,17 @@ def transition_talent(recruitment_id: int, talent_id: int, data: TalentTransitio
     if not t:
         raise HTTPException(404, "Talent not found")
 
-    target = data.stage
-    if target not in STAGE_TRANSITIONS.get(t.stage, []):
-        raise HTTPException(400, f"Cannot transition from {t.stage.value} to {target.value}")
+    target = data.status
+    if target not in STATUS_TRANSITIONS.get(t.status, []):
+        raise HTTPException(400, f"Cannot transition from {t.status.value} to {target.value}")
 
     history = []
-    if t.stage_history:
-        history = json.loads(t.stage_history)
-    history.append({"from": t.stage.value, "to": target.value, "at": datetime.utcnow().isoformat()})
+    if t.status_history:
+        history = json.loads(t.status_history)
+    history.append({"from": t.status.value, "to": target.value, "at": datetime.utcnow().isoformat()})
 
-    t.stage = target
-    t.stage_history = json.dumps(history)
+    t.status = target
+    t.status_history = json.dumps(history)
     db.commit()
     db.refresh(t)
     return t

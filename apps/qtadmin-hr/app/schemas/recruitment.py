@@ -4,7 +4,7 @@ from pydantic import BaseModel
 
 
 class RecruitmentCreate(BaseModel):
-    plan_id: int
+    org_position_id: int
     name: str
     recruiter: str | None = None
     target_date: str | None = None
@@ -21,7 +21,8 @@ class RecruitmentUpdate(BaseModel):
 
 class RecruitmentRead(BaseModel):
     id: int
-    plan_id: int
+    org_position_id: int
+    org_position_name: str | None
     name: str
     recruiter: str | None
     target_date: str | None

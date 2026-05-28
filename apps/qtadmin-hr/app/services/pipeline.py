@@ -1,20 +1,20 @@
 from sqlalchemy.orm import Session
 
-from app.models.talent import Talent, TalentStage
+from app.models.talent import Talent, TalentStatus
 from app.services.auth_client import get_user_profile
 
 
 def get_pipeline(db: Session) -> dict:
     stages = {}
     total = 0
-    for stage in TalentStage:
+    for status in TalentStatus:
         talents = (
             db.query(Talent)
-            .filter(Talent.stage == stage)
+            .filter(Talent.status == status)
             .order_by(Talent.updated_at.desc())
             .all()
         )
-        stages[stage.value] = [_talent_to_card(t) for t in talents]
+        stages[status.value] = [_talent_to_card(t) for t in talents]
         total += len(talents)
 
     need_attention = len(stages.get("exam_received", [])) + len(stages.get("evaluating", []))
@@ -22,7 +22,7 @@ def get_pipeline(db: Session) -> dict:
         "stages": stages,
         "summary": {
             "total": total,
-            "by_stage": {s.value: len(stages.get(s.value, [])) for s in TalentStage},
+            "by_stage": {s.value: len(stages.get(s.value, [])) for s in TalentStatus},
             "need_attention": need_attention,
         },
     }
@@ -41,9 +41,10 @@ def _talent_to_card(t: Talent) -> dict:
         "recruitment": {
             "id": t.recruitment.id,
             "name": t.recruitment.name,
-            "plan_id": t.recruitment.plan_id,
+            "org_position_id": t.recruitment.org_position_id,
+            "org_position_name": t.recruitment.org_position_name,
         },
-        "stage": t.stage.value,
+        "status": t.status.value,
         "assigned_to": t.assigned_to,
         "source": t.source,
         "created_at": t.created_at.isoformat(),
@@ -51,12 +52,12 @@ def _talent_to_card(t: Talent) -> dict:
     }
 
 
-def get_stage_counts(db: Session) -> list[dict]:
+def get_status_counts(db: Session) -> list[dict]:
     from sqlalchemy import func
 
     rows = (
-        db.query(Talent.stage, func.count(Talent.id))
-        .group_by(Talent.stage)
+        db.query(Talent.status, func.count(Talent.id))
+        .group_by(Talent.status)
         .all()
     )
-    return [{"stage": stage.value, "count": count} for stage, count in rows]
+    return [{"status": status.value, "count": count} for status, count in rows]
