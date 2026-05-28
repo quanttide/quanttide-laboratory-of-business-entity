@@ -6,7 +6,7 @@ from app.models.talent import TalentStage
 
 
 class TalentCreate(BaseModel):
-    name: str
+    real_name: str
     email: str
     phone: str | None = None
     school: str | None = None
@@ -19,7 +19,7 @@ class TalentCreate(BaseModel):
 
 
 class TalentUpdate(BaseModel):
-    name: str | None = None
+    real_name: str | None = None
     email: str | None = None
     phone: str | None = None
     school: str | None = None
@@ -37,7 +37,7 @@ class TalentTransition(BaseModel):
 class TalentRead(BaseModel):
     id: int
     recruitment_id: int
-    name: str
+    real_name: str
     email: str
     phone: str | None
     school: str | None

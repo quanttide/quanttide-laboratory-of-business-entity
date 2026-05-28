@@ -65,7 +65,7 @@ curl -X POST http://127.0.0.1:8001/positions \
 curl -X POST http://127.0.0.1:8000/applications/quick \
   -H 'Content-Type: application/json' \
   -d '{
-    "candidate_name": "张三",
+    "candidate_real_name": "张三",
     "candidate_email": "zhangsan@test.com",
     "candidate_school": "某大学",
     "org_position_name": "技术实习生"

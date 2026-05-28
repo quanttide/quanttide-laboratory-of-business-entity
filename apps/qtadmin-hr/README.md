@@ -65,5 +65,5 @@ curl -X POST http://127.0.0.1:8000/plans -d '{"org_position_id":1,"headcount":3,
 curl -X POST http://127.0.0.1:8000/recruitments -d '{"plan_id":1,"name":"5月招聘","recruiter":"刘婧怡"}'
 
 # 4. 添加申请者
-curl -X POST http://127.0.0.1:8000/recruitments/1/applicants -d '{"name":"张三","email":"zs@test.com","school":"某大学"}'
+curl -X POST http://127.0.0.1:8000/recruitments/1/talents -d '{"real_name":"张三","email":"zs@test.com","school":"某大学"}'
 ```

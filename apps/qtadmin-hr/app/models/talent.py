@@ -36,7 +36,7 @@ class Talent(Base):
     id: Mapped[int] = mapped_column(primary_key=True, index=True)
     recruitment_id: Mapped[int] = mapped_column(ForeignKey("recruitments.id"), index=True)
 
-    name: Mapped[str] = mapped_column(String(100), index=True)
+    real_name: Mapped[str] = mapped_column(String(100), index=True)
     email: Mapped[str] = mapped_column(String(200), index=True)
     phone: Mapped[str | None] = mapped_column(String(50))
     school: Mapped[str | None] = mapped_column(String(200))

@@ -32,7 +32,7 @@ def get_pipeline(db: Session) -> dict:
 def _talent_to_card(t: Talent) -> dict:
     return {
         "id": t.id,
-        "name": t.name,
+        "real_name": t.real_name,
         "email": t.email,
         "school": t.school,
         "recruitment_id": t.recruitment_id,
