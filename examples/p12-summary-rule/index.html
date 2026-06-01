@@ -1,0 +1,172 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>摘要规则校验工具</title>
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, "Noto Sans SC", sans-serif; background: #f5f5f5; padding: 40px; color: #333; }
+.container { max-width: 720px; margin: 0 auto; background: #fff; border-radius: 8px; box-shadow: 0 2px 12px rgba(0,0,0,0.08); padding: 32px; }
+h1 { font-size: 22px; margin-bottom: 4px; }
+.subtitle { color: #888; font-size: 13px; margin-bottom: 24px; }
+.form-group { margin-bottom: 12px; }
+.form-group label { display: block; font-size: 13px; color: #666; margin-bottom: 4px; }
+.form-group textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; min-height: 120px; resize: vertical; }
+.form-group textarea:focus { outline: none; border-color: #1a73e8; }
+.row { display: flex; gap: 24px; margin-bottom: 16px; flex-wrap: wrap; }
+.stat { flex: 1; min-width: 120px; text-align: center; padding: 12px; border-radius: 6px; background: #f8f9fa; }
+.stat .num { font-size: 28px; font-weight: 700; }
+.stat .num.pass { color: #2e7d32; }
+.stat .num.fail { color: #c62828; }
+.stat .lbl { font-size: 12px; color: #888; margin-top: 2px; }
+.checks { margin-top: 12px; }
+.check { display: flex; align-items: center; gap: 8px; padding: 8px 12px; margin-bottom: 4px; border-radius: 4px; font-size: 14px; }
+.check.ok { background: #e8f5e9; color: #2e7d32; }
+.check.err { background: #fce4ec; color: #c62828; }
+.check .icon { font-size: 16px; }
+.btn { padding: 8px 24px; background: #1a73e8; color: #fff; border: none; border-radius: 4px; font-size: 14px; cursor: pointer; }
+.btn:hover { background: #1557b0; }
+.btn-secondary { background: #e8e8e8; color: #333; margin-left: 8px; }
+.btn-secondary:hover { background: #d0d0d0; }
+.sample-btns { display: flex; gap: 6px; margin-bottom: 12px; flex-wrap: wrap; }
+.sample-btns button { padding: 4px 12px; font-size: 12px; border: 1px solid #ddd; border-radius: 4px; background: #fff; cursor: pointer; color: #555; }
+.sample-btns button:hover { border-color: #1a73e8; color: #1a73e8; }
+.result-box { padding: 12px; border-radius: 4px; margin-top: 12px; font-size: 13px; display: none; }
+.result-box.pass { display: block; background: #e8f5e9; border-left: 3px solid #2e7d32; }
+.result-box.fail { display: block; background: #fce4ec; border-left: 3px solid #c62828; }
+.ai-markers { font-size: 12px; color: #888; margin-top: 8px; padding: 8px; background: #f5f5f5; border-radius: 4px; display: none; }
+</style>
+</head>
+<body>
+<div class="container">
+  <h1>摘要规则校验</h1>
+  <p class="subtitle">依据《量潮科技沟通管理章程》第六条：向团队渠道传递信息应以 500 字以内的摘要形式呈现，禁止发送 AI 对话原文或未经处理的原始信息。</p>
+
+  <div class="sample-btns">
+    <button onclick="loadSample('good')">✅ 合格摘要</button>
+    <button onclick="loadSample('bad')">❌ AI 原文过长</button>
+    <button onclick="loadSample('raw')">❌ 未处理原文</button>
+  </div>
+
+  <div class="form-group">
+    <label>粘贴要校验的文本</label>
+    <textarea id="input" placeholder="在此粘贴消息内容..." oninput="validate()"></textarea>
+  </div>
+
+  <div>
+    <button class="btn" onclick="validate()">校验</button>
+    <button class="btn btn-secondary" onclick="clearInput()">清空</button>
+  </div>
+
+  <div class="row" style="margin-top:16px;">
+    <div class="stat"><div class="num" id="charCount">0</div><div class="lbl">字数</div></div>
+    <div class="stat"><div class="num" id="lineCount">0</div><div class="lbl">行数</div></div>
+    <div class="stat"><div class="num" id="aiScore">0%</div><div class="lbl">AI 原文风险</div></div>
+  </div>
+
+  <div class="checks" id="checks"></div>
+  <div class="result-box" id="result"></div>
+  <div class="ai-markers" id="aiMarkers"></div>
+</div>
+
+<script>
+function validate() {
+  const text = document.getElementById('input').value;
+  const chars = text.length;
+  const lines = text.split('\n').filter(l => l.trim()).length;
+  document.getElementById('charCount').textContent = chars;
+  document.getElementById('lineCount').textContent = lines;
+
+  const cc = document.getElementById('charCount');
+  cc.className = 'num' + (chars <= 500 ? ' pass' : ' fail');
+
+  let checksHtml = '';
+  let pass = true;
+  let aiDetails = [];
+
+  // Check 1: 500字限制
+  if (chars <= 500) {
+    checksHtml += '<div class="check ok"><span class="icon">✅</span>字数合规（' + chars + '/500）</div>';
+  } else {
+    checksHtml += '<div class="check err"><span class="icon">❌</span>字数超限（' + chars + '/500），超出 ' + (chars - 500) + ' 字</div>';
+    pass = false;
+  }
+
+  // Check 2: AI 原文检测
+  const aiMarkers = [
+    { pattern: /作为.*AI|作为.*人工智能/i, label: '含"作为AI/人工智能"自称' },
+    { pattern: /(抱歉|对不起|很遗憾)，我[不]?(能|可以|知道|理解)/i, label: '含AI道歉/免责句式' },
+    { pattern: /根据我的(知识|理解|训练|数据)/i, label: '含"根据我的知识/理解"' },
+    { pattern: /温馨提示|需要注意的是|值得注意的是/i, label: '含AI常用提醒语' },
+    { pattern: /如果您有任何其他问题|如有其他问题/i, label: '含AI结束语' },
+    { pattern: /作为一个大语言模型|作为LLM|我是一个AI/i, label: '含大语言模型自称' },
+    { pattern: /我无法(访问|浏览|查看|实时)/i, label: '含AI能力限制声明' },
+    { pattern: /截止到我的知识截止日期|我的知识截止于/i, label: '含知识截止日期声明' },
+  ];
+
+  let matchedMarkers = [];
+  aiMarkers.forEach(m => {
+    if (m.pattern.test(text)) matchedMarkers.push(m.label);
+  });
+
+  const aiRisk = Math.min(100, matchedMarkers.length * 15 + (chars > 800 ? 20 : 0));
+  document.getElementById('aiScore').textContent = aiRisk + '%';
+  const as = document.getElementById('aiScore');
+  as.className = 'num' + (aiRisk < 40 ? ' pass' : ' fail');
+
+  if (matchedMarkers.length > 0) {
+    checksHtml += '<div class="check err"><span class="icon">🤖</span>疑似 AI 原文（命中 ' + matchedMarkers.length + ' 项特征）</div>';
+    pass = false;
+    document.getElementById('aiMarkers').style.display = 'block';
+    document.getElementById('aiMarkers').innerHTML = '命中特征：<ul>' + matchedMarkers.map(m => '<li>' + m + '</li>').join('') + '</ul>';
+  } else {
+    checksHtml += '<div class="check ok"><span class="icon">✅</span>未检测到 AI 原文特征</div>';
+    document.getElementById('aiMarkers').style.display = 'none';
+  }
+
+  // Check 3: 多段/结构检查
+  if (lines <= 1 && chars > 200) {
+    checksHtml += '<div class="check err"><span class="icon">⚠</span>长文本无分段，建议按要点组织</div>';
+    pass = false;
+  } else {
+    checksHtml += '<div class="check ok"><span class="icon">✅</span>文本结构合理</div>';
+  }
+
+  document.getElementById('checks').innerHTML = checksHtml;
+
+  const result = document.getElementById('result');
+  if (pass) {
+    result.className = 'result-box pass';
+    result.innerHTML = '✅ 摘要合规，可发送至团队渠道。';
+  } else {
+    result.className = 'result-box fail';
+    result.innerHTML = '❌ 摘要不合规，请修改后重新校验。' + (chars > 500 ? '<br>建议精简至 500 字以内。' : '') + (matchedMarkers.length > 0 ? '<br>建议用自己的话重新组织，不要直接粘贴 AI 输出。' : '');
+  }
+}
+
+function loadSample(type) {
+  const samples = {
+    good: '今日完成两件事：\n1. 与客户确认内训需求，定于6月15日开班，参训20人。\n2. 收到合作协议初稿，法务审核中，预计周四反馈。\n\n需关注：客户希望加入数据能力评估报告输出，涉及溢价报价，已走审批流程。',
+    bad: '作为一个人工智能助手，我很高兴能够为您提供关于数据分析内训课程的详细信息。根据我的理解和训练数据，企业管理者的数据思维培训目前市场上确实存在一定需求，但能够提供高质量服务的供应商并不多。我们的优势在于不仅仅是教授工具操作，更重要的是帮助管理者建立数据驱动的决策思维方式。\n\n关于您提出的用实际业务数据做案例的需求，这个想法非常好。通过分析真实数据，学员能够更直观地理解数据如何指导决策。我们的首席顾问在这一领域有超过10年的经验，曾经为多家知名企业提供过类似的培训服务。\n\n如果您还有其他问题，请随时告诉我，我会尽力为您解答。',
+    raw: '项目进度同步：\n\n目前数据库迁移完成80%，还剩用户权限表和历史日志两张表没迁。中间碰到一个编码问题，就是旧库是GBK的，新库是UTF-8，有个别生僻字转码报错。排查了一下发现集中在三个表里，大概20条记录。解决方案是用Python写了个脚本逐条转码并校验，已经跑完了，没丢数据。\n\n下周计划：周二做全量数据一致性校验，周四安排一次回归测试。如果没问题的话，下周五可以切流量。备选方案是如果周四测试不过，就延迟到下周一。\n\n大概就是这样，有问题随时找我。'
+  };
+  document.getElementById('input').value = samples[type];
+  validate();
+}
+
+function clearInput() {
+  document.getElementById('input').value = '';
+  document.getElementById('charCount').textContent = '0';
+  document.getElementById('charCount').className = 'num';
+  document.getElementById('lineCount').textContent = '0';
+  document.getElementById('aiScore').textContent = '0%';
+  document.getElementById('aiScore').className = 'num';
+  document.getElementById('checks').innerHTML = '';
+  document.getElementById('result').className = 'result-box';
+  document.getElementById('aiMarkers').style.display = 'none';
+}
+
+validate();
+</script>
+</body>
+</html>
