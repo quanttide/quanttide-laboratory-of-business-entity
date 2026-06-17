@@ -1,38 +1,25 @@
 # 报价业务实体定义
 
-```yaml
-# 客户
 Customer:
   type: enum [企业, 高校, 学生, 其他]
-  price_system: map(type → price_tier)
 
-# 人员
 Personnel:
   level: enum [首席, 资深, 高级, 中级, 初级]
-  hourly_rate: map(level × customer_type → price)
 
-# 服务项
 ServiceItem:
   name: string
   hours: number
-  personnel_level: Personnel.level
+  personnel_level: enum [首席, 资深, 高级, 中级, 初级]
 
-# 报价单
 Quotation:
-  items: list[ServiceItem]
-  subtotal: number          # sum(items.price)
-  premium_rate: number      # 0–0.5, 仅溢价时
-  premium_amount: number    # subtotal × premium_rate
-  discount_rate: number     # 0–0.15 (满10h→0.1, 满20h→0.15)
-  discount_amount: number   # subtotal × discount_rate
-  total: number             # subtotal + premium - discount
+  items: list
+  subtotal: number
+  premium_rate: number
+  premium_amount: number
+  discount_rate: number
+  discount_amount: number
+  total: number
 
-# 审批
 Approval:
   type: enum [标准, 重大, 让利]
   approver: enum [业务线负责人, 管理层]
-  conditions:
-    标准: 常规项目，无溢价/让利
-    重大: 涉及溢价 或 总价超金额标准
-    让利: 让利幅度超规定比例
-```
