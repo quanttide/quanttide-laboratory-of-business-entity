@@ -1,111 +1,96 @@
 rules:
-- name: 首席企业客户定价
-  source: profile
+- name: 稀缺性定价
+  source: bylaw第四条
   score: 5
-  reason: 2,000 元/小时，确定数值
-- name: 高级企业客户定价
-  source: profile
+  reason: 明确规则：以稀缺性为基础，成本为下限。可直接编码。
+- name: 机会成本参照
+  source: bylaw第五条
+  score: 3
+  reason: 概念清晰但缺乏量化方法，需补充机会成本计算规则。
+- name: 创新溢价
+  source: bylaw第六条、tutorial四层模型、profile溢价规则
   score: 5
-  reason: 1,000 元/小时，确定数值
-- name: 溢价条件判断
-  source: handbook
-  score: 5
-  reason: 枚举条件，无歧义
-- name: 溢价幅度范围
-  source: profile
-  score: 5
-  reason: 30-50%，确定范围
-- name: 让利规则（满10h 9折）
-  source: profile
-  score: 5
-  reason: 确定性规则
-- name: 让利规则（满20h 8.5折）
-  source: profile
-  score: 5
-  reason: 确定性规则
-- name: 审批层级判断
-  source: handbook
-  score: 5
-  reason: 三类条件逻辑清晰
-- name: 报价单结构比例
-  source: handbook
-  score: 5
-  reason: 固定比例 3:4:3
-- name: 首次合作保本线
-  source: profile
+  reason: 明确规定溢价幅度30-50%，需审批。直接可编码。
+- name: 长期关系让利
+  source: bylaw第七条
+  score: 4
+  reason: 规则明确但需结合审批权限，微调后可编码。
+- name: 确定性优惠与紧急性溢价
+  source: bylaw第八条
   score: 2
-  reason: '"保本线"未定义数值'
-- name: 稀缺性评估
-  source: bylaw
-  score: 2
-  reason: 四个维度均需主观判断
-- name: 创新溢价评估
-  source: bylaw
-  score: 2
-  reason: 定性评估，无量化标准
-- name: 长期合作价值评估
-  source: bylaw
-  score: 2
-  reason: 定性判断
-- name: 资深/中级/初级定价
-  source: profile
-  score: 1
-  reason: 人员与价格均为"待补充"
-- name: 高校客户定价
-  source: profile
-  score: 2
-  reason: '"按合作协议"，非确定值'
-- name: 其他客户定价
-  source: profile
-  score: 1
-  reason: '"一事一议"，无规则'
-rate: 53
+  reason: 优惠和溢价条件未量化，如提前预定天数、缩短周期标准。
+- name: 现金流优先
+  source: bylaw第九条
+  score: 4
+  reason: 排序规则明确，可编码为优先级比较函数。
+- name: 人员分级的基准价格查询
+  source: bylaw第十五条、第十六条、profile人员分级价格
+  score: 3
+  reason: 基准价格部分待补充，无法直接使用。
+- name: 报价流程：初步评估
+  source: bylaw第十七条、handbook场景一
+  score: 5
+  reason: 步骤清晰，可直接编码为工作流。
+- name: 内部审批层级
+  source: bylaw第十八条、handbook场景五、profile审批层级
+  score: 5
+  reason: 条件与审批人明确，可直接编码。
+- name: 商务谈判让利规则
+  source: handbook场景四、profile让利规则
+  score: 5
+  reason: 具体折扣条件明确，可直接编码。
+- name: 不得跨等级指派
+  source: handbook约束规则
+  score: 5
+  reason: 明确的禁止规则，可直接编码。
+- name: 客户类型定价差异
+  source: bylaw第十四条、profile客户类型
+  score: 3
+  reason: 学生客户有专属价，高校按协议，其他一事一议；协议定价需额外逻辑。
+- name: 报价单结构
+  source: handbook场景二
+  score: 5
+  reason: 固定比例30-40-30，可直接编码。
+rate: 0.6154
 ambiguities:
-- category: 章程层面
-  description: 第十八条"金额标准"与"让利比例"由管理层另行制定——具体数值未定义，编码时视为配置参数
-- category: 章程层面
-  description: 第十四条"其他类型客户"一事一议——无定价规则
-- category: 章程层面
-  description: 资深/中级/初级人员定价待补充
-- category: 手册层面
-  description: 人员等级表中"资深""中级""初级"的对应人选和服务对象均为"待补充"
-- category: 手册层面
-  description: 谈判话术模板中让利规则引用报价档案，但未说明保本线的计算方式
-- category: 教程层面
-  description: 无明确金额数字，只有定价思维框架
-- category: 教程层面
-  description: '"成本大约 X 元"中的 X 未给出，标注"按各业务线核算"'
+- category: 定价要素量化
+  description: 工作量、稀缺性等要素的具体量化标准未定义，仅描述性。
+- category: 基准价格缺失
+  description: 资深、中级、初级人员价格空白，无法计算基准报价。
+- category: 学生专属价定义
+  description: 学生客户专属价的具体数值或计算规则未提供。
+- category: 高校合作协议
+  description: 高校客户价格按合作协议，但协议条件未说明。
+- category: 机会成本计算
+  description: 机会成本参照原则缺少计算模型。
+- category: 超金额标准定义
+  description: 重大报价中"超金额标准"的具体金额未定义。
+- category: 确定性优惠与紧急性溢价条件
+  description: 提前预定具体天数、缩短周期具体时长未定义。
 issues:
-- number: 1
-  title: '"保本线"未定义'
-  source: profile 让利规则
-  problem: 首次合作不低于保本线，但保本线的计算方式和具体数值未定义
-  suggestion: 补充保本线的计算公式或默认值（如 = 成本 × 1.2）
-- number: 2
-  title: 资深/中级/初级人员定价缺失
-  source: profile 人员分级
-  problem: 五个等级中只有首席和高级有具体价格，其余标注为"待补充"
-  suggestion: 补充缺失的人员定价，或明确其不可用状态
-- number: 3
-  title: 金额标准与让利比例未定义
-  source: bylaw 第十八条
-  problem: 章程规定"金额标准"和"让利比例"由管理层另行制定，但当前无具体数值
-  suggestion: 制定并补充这两个配置参数
-- number: 4
-  title: 高校客户定价依赖个案
-  source: profile 客户类型
-  problem: 高校客户为"按合作协议"，无法编码为确定的定价规则
-  suggestion: 如有常见合作模式，定义标准价格区间
-- number: 5
-  title: 稀缺性/创新溢价/长期价值评估无量化标准
-  source: bylaw 第十一至十三条
-  problem: 三个评估要素均为定性判断，无法直接编码
-  suggestion: 如需要这些评估自动化，可设计评分量表（如 1-5 分）将定性转为定量
+- title: 价格数据不完整
+  source: profile
+  problem: 资深、中级、初级人员价格缺失，无法完成基准报价计算。
+  suggestion: 补充所有人员等级的标准价格。
+- title: 学生客户价格未定义
+  source: profile客户类型
+  problem: 学生专属价无具体数值，无法对学生客户报价。
+  suggestion: 定义学生客户价格或折扣规则。
+- title: 高校客户定价依赖外部协议
+  source: profile客户类型
+  problem: 高校按合作协议定价，但合作条件无具体规则。
+  suggestion: 补充协议定价的触发条件和定价机制。
+- title: 机会成本量化无标准
+  source: bylaw第五条
+  problem: 机会成本概念明确但无法直接编码，缺乏计算模型。
+  suggestion: 定义机会成本的量化方法（如替代方案收益）。
+- title: 重大报价金额标准空缺
+  source: bylaw第十八条
+  problem: 超金额标准未定义具体数值，无法判断是否需管理层审批。
+  suggestion: 设定具体的金额阈值。
+- title: 确定性优惠与紧急性溢价条件模糊
+  source: bylaw第八条
+  problem: 提前预定和缩短周期缺乏具体时间定义，无法自动执行。
+  suggestion: 明确优惠的提前天数与加急的周期缩短标准。
 observations:
-- 教程的四层定价思维模型是好框架，但具体定价完全依赖报价档案
-- 手册的 10 条"不得"规则非常适合编码为断言/校验
-- 报价单 3:4:3 结构比例清晰，可直接编码为默认模板
-conclusions:
-- 可编码率 53%：约一半规则已清晰到可直接翻译为代码，另一半有明确改进方向
-- 文档质量度量：可编码性评分提供了一个客观的文档质量度量——章程/手册/档案的质量 = 可编码性得分。5 分说明文档清晰，1-2 分说明有改进空间
-- 治理即代码：Assets → Data → Code → Docs 管线可行。结构化时发现保本线未定义，编码时发现人员定价缺失，评估时发现稀缺性无量化标准——这些问题在纯文本阅读时容易被忽略，但在编码时变得不可回避
+- 文档来源包括章程、手册、教程和档案四部分，覆盖了报价业务的原则、流程和定价要素。其中bylaw和profile为主要规则来源，handbook和tutorial提供了流程和思维模型补充。大多数规则可直接编码或微调后编码，但定价数据缺失和部分量化标准模糊是主要障碍。建议优先补充价格数据，然后将模糊条件转化为可量化规则。
