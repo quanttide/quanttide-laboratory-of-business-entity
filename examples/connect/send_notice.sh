@@ -3,11 +3,11 @@ set -euo pipefail
 
 # 发送飞书群通知并 @ 指定成员
 # 用法:
-#   ./send_notice.sh --chat "群名" --user "姓名" --msg "通知内容"
-#   ./send_notice.sh --chat oc_xxx --user ou_xxx --msg "通知内容"
+#   ./send_notice.sh --chat "群名" --at "姓名" --msg "通知内容"
+#   ./send_notice.sh --chat oc_xxx --at ou_xxx --msg "通知内容"
 
 usage() {
-  echo "用法: $0 --chat <群名|chat_id> --user <姓名|open_id> --msg <消息>"
+  echo "用法: $0 --chat <群名|chat_id> --at <姓名|open_id> --msg <消息>"
   exit 1
 }
 
@@ -15,13 +15,13 @@ usage() {
 while [[ $# -gt 0 ]]; do
   case "$1" in
     --chat) CHAT="$2"; shift 2 ;;
-    --user) USER="$2"; shift 2 ;;
+    --at)   AT_USER="$2"; shift 2 ;;
     --msg)  MSG="$2";  shift 2 ;;
     *) usage ;;
   esac
 done
 
-[[ -z "${CHAT:-}" || -z "${USER:-}" || -z "${MSG:-}" ]] && usage
+[[ -z "${CHAT:-}" || -z "${AT_USER:-}" || -z "${MSG:-}" ]] && usage
 
 # 解析 chat_id
 if [[ "$CHAT" =~ ^oc_ ]]; then
@@ -38,12 +38,12 @@ else
 fi
 
 # 解析 open_id
-if [[ "$USER" =~ ^ou_ ]]; then
-  OPEN_ID="$USER"
+if [[ "$AT_USER" =~ ^ou_ ]]; then
+  OPEN_ID="$AT_USER"
 else
-  echo "-> 搜索成员: $USER"
-  OPEN_ID=$(lark-cli contact +search-user --query "$USER" --as user 2>/dev/null | jq -r '.data.users[0].open_id // empty')
-  [[ -z "$OPEN_ID" ]] && { echo "错误: 未找到成员 '$USER'"; exit 1; }
+  echo "-> 搜索成员: $AT_USER"
+  OPEN_ID=$(lark-cli contact +search-user --query "$AT_USER" --as user 2>/dev/null | jq -r '.data.users[0].open_id // empty')
+  [[ -z "$OPEN_ID" ]] && { echo "错误: 未找到成员 '$AT_USER'"; exit 1; }
 fi
 
 # 发送消息
