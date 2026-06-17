@@ -3,25 +3,25 @@ set -euo pipefail
 
 # 发送飞书群通知并 @ 指定成员
 # 用法:
-#   ./send_notice.sh --chat "群名" --at "姓名" --msg "通知内容"
-#   ./send_notice.sh --chat oc_xxx --at ou_xxx --msg "通知内容"
+#   ./send_notice.sh --chat "群名" --at "姓名" --notice "通知内容"
+#   ./send_notice.sh --chat oc_xxx --at ou_xxx --notice "通知内容"
 
 usage() {
-  echo "用法: $0 --chat <群名|chat_id> --at <姓名|open_id> --msg <消息>"
+  echo "用法: $0 --chat <群名|chat_id> --at <姓名|open_id> --notice <通知内容>"
   exit 1
 }
 
 # 解析参数
 while [[ $# -gt 0 ]]; do
   case "$1" in
-    --chat) CHAT="$2"; shift 2 ;;
-    --at)   AT_USER="$2"; shift 2 ;;
-    --msg)  MSG="$2";  shift 2 ;;
+    --chat)   CHAT="$2"; shift 2 ;;
+    --at)     AT_USER="$2"; shift 2 ;;
+    --notice) NOTICE="$2"; shift 2 ;;
     *) usage ;;
   esac
 done
 
-[[ -z "${CHAT:-}" || -z "${AT_USER:-}" || -z "${MSG:-}" ]] && usage
+[[ -z "${CHAT:-}" || -z "${AT_USER:-}" || -z "${NOTICE:-}" ]] && usage
 
 # 解析 chat_id
 if [[ "$CHAT" =~ ^oc_ ]]; then
@@ -50,7 +50,7 @@ fi
 echo "-> 发送通知至: $(lark-cli im +chat-list --as user 2>/dev/null | jq -r ".data.chats[] | select(.chat_id==\"$CHAT_ID\") | .name // \"$CHAT_ID\"")"
 lark-cli im +messages-send \
   --chat-id "$CHAT_ID" \
-  --markdown "<at user_id=\"$OPEN_ID\"></at>\n\n$MSG" \
+  --markdown "<at user_id=\"$OPEN_ID\"></at>\n\n$NOTICE" \
   --as user > /dev/null
 
 echo "✓ 已发送"
