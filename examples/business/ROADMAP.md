@@ -20,16 +20,15 @@ flowchart LR
 
 | # | 任务 | 输入 | 产出 |
 |---|------|------|------|
-| 1.1 | 收集章程中报价相关条款 | docs/bylaw | `assets/bylaw-quotation.md` |
-| 1.2 | 收集手册中报价操作流程 | docs/handbook | `assets/handbook-quotation.md` |
-| 1.3 | 收集教程中报价教学案例 | docs/tutorial | `assets/tutorial-quotation.md` |
-| 1.4 | 收集历史报价单样本（脱敏） | 业务部门 | `assets/samples/*.pdf` 或 `assets/samples/*.md` |
-| 1.5 | 标注每份资产的模糊点 | 上述材料 | `assets/ambiguities.md` |
+| 1.1 | 收集章程中报价相关条款 | docs/bylaw | `assets/bylaw.md` |
+| 1.2 | 收集手册中报价操作流程 | docs/handbook | `assets/handbook.md` |
+| 1.3 | 收集教程中报价教学案例 | docs/tutorial | `assets/tutorial.md` |
+| 1.4 | 收集报价规则 | docs/profile | `assets/profile/*.md` |
+| 1.5 | 标注每份资产的模糊点 | 上述材料 | `docs/asset.md` |
 
 **验收标准**：
 - [ ] 报价相关的章程条款已完整提取
 - [ ] 报价操作流程可追溯到手册原文
-- [ ] 至少包含 3 份历史报价单样本
 - [ ] 模糊点清单已记录，每项标注了具体位置和疑问
 
 ---
@@ -42,8 +41,7 @@ flowchart LR
 |---|------|------|------|
 | 2.1 | 识别报价业务实体（客户、项目、服务项、价格、折扣、税率等） | 步骤一产出 | `data/schema.yaml`（实体关系定义） |
 | 2.2 | 定义每项规则的可编码性条件 | 步骤一产出 | `data/rules.yaml`（规则→代码条件映射） |
-| 2.3 | 将历史报价样本转换为结构化数据 | `assets/samples/` | `data/samples/*.yaml` |
-| 2.4 | 验证数据完整性（是否有字段无法从资产中找到对应？） | 上述产出 | `data/verification.md` |
+| 2.4 | 验证数据完整性（是否有字段无法从资产中找到对应？） | 上述产出 | `docsverification.md` |
 
 **验收标准**：
 - [ ] schema 覆盖报价全流程（客户信息→服务项→价格计算→折扣→总价）
@@ -78,10 +76,8 @@ rules:
 | # | 任务 | 输入 | 产出 |
 |---|------|------|------|
 | 3.1 | 实现报价计算引擎（服务项×单价×数量 + 折扣 + 税） | `data/rules.yaml` | `src/calculator.py` |
-| 3.2 | 实现折扣规则 | `data/rules.yaml` | `src/discount.py` |
-| 3.3 | 实现审批流程判断（超阈值→需审批） | `data/rules.yaml` | `src/approval.py` |
 | 3.4 | 集成测试：用 `data/samples/*.yaml` 验证计算结果 | 上述产出 | `tests/test_quotation.py` |
-| 3.5 | 记录编码过程中发现的模糊点 | 上述过程 | `src/findings.md` |
+| 3.5 | 记录编码过程中发现的模糊点 | 上述过程 | `docs/findings.md` |
 
 **验收标准**：
 - [ ] 报价计算引擎可对结构化数据输出正确报价单
@@ -101,7 +97,7 @@ rules:
 | 4.1 | 为每项规则的可编码性打分（1-5 分） | 步骤二/三产出 | `docs/clarity-scores.md` |
 | 4.2 | 编写文档改进建议（指向章程/手册的具体章节） | 步骤三 `findings.md` | `docs/feedback.md` |
 | 4.3 | 生成实验报告（做了什么、学到了什么、下一步） | 全部产出 | `docs/experiment-report.md` |
-| 4.4 | 将改进建议提交到对应仓库的 Issue | `docs/feedback.md` | 对应仓库的 GitHub Issue |
+| 4.4 | 撰写总结报告 docs/index.md
 
 **评分标准**：
 
