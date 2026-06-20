@@ -10,7 +10,7 @@
 | 创建日期 | 2026-06-20 |
 | 对应章程 | 无（元方法论实验） |
 | 评估对象 | `default/quanttide-tech/docs/handbook/`（39 个职能目录） |
-| 状态 | 实验设计中 |
+|| 状态 | 已实现（LLM 评估脚本） |
 
 ## 实验目的
 
@@ -158,3 +158,64 @@
 - 将叙事工程、知识工程、认知工程加入手册编写规范（CONTRIBUTING.md）
 - 开发"手册质量自动检查"脚本，扫描三个维度的指标
 - 将手册质量作为章程修订的输入——"手册写不清楚的规则就是模糊的章程"
+
+## 实现方案
+
+### LLM 评估脚本
+
+**文件：** `examples/p40-evaluate.py`
+
+使用 DeepSeek V4（`deepseek-chat`）对每个手册文件评估 15 个指标（叙事 5 + 知识 5 + 认知 5）。
+
+**工作流程：**
+
+```
+读取 handbook/*.md → 对每个文件调用 LLM → 5 个指标/维度 → 结构化 JSON → 汇总报告
+```
+
+**命令：**
+
+```bash
+# 完整评估（88 个文件，~22 分钟）
+python3 examples/p40-evaluate.py
+
+# 快速模式：仅评估 index.md
+python3 examples/p40-evaluate.py --quick
+
+# 测试模式：仅评估前 5 个文件
+python3 examples/p40-evaluate.py --limit 5
+
+# 断点续评（中断后继续）
+python3 examples/p40-evaluate.py --resume
+```
+
+**输出：**
+| 文件 | 格式 | 内容 |
+|------|------|------|
+| `p40-results.json` | JSON | 每个文件 15 个指标的评分 + 评审理由 + 证据摘录 |
+| `p40-report.md` | Markdown | 健康度总览 + 维度分析 + 文件排行 + 改进建议 |
+
+**单次 LLM 调用产出：**
+
+```json
+{
+  "score": 4,
+  "reason": "以具体场景开头，有清晰的角色定义",
+  "evidence": "「场景一：收到报价需求，初步评估」"
+}
+```
+
+### 架构说明
+
+```
+evaluate.py
+├── get_all_handbook_files()   → 扫描 handbook 下所有 .md（排除元文件）
+├── evaluate_file()            → 对单个文件调用 15 次 LLM
+├── call_llm()                 → DeepSeek V4 API 调用（带重试）
+├── parse_score_response()     → JSON 解析 + 容错
+├── compute_stats()            → 维度平均/健康度分布/排行
+└── generate_markdown_report() → 生成可读报告
+```
+
+每次评估后自动保存中间结果（`p40-results.json`），支持断点续评。
+
