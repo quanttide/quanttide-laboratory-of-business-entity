@@ -31,82 +31,42 @@ DEEPSEEK_API_KEY = os.environ.get("DEEPSEEK_API_KEY", "")
 MODEL = "deepseek-chat"  # DeepSeek V4
 BASE_URL = "https://api.deepseek.com/v1"
 
-# 15 个评估指标
+# 7 个评估指标（叙事 1 + 知识 5 + 认知 1）
 METRICS = {
-    "narrative_scene_anchor": {
+    "narrative_clarity": {
         "dimension": "narrative",
-        "label": "叙事·场景锚定",
-        "prompt": "评估此手册是否以具体工作场景（而非抽象概念）开头：前三段是否让读者能说清'在什么情况下该用这个手册'？",
+        "label": "叙事·清晰易懂",
+        "prompt": "评估此手册的语言表达是否清晰易懂：句子是否简短通顺？术语是否有解释？逻辑是否连贯？读者能否轻松跟上思路而不感到困惑？",
     },
-    "narrative_role_clarity": {
-        "dimension": "narrative",
-        "label": "叙事·角色代入",
-        "prompt": "评估此手册是否明确说明'谁是执行者、谁是审批者'：手册中的'你'对应哪个具体岗位或角色？",
-    },
-    "narrative_causal_loop": {
-        "dimension": "narrative",
-        "label": "叙事·因果闭环",
-        "prompt": "评估此手册是否说明了'为什么这么做'：是否有'设计者注''设计理由'类的元注释来解释规则背后的逻辑？",
-    },
-    "narrative_counterexample": {
-        "dimension": "narrative",
-        "label": "叙事·反例教育",
-        "prompt": "评估此手册是否指出了典型错误做法：是否有'你不得做的事情''常见错误''注意'等约束或警示内容？",
-    },
-    "narrative_rhythm": {
-        "dimension": "narrative",
-        "label": "叙事·节奏控制",
-        "prompt": "评估此手册的信息密度是否均匀：长段落是否合理分节？关键规则是否用列表、表格等方式突出？有无大段无结构的文字墙？",
-    },
-    "knowledge_atomicity": {
+    "knowledge_extractable_branch": {
         "dimension": "knowledge",
-        "label": "知识·原子性",
-        "prompt": "评估知识是否拆分为最小独立单元：一段话是否包含多个不相关的知识点？内容是否可被独立引用和复用？",
+        "label": "可编程·条件分支",
+        "prompt": "评估此手册中包含的可编程条件逻辑的清晰度：规则是否明确定义了'如果X则Y'的条件分支？条件判断的依据是否可量化或可枚举？（例如：'如果首付比例低于30%，则…'是可编码的；'视情况而定'是不可编码的）",
     },
-    "knowledge_indexability": {
+    "knowledge_extractable_rule": {
         "dimension": "knowledge",
-        "label": "知识·可索引性",
-        "prompt": "评估知识的检索入口是否清晰：如果是 index.md，是否提供了导航功能？如果是子文件，是否被 index.md 引用？",
+        "label": "可编程·规则参数",
+        "prompt": "评估此手册中的规则参数是否清晰可提取：金额、比例、期限、阈值等数值型参数是否明确给出或指向明确的数据源？（例如：'首付30-50%'是可提取的参数；'根据历史经验'是不可提取的；'（待补充）'是空白节点）",
     },
-    "knowledge_hierarchy": {
+    "knowledge_extractable_flow": {
         "dimension": "knowledge",
-        "label": "知识·层级一致性",
-        "prompt": "评估章节结构与知识层级是否匹配：标题深度（# → ## → ###）是否反映知识点的从属关系？目录结构是否合理？",
+        "label": "可编程·流程状态机",
+        "prompt": "评估此手册中的流程是否可建模为状态机：是否有明确的起始状态、中间态/步骤、终止状态？步骤之间的转移条件是否清晰？（例如：'先样例→再尾款→再全量交付'是可建模的流程；并列的无序列表是半可建模的；纯描述性段落是不可建模的）",
     },
-    "knowledge_crossref": {
+    "knowledge_extractable_role": {
         "dimension": "knowledge",
-        "label": "知识·交叉引用",
-        "prompt": "评估知识点之间是否有显式的交叉引用：是否有'详见X章''参照Y手册''相关：[链接]'等关联？",
+        "label": "可编程·角色权限",
+        "prompt": "评估此手册中的角色和权限定义是否可编程：谁可以做什么、谁不能做什么、谁审批什么——这些是否明确到可以直接映射为代码中的角色权限模型？（例如：'销售管能不能溢价，商务管网有没有底线'是可映射的；'相关人员'是不可映射的）",
     },
-    "knowledge_version_alignment": {
+    "knowledge_extractable_validation": {
         "dimension": "knowledge",
-        "label": "知识·版本对齐",
-        "prompt": "评估手册引用的版本号是否明确且一致：是否有章程/教程版本号？版本号是否可能是过时的？",
+        "label": "可编程·校验规则",
+        "prompt": "评估此手册中定义的约束和校验规则是否可编程：'不得''必须''禁止'等约束是否清晰定义了校验条件？是否有可转化为自动化检查清单的规则？（例如：'不得在首付款到账前启动项目'是清晰的校验规则；'注意安全'是不可编程的模糊约束）",
     },
-    "cognitive_working_memory": {
+    "cognitive_mental_model": {
         "dimension": "cognitive",
-        "label": "认知·工作记忆负担",
-        "prompt": "评估阅读和执行手册所需的工作记忆：操作步骤是否超过 7±2 项？是否需要同时对照多份其他文档才能理解？是否有检查清单/步骤编号来降低负担？",
-    },
-    "cognitive_decision_ambiguity": {
-        "dimension": "cognitive",
-        "label": "认知·决策歧义度",
-        "prompt": "评估读者在哪些节点需要自己做判断：是否有'视情况而定''酌情处理'而无判断标准？决策条件是否明确？",
-    },
-    "cognitive_process_visibility": {
-        "dimension": "cognitive",
-        "label": "认知·流程可见性",
-        "prompt": "评估流程是否可在一页内看清：是否有流程图、时间线、步骤编号或检查清单？整体流程是否直观可见？",
-    },
-    "cognitive_exception_coverage": {
-        "dimension": "cognitive",
-        "label": "认知·异常路径覆盖",
-        "prompt": "评估是否覆盖了常见异常和边界情况：是否有'如果...则...'的条件分支？是否处理了'出错时怎么办'？",
-    },
-    "cognitive_progressive_disclosure": {
-        "dimension": "cognitive",
-        "label": "认知·渐进披露",
-        "prompt": "评估复杂知识是否分层呈现：是否有'新手必读''进阶参考''快速上手'等阅读路径区分？内容是否按难度梯度组织？",
+        "label": "心智·三段论完整性",
+        "prompt": "评估此手册是否帮助读者建立了完整的工作心智模型。一个完整的工作手册应当包含三个部分：（1）意图——为什么做、在什么场景下触发、谁来做、目标是什么；（2）流程——怎么做、先做什么再做什么、步骤之间的转移条件；（3）验收——怎么知道做完了、做对了、交付标准和检查条件是什么。请整体判断：这篇手册的意图→流程→验收三段论完整吗？读者读完能否在脑子里画出完整的工作地图？还是缺了某一段？",
     },
 }
 
