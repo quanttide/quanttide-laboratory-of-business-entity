@@ -1,0 +1,45 @@
+{
+  "id": "asset-006",
+  "type": "dataset",
+  "name": "index_trend.png",
+  "description": "日度 CPI 趋势折线图",
+  "pipeline_id": "pipeline-001",
+  "pipeline_step": 5,
+  "responsible": "viz-team",
+  "acceptance_criteria": [
+    "折线图横轴日期、纵轴指数值正确",
+    "图例清晰可读",
+    "输出格式为 PNG 或交互式 HTML"
+  ],
+  "status": "verified",
+  "file_path": "output/index_trend.png",
+  "version": "v1",
+  "created_at": "2026-06-22T10:00:00+08:00",
+  "submitted_at": "2026-06-22T14:00:00+08:00",
+  "verifications": [
+    {
+      "verifier": "client",
+      "conclusion": "pass",
+      "timestamp": "2026-06-22T18:56:51.246823+08:00",
+      "criteria_check": {
+        "criterion_0": {
+          "criterion": "折线图横轴日期、纵轴指数值正确",
+          "passed": true,
+          "note": "自动检查通过"
+        },
+        "criterion_1": {
+          "criterion": "图例清晰可读",
+          "passed": true,
+          "note": "自动检查通过"
+        },
+        "criterion_2": {
+          "criterion": "输出格式为 PNG 或交互式 HTML",
+          "passed": true,
+          "note": "自动检查通过"
+        }
+      },
+      "criteria_summary": "3/3 通过",
+      "issues": []
+    }
+  ]
+}
