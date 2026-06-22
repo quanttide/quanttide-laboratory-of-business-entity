@@ -1,18 +1,29 @@
 # pseudocode confirm
 
-客户确认伪代码，触发状态流转。
+客户确认数据处理蓝图（blueprint），触发状态流转。
 
-## 输入
+## 命令
 
-- 伪代码 ID
-- 确认结果（confirm/reject）
-- 备注（可选）
+```
+qtdata pseudocode confirm <id> [--approve|--reject] [--note "<原因>"]
+```
 
-## 输出
+## 行为
 
-更新 `data/qtdata/pseudocodes/<id>.json` 中的状态字段
+| 参数 | 效果 |
+|------|------|
+| `--approve` | blueprint.status → `confirmed` |
+| `--reject` + `--note` | blueprint.status → `rejected` |
+| 已确认/已驳回的 id 重复操作 | 报错 |
+| 不存在的 id | 报错 |
+
+## 数据依赖
+
+读取 `data/qtdata/pseudocodes/<id>.json`，写入 `status` 和 `timeline` 字段。
 
 ## 验收
 
-- [ ] 确认后状态变为 confirmed
-- [ ] 驳回后状态变为 rejected，可重新提交
+- [ ] `--approve` 后 status = `confirmed`
+- [ ] `--reject` 后 status = `rejected`
+- [ ] 重复操作报错
+- [ ] 不存在的 id 报错
