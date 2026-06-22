@@ -22,6 +22,68 @@ from datetime import datetime, timezone, timedelta
 
 TZ = timezone(timedelta(hours=8))
 DATA_DIR = Path(__file__).parent / "data" / "qtdata" / "assets"
+INDEX_PATH = DATA_DIR / "index.json"
+
+
+def load_index() -> list[dict]:
+    if INDEX_PATH.exists():
+        return json.loads(INDEX_PATH.read_text(encoding="utf-8"))
+    return []
+
+
+def save_index(assets: list[dict]):
+    INDEX_PATH.write_text(json.dumps(assets, ensure_ascii=False, indent=2), encoding="utf-8")
+
+
+def sync_index(asset: dict):
+    """将单个资产同步到 index.json 清单。"""
+    assets = load_index()
+    for i, a in enumerate(assets):
+        if a["id"] == asset["id"]:
+            verif = asset.get("verifications", [])
+            last = verif[-1] if verif else {}
+            assets[i] = {
+                "id": asset["id"],
+                "type": asset["type"],
+                "name": asset["name"],
+                "description": asset["description"],
+                "pipeline_id": asset["pipeline_id"],
+                "pipeline_step": asset["pipeline_step"],
+                "responsible": asset["responsible"],
+                "status": asset["status"],
+                "conclusion": last.get("conclusion", "pending") if last else "pending",
+                "issues": last.get("issues", []),
+            }
+            save_index(assets)
+            return
+    # not found, append
+    assets.append({
+        "id": asset["id"],
+        "type": asset["type"],
+        "name": asset["name"],
+        "description": asset["description"],
+        "pipeline_id": asset["pipeline_id"],
+        "pipeline_step": asset["pipeline_step"],
+        "responsible": asset["responsible"],
+        "status": asset["status"],
+        "conclusion": "pending",
+        "issues": [],
+    })
+    save_index(assets)
+
+
+def list_assets():
+    """打印资产清单。"""
+    assets = load_index()
+    if not assets:
+        print("(无资产)")
+        return
+    print(f"{'ID':12s} {'类型':8s} {'状态':9s} {'结论':5s}  {'名称'}")
+    print("-" * 60)
+    for a in assets:
+        issues = ", ".join(a.get("issues", []))
+        flag = f" ⚠ {issues}" if issues else ""
+        print(f"{a['id']:12s} {a['type']:8s} {a['status']:9s} {a['conclusion']:5s}  {a['name']}{flag}")
 
 
 def load_asset(asset_id: str) -> dict:
@@ -37,6 +99,7 @@ def save_asset(asset: dict):
     path = DATA_DIR / f"{asset['id']}.json"
     with open(path, "w", encoding="utf-8") as f:
         json.dump(asset, f, ensure_ascii=False, indent=2)
+    sync_index(asset)
 
 
 def auto_verify(asset: dict) -> dict:
@@ -162,10 +225,8 @@ def main():
         print("  --pass          验收通过（默认：根据准则自动判断）")
         print("  --fail          验收不通过")
         print("  --issue TEXT    问题描述（可多次使用）")
-        print("\n可用资产:")
-        for path in sorted(DATA_DIR.glob("asset-*.json")):
-            asset = json.loads(path.read_text(encoding="utf-8"))
-            print(f"  {asset['id']}  {asset['type']:8s}  {asset['status']:10s}  {asset['name']}")
+        print()
+        list_assets()
         sys.exit(0)
 
     asset_id = sys.argv[1]

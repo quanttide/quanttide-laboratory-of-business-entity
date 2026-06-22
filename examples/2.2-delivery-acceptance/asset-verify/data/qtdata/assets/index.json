@@ -1,0 +1,90 @@
+[
+  {
+    "id": "asset-001",
+    "type": "dataset",
+    "name": "categories.csv",
+    "description": "商品三级分类表，含层级与 CPI 权重",
+    "pipeline_id": "pipeline-001",
+    "pipeline_step": 1,
+    "responsible": "data-team",
+    "status": "verified",
+    "conclusion": "pass",
+    "issues": []
+  },
+  {
+    "id": "asset-002",
+    "type": "dataset",
+    "name": "products.csv",
+    "description": "商品清单，归属叶子分类，含基础价格",
+    "pipeline_id": "pipeline-001",
+    "pipeline_step": 1,
+    "responsible": "data-team",
+    "status": "rejected",
+    "conclusion": "fail",
+    "issues": [
+      "3 条商品引用了非叶子分类"
+    ]
+  },
+  {
+    "id": "asset-003",
+    "type": "dataset",
+    "name": "daily_price batch",
+    "description": "365 天每日商品价格 CSV",
+    "pipeline_id": "pipeline-001",
+    "pipeline_step": 1,
+    "responsible": "data-team",
+    "status": "rejected",
+    "conclusion": "fail",
+    "issues": [
+      "缺少 2026-06-14 ~ 2026-06-16 三日数据"
+    ]
+  },
+  {
+    "id": "asset-004",
+    "type": "processor",
+    "name": "cavallo_index.py",
+    "description": "Cavallo 几何平均法指数计算脚本",
+    "pipeline_id": "pipeline-001",
+    "pipeline_step": 4,
+    "responsible": "algorithm-team",
+    "status": "verified",
+    "conclusion": "pass",
+    "issues": []
+  },
+  {
+    "id": "asset-005",
+    "type": "dataset",
+    "name": "cavallo_index.csv",
+    "description": "Cavallo 指数计算结果",
+    "pipeline_id": "pipeline-001",
+    "pipeline_step": 4,
+    "responsible": "algorithm-team",
+    "status": "verified",
+    "conclusion": "pass",
+    "issues": []
+  },
+  {
+    "id": "asset-006",
+    "type": "dataset",
+    "name": "index_trend.png",
+    "description": "日度 CPI 趋势折线图",
+    "pipeline_id": "pipeline-001",
+    "pipeline_step": 5,
+    "responsible": "viz-team",
+    "status": "verified",
+    "conclusion": "pass",
+    "issues": []
+  },
+  {
+    "id": "asset-007",
+    "type": "doc",
+    "name": "设计文档",
+    "description": "需求分析、表结构设计、Python/SQL 代码逻辑",
+    "pipeline_id": "pipeline-001",
+    "pipeline_step": 7,
+    "responsible": "doc-team",
+    "status": "verified",
+    "conclusion": "pass",
+    "issues": []
+  }
+]
