@@ -48,19 +48,7 @@
   .step-detail .value code { background: #f5f5f5; padding: 1px 6px; border-radius: 4px; font-size: 12px; color: #1677ff; }
   .step-detail .value .desc-line { display: block; padding: 2px 0; }
 
-  /* 时间线 */
-  .timeline { background: #fff; border-radius: 12px; padding: 28px 32px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
-  .timeline-title { font-size: 15px; font-weight: 600; color: #434343; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
-  .timeline-title::before { content: ''; display: inline-block; width: 4px; height: 18px; background: #fa8c16; border-radius: 2px; }
-  .tl-entry { display: flex; gap: 16px; padding: 12px 0; border-left: 2px solid #e8e8e8; margin-left: 8px; padding-left: 20px; position: relative; }
-  .tl-entry::before { content: ''; position: absolute; left: -6px; top: 16px; width: 10px; height: 10px; border-radius: 50%; background: #1677ff; }
-  .tl-entry:last-child { border-left-color: transparent; }
-  .tl-action { font-weight: 600; font-size: 14px; min-width: 60px; }
-  .tl-action.submit { color: #1677ff; }
-  .tl-action.confirm { color: #389e0d; }
-  .tl-action.reject { color: #cf1322; }
-  .tl-info { font-size: 13px; color: #595959; }
-  .tl-time { font-size: 12px; color: #8c8c8c; white-space: nowrap; }
+
 </style>
 </head>
 <body>
@@ -205,16 +193,6 @@
       <div class="value"><code>output/daily_index_trend.png</code></div>
       <span class="label">操作</span>
       <div class="value"><span class="desc-line">Python matplotlib 绘制日度指数趋势图</span></div>
-    </div>
-  </div>
-
-  <!-- 时间线 -->
-  <div class="timeline">
-    <div class="timeline-title">操作日志</div>
-    <div class="tl-entry">
-      <span class="tl-action submit">📤 提交</span>
-      <div class="tl-info">张三 — 首次提交伪代码工作流</div>
-      <div class="tl-time">2026-06-22 10:00</div>
     </div>
   </div>
 
