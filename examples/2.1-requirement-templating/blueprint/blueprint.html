@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>数据处理蓝图 — 高频价格指数计算</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { font-family: -apple-system, 'Noto Sans SC', system-ui, sans-serif; background: #f5f6f8; color: #1a1a2e; padding: 40px; }
+  .container { max-width: 1100px; margin: 0 auto; }
+
+  /* 页眉 */
+  .header { background: #fff; border-radius: 12px; padding: 28px 32px; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .header-top { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .header h1 { font-size: 22px; font-weight: 700; }
+  .badge { display: inline-block; padding: 4px 14px; border-radius: 20px; font-size: 13px; font-weight: 600; }
+  .badge.submitted { background: #fff7e6; color: #d48806; border: 1px solid #ffe58f; }
+  .badge.confirmed { background: #f6ffed; color: #389e0d; border: 1px solid #b7eb8f; }
+  .badge.draft { background: #f0f0f0; color: #595959; border: 1px solid #d9d9d9; }
+  .badge.rejected { background: #fff2f0; color: #cf1322; border: 1px solid #ffa39e; }
+  .meta { display: flex; gap: 24px; font-size: 13px; color: #8c8c8c; }
+  .meta span strong { color: #434343; }
+
+  /* 管道可视化 */
+  .pipeline { background: #fff; border-radius: 12px; padding: 36px 32px; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.06); overflow-x: auto; }
+  .pipeline-title { font-size: 15px; font-weight: 600; color: #434343; margin-bottom: 28px; display: flex; align-items: center; gap: 8px; }
+  .pipeline-title::before { content: ''; display: inline-block; width: 4px; height: 18px; background: #1677ff; border-radius: 2px; }
+  .flow { display: flex; align-items: center; justify-content: center; min-width: -moz-fit-content; }
+  .step-card { flex-shrink: 0; width: 150px; background: #fafafa; border: 1px solid #e8e8e8; border-radius: 10px; padding: 16px; text-align: center; position: relative; transition: all .2s; }
+  .step-card:hover { border-color: #1677ff; box-shadow: 0 4px 12px rgba(22,119,255,.12); transform: translateY(-2px); }
+  .step-num { width: 26px; height: 26px; border-radius: 50%; background: #1677ff; color: #fff; font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; justify-content: center; margin-bottom: 10px; }
+  .step-name { font-size: 14px; font-weight: 600; margin-bottom: 4px; }
+  .step-layer { font-size: 11px; color: #8c8c8c; padding: 2px 8px; border-radius: 10px; background: #f0f0f0; display: inline-block; margin-top: 4px; }
+  .step-layer.oss { background: #fff7e6; color: #d48806; }
+  .step-layer.clickhouse { background: #f0f5ff; color: #1677ff; }
+  .step-layer.output { background: #f6ffed; color: #389e0d; }
+  .arrow { flex-shrink: 0; width: 40px; height: 2px; background: #d9d9d9; position: relative; margin: 0 4px; }
+  .arrow::after { content: ''; position: absolute; right: -1px; top: -5px; width: 0; height: 0; border-top: 6px solid transparent; border-bottom: 6px solid transparent; border-left: 8px solid #d9d9d9; }
+
+  /* 步骤详情 */
+  .details { background: #fff; border-radius: 12px; padding: 28px 32px; margin-bottom: 24px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .details-title { font-size: 15px; font-weight: 600; color: #434343; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+  .details-title::before { content: ''; display: inline-block; width: 4px; height: 18px; background: #52c41a; border-radius: 2px; }
+  .step-detail { padding: 16px 0; border-bottom: 1px solid #f0f0f0; display: grid; grid-template-columns: 100px 1fr; gap: 8px 16px; }
+  .step-detail:last-child { border-bottom: none; }
+  .step-detail .label { font-size: 12px; color: #8c8c8c; font-weight: 500; }
+  .step-detail .value { font-size: 13px; color: #1a1a2e; }
+  .step-detail .value code { background: #f5f5f5; padding: 1px 6px; border-radius: 4px; font-size: 12px; color: #1677ff; }
+  .step-detail .value .desc-line { display: block; padding: 2px 0; }
+
+  /* 时间线 */
+  .timeline { background: #fff; border-radius: 12px; padding: 28px 32px; box-shadow: 0 1px 4px rgba(0,0,0,.06); }
+  .timeline-title { font-size: 15px; font-weight: 600; color: #434343; margin-bottom: 20px; display: flex; align-items: center; gap: 8px; }
+  .timeline-title::before { content: ''; display: inline-block; width: 4px; height: 18px; background: #fa8c16; border-radius: 2px; }
+  .tl-entry { display: flex; gap: 16px; padding: 12px 0; border-left: 2px solid #e8e8e8; margin-left: 8px; padding-left: 20px; position: relative; }
+  .tl-entry::before { content: ''; position: absolute; left: -6px; top: 16px; width: 10px; height: 10px; border-radius: 50%; background: #1677ff; }
+  .tl-entry:last-child { border-left-color: transparent; }
+  .tl-action { font-weight: 600; font-size: 14px; min-width: 60px; }
+  .tl-action.submit { color: #1677ff; }
+  .tl-action.confirm { color: #389e0d; }
+  .tl-action.reject { color: #cf1322; }
+  .tl-info { font-size: 13px; color: #595959; }
+  .tl-time { font-size: 12px; color: #8c8c8c; white-space: nowrap; }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- 页眉 -->
+  <div class="header">
+    <div class="header-top">
+      <h1>🚰 数据处理蓝图</h1>
+      <span class="badge submitted">✅ 已提交</span>
+    </div>
+    <div class="meta">
+      <span>ID: <strong>a1b2c3d4-e5f6-7890-abcd-ef1234567890</strong></span>
+      <span>需求: <strong>req-2026-001</strong></span>
+      <span>版本: <strong>v1</strong></span>
+      <span>创建: <strong>2026-06-22 09:00</strong></span>
+    </div>
+  </div>
+
+  <!-- 管道 -->
+  <div class="pipeline">
+    <div class="pipeline-title">处理管道</div>
+    <div class="flow">
+      <div class="step-card">
+        <div class="step-num">1</div>
+        <div class="step-name">数据采集</div>
+        <span class="step-layer oss">对象存储</span>
+      </div>
+      <div class="arrow"></div>
+      <div class="step-card">
+        <div class="step-num">2</div>
+        <div class="step-name">数据预处理</div>
+        <span class="step-layer clickhouse">ClickHouse</span>
+      </div>
+      <div class="arrow"></div>
+      <div class="step-card">
+        <div class="step-num">3</div>
+        <div class="step-name">异常处理</div>
+        <span class="step-layer clickhouse">ClickHouse</span>
+      </div>
+      <div class="arrow"></div>
+      <div class="step-card">
+        <div class="step-num">4</div>
+        <div class="step-name">分类加权平均</div>
+        <span class="step-layer clickhouse">ClickHouse</span>
+      </div>
+      <div class="arrow"></div>
+      <div class="step-card">
+        <div class="step-num">5</div>
+        <div class="step-name">链式指数计算</div>
+        <span class="step-layer clickhouse">ClickHouse</span>
+      </div>
+      <div class="arrow"></div>
+      <div class="step-card">
+        <div class="step-num">6</div>
+        <div class="step-name">可视化</div>
+        <span class="step-layer output">图表输出</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- 步骤详情 -->
+  <div class="details">
+    <div class="details-title">步骤明细</div>
+
+    <div class="step-detail">
+      <span class="label">步骤 1</span>
+      <div class="value"><strong>数据采集</strong></div>
+      <span class="label">输入</span>
+      <div class="value"><code>category.csv, product.csv, price.csv</code></div>
+      <span class="label">输出</span>
+      <div class="value"><code>oss://cpp-raw/{date}/</code></div>
+      <span class="label">操作</span>
+      <div class="value"><span class="desc-line">上传模拟数据集至对象存储，按日期分区</span></div>
+    </div>
+
+    <div class="step-detail">
+      <span class="label">步骤 2</span>
+      <div class="value"><strong>数据预处理</strong> <span style="font-size:12px;color:#8c8c8c;">↳ 依赖: 数据采集</span></div>
+      <span class="label">输入</span>
+      <div class="value"><code>oss://cpp-raw/{date}/</code></div>
+      <span class="label">输出</span>
+      <div class="value"><code>clickhouse://staging.cleaned_prices</code></div>
+      <span class="label">操作</span>
+      <div class="value">
+        <span class="desc-line">字段类型适配与转换</span>
+        <span class="desc-line">统一时间格式为 YYYY-MM-DD</span>
+        <span class="desc-line">统一价格单位为元</span>
+        <span class="desc-line">统一分类编码为国标6位码</span>
+      </div>
+    </div>
+
+    <div class="step-detail">
+      <span class="label">步骤 3</span>
+      <div class="value"><strong>异常处理</strong> <span style="font-size:12px;color:#8c8c8c;">↳ 依赖: 数据预处理</span></div>
+      <span class="label">输入</span>
+      <div class="value"><code>clickhouse://staging.cleaned_prices</code></div>
+      <span class="label">输出</span>
+      <div class="value"><code>clickhouse://staging.valid_prices</code></div>
+      <span class="label">操作</span>
+      <div class="value">
+        <span class="desc-line">过滤 price 为空或 ≤0 的记录</span>
+        <span class="desc-line">标记价格波动超过 3σ 的异常点</span>
+      </div>
+    </div>
+
+    <div class="step-detail">
+      <span class="label">步骤 4</span>
+      <div class="value"><strong>分类加权平均</strong> <span style="font-size:12px;color:#8c8c8c;">↳ 依赖: 异常处理</span></div>
+      <span class="label">输入</span>
+      <div class="value"><code>clickhouse://staging.valid_prices</code></div>
+      <span class="label">输出</span>
+      <div class="value"><code>clickhouse://staging.category_daily_avg</code></div>
+      <span class="label">操作</span>
+      <div class="value">
+        <span class="desc-line">按 category_id + date 分组</span>
+        <span class="desc-line">计算销量加权平均价格</span>
+      </div>
+    </div>
+
+    <div class="step-detail">
+      <span class="label">步骤 5</span>
+      <div class="value"><strong>链式指数计算</strong> <span style="font-size:12px;color:#8c8c8c;">↳ 依赖: 分类加权平均</span></div>
+      <span class="label">输入</span>
+      <div class="value"><code>clickhouse://staging.category_daily_avg</code></div>
+      <span class="label">输出</span>
+      <div class="value"><code>clickhouse://mart.daily_price_index</code></div>
+      <span class="label">操作</span>
+      <div class="value">
+        <span class="desc-line">基期指数 = 100</span>
+        <span class="desc-line">当日指数 = 上期指数 × (1 + 环比变化率)</span>
+        <span class="desc-line">GROUP BY category_id ORDER BY date</span>
+      </div>
+    </div>
+
+    <div class="step-detail">
+      <span class="label">步骤 6</span>
+      <div class="value"><strong>可视化</strong> <span style="font-size:12px;color:#8c8c8c;">↳ 依赖: 链式指数计算</span></div>
+      <span class="label">输入</span>
+      <div class="value"><code>clickhouse://mart.daily_price_index</code></div>
+      <span class="label">输出</span>
+      <div class="value"><code>output/daily_index_trend.png</code></div>
+      <span class="label">操作</span>
+      <div class="value"><span class="desc-line">Python matplotlib 绘制日度指数趋势图</span></div>
+    </div>
+  </div>
+
+  <!-- 时间线 -->
+  <div class="timeline">
+    <div class="timeline-title">操作日志</div>
+    <div class="tl-entry">
+      <span class="tl-action submit">📤 提交</span>
+      <div class="tl-info">张三 — 首次提交伪代码工作流</div>
+      <div class="tl-time">2026-06-22 10:00</div>
+    </div>
+  </div>
+
+</div>
+</body>
+</html>
