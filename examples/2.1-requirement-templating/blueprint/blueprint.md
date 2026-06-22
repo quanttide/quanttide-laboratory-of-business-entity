@@ -1,32 +1,60 @@
-# blueprint — 数据处理蓝图
+# 蓝图契约
 
-## 概念
+## package blueprint
 
-Blueprint 是一份描述"数据怎么流、怎么变"的契约。它不是数据定义（data contract），而是处理流程定义——从数据采集到最终产出，每步的输入输出和操作。
-
-## 文件
-
-- `blueprint.cue` — CUE 类型定义 + 实例
-
-一个 blueprint 包含：
-
-| 字段 | 说明 |
-|------|------|
-| `workflow` | 步骤列表，每步含 `from/to/desc/depends` |
-| `status` | 当前状态（draft/submitted/confirmed/rejected） |
-| `timeline` | 操作日志 |
-
-## 实例
-
-以高频价格指数计算为例的完整蓝图见 `blueprint.cue`，定义了 6 步处理流程：
+### #Timestamp
 
 ```
-数据采集 → 数据预处理 → 异常处理 → 分类加权平均 → 链式指数计算 → 可视化
+=~"^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}:\\d{2}[+-]\\d{2}:\\d{2}$"
 ```
 
-## 使用
+ISO 8601 时间戳格式。
 
-```bash
-cue vet blueprint.cue              # 校验
-cue export blueprint.cue --out json # 导出
+### #Step
+
 ```
+{
+  name:    string
+  from:    string
+  to:      string
+  desc:    string
+  depends?: [...string]
+}
+```
+
+一个处理步骤。`from` 输入，`to` 输出，`desc` 操作描述，`depends` 依赖的上一步名称（可选）。
+
+### #Pipeline
+
+```
+{
+  name:  string
+  steps: [...#Step]
+}
+```
+
+步骤管道。`name` 工作流名称，`steps` 有序步骤列表。
+
+### #Status
+
+```
+"draft" | "submitted" | "confirmed" | "rejected"
+```
+
+蓝图状态枚举。
+
+### #Blueprint
+
+```
+{
+  id:             =~"^[a-f0-9]{8}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{4}-[a-f0-9]{12}$"
+  requirement_id: string
+  version:        >0
+  workflow:       #Pipeline
+  status:         #Status
+  created_at:     #Timestamp
+  updated_at:     #Timestamp
+}
+```
+
+蓝图主类型。`id` UUID 格式，`version` 大于 0，`workflow` 处理管道。

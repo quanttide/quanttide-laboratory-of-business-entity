@@ -32,7 +32,7 @@
 	version:        >0
 	workflow:       #Pipeline
 	status:         #Status
-	timeline:       [...#TimelineEntry]
+	timeline?:      [...#TimelineEntry]
 	created_at:     #Timestamp
 	updated_at:     #Timestamp
 }
@@ -90,14 +90,6 @@ pseudocode: #Blueprint & {
 		]
 	}
 	status: "submitted"
-	timeline: [
-		{
-			action:    "submit"
-			actor:     "张三"
-			timestamp: "2026-06-22T10:00:00+08:00"
-			note:      "首次提交伪代码工作流"
-		},
-	]
 	created_at: "2026-06-22T09:00:00+08:00"
 	updated_at: "2026-06-22T10:00:00+08:00"
 }
