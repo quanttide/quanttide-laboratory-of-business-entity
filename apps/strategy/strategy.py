@@ -103,13 +103,25 @@ def _parse_json(text):
 # ── CLI ─────────────────────────────────────────────────────────
 
 
-def cmd_new():
+def cmd_new(context_file=None):
     """发起一轮新的战略推演"""
     print("\n=== Bug is Feature —— 战略假设压力测试 ===\n")
 
-    # 加载上下文
+    # 加载上下文：优先从文件，否则交互输入
     ctx = load_context()
-    if not ctx:
+    if context_file:
+        raw = json.loads(Path(context_file).read_text())
+        company = raw.get("corporate_strategy", {}).get("direction", "")
+        ctx = {
+            "company": company,
+            "businesses": [
+                {"name": b["name"], "challenge": b.get("challenge", "")}
+                for b in raw.get("business_strategy", [])
+            ],
+        }
+        save_context(ctx)
+        print(f"已从 {context_file} 加载上下文\n")
+    elif not ctx:
         print("还没有战略上下文。请先输入：")
         ctx["company"] = input("公司方向（如：从项目制转型PaaS）：").strip()
         ctx["businesses"] = []
@@ -246,19 +258,22 @@ Bug is Feature —— 战略假设压力测试机
 def main():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
 
-    cmds = {
-        "new": cmd_new,
-        "list": cmd_list,
-        "stats": cmd_stats,
-        "context": cmd_context,
-        "help": cmd_help,
-    }
-
-    if len(sys.argv) < 2 or sys.argv[1] not in cmds:
+    if len(sys.argv) < 2 or sys.argv[1] == "help":
         cmd_help()
         return
 
-    cmds[sys.argv[1]]()
+    cmd = sys.argv[1]
+    if cmd == "new":
+        context_file = sys.argv[2] if len(sys.argv) > 2 else None
+        cmd_new(context_file)
+    elif cmd == "list":
+        cmd_list()
+    elif cmd == "stats":
+        cmd_stats()
+    elif cmd == "context":
+        cmd_context()
+    else:
+        cmd_help()
 
 
 if __name__ == "__main__":
