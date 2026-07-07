@@ -1,11 +1,5 @@
 #!/usr/bin/env python3
-"""Bug is Feature —— 战略假设压力测试机。
-
-把 AI 当辩论对手而非算命先生：
-AI 抛出的极端观点（Bug）→ 剖析背后的假设（Feature）→ 人类验证 → 存入假设库。
-
-数据存储在本地 ~/.qtstrategy/ 目录。
-"""
+"""Bug is Feature —— 战略假设压力测试机。"""
 
 import json
 import os
@@ -18,111 +12,106 @@ from quanttide_agent import LLM
 from quanttide_agent.config import settings
 
 DATA_DIR = Path(__file__).parent
+HYPOTHESES_FILE = DATA_DIR / "hypotheses.json"
+CONTEXT_FILE = DATA_DIR / "context.json"
+
 LLM_CLIENT = LLM(
     model=settings.llm_model or "deepseek-chat",
     base_url=settings.llm_base_url,
     api_key=settings.llm_api_key,
 )
 
-# ── 数据层 ──────────────────────────────────────────────────────
 
-HYPOTHESES_FILE = DATA_DIR / "hypotheses.json"
-CONTEXT_FILE = DATA_DIR / "context.json"
-
-
-def load_hypotheses():
-    if HYPOTHESES_FILE.exists():
-        return json.loads(HYPOTHESES_FILE.read_text())
-    return []
-
-
-def save_hypotheses(hypotheses):
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    HYPOTHESES_FILE.write_text(json.dumps(hypotheses, ensure_ascii=False, indent=2))
-
-
-def load_context():
-    if CONTEXT_FILE.exists():
-        return json.loads(CONTEXT_FILE.read_text())
+def load_json(path):
+    if path.exists():
+        return json.loads(path.read_text())
     return {}
 
 
-def save_context(ctx):
+def save_json(path, data):
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-    CONTEXT_FILE.write_text(json.dumps(ctx, ensure_ascii=False, indent=2))
+    path.write_text(json.dumps(data, ensure_ascii=False, indent=2))
 
 
-# ── System 1：正常战略分析 ────────────────────────────────
+def load_hypotheses():
+    return load_json(HYPOTHESES_FILE) if HYPOTHESES_FILE.exists() else []
 
-SYSTEM1_PROMPT = """你是一个战略顾问。基于用户的战略上下文，给出一个正常的战略分析和建议。
+
+def save_hypotheses(h):
+    save_json(HYPOTHESES_FILE, h)
+
+
+def load_context():
+    return load_json(CONTEXT_FILE)
+
+
+def save_context(c):
+    save_json(CONTEXT_FILE, c)
+
+
+# System 1: 正常战略分析
+SYS1 = """你是一个战略顾问。基于用户的战略上下文，给出一个正常的战略分析和建议。
 
 要求：
 1. 分析用户当前的战略处境
 2. 给出一个合理的战略建议
 3. 说明你的推导逻辑
-4. 用 JSON 输出：{{"analysis": "战略分析", "advice": "建议", "rationale": "推导逻辑"}}"""
+4. 用 JSON 输出：{"analysis": "战略分析", "advice": "建议", "rationale": "推导逻辑"}"""
 
-# ── System 2：假设一定错了，审视频率────
+# System 2: 假设一定错了
+SYS2 = """假设上面这份战略分析和建议完全是错的。你的任务不是修正它，而是审视它为什么是错的。
 
-SYSTEM2_PROMPT = """假设上面这份战略分析和建议完全是错的。你的任务不是修正它，而是审视它为什么是错的。
+找出 AI 得出这个错误结论所依赖的隐藏假设。
 
-找出 AI 得出这个错误结论所依赖的隐藏假设。这些假设是 AI 推理链条中的薄弱环节——
-一旦这些假设在现实中不成立，整个建议就崩塌了。
+输出 JSON：{"hypotheses": [{"statement": "隐藏假设是什么", "error": "为什么这个假设在现实中不成立"}]}
 
-输出 JSON：{{"hypotheses": [{{"statement": "隐藏假设是什么", "error": "为什么这个假设可能是错误的/在现实中不成立"}}]}}
-
-原始分析：{analysis}
-原始建议：{advice}
-推导逻辑：{rationale}"""
+原始分析：ANALYSIS_PLACEHOLDER
+原始建议：ADVICE_PLACEHOLDER
+推导逻辑：RATIONALE_PLACEHOLDER"""
 
 
 def system1(context_text):
-    """System 1: 正常战略分析"""
-    prompt = f"{SYSTEM1_PROMPT}\n\n用户的战略上下文：\n{context_text}"
-    resp = LLM_CLIENT.complete(prompt, temperature=0.5, max_tokens=1500)
-    content = _parse_json(resp.content.strip())
-    return (
-        content.get("analysis", ""),
-        content.get("advice", ""),
-        content.get("rationale", ""),
+    resp = LLM_CLIENT.complete(
+        f"{SYS1}\n\n用户的战略上下文：\n{context_text}",
+        temperature=0.5,
+        max_tokens=1500,
     )
+    c = _parse(resp.content.strip())
+    return c.get("analysis", ""), c.get("advice", ""), c.get("rationale", "")
 
 
 def system2(analysis, advice, rationale):
-    """System 2: 假设一定错了，审视频率〕"""
-    prompt = SYSTEM2_PROMPT.format(
-        analysis=analysis, advice=advice, rationale=rationale
+    prompt = (
+        SYS2.replace("ANALYSIS_PLACEHOLDER", analysis)
+        .replace("ADVICE_PLACEHOLDER", advice)
+        .replace("RATIONALE_PLACEHOLDER", rationale)
     )
     resp = LLM_CLIENT.complete(prompt, temperature=0.3, max_tokens=1500)
-    content = _parse_json(resp.content.strip())
-    return content.get("hypotheses", [])
+    c = _parse(resp.content.strip())
+    return c.get("hypotheses", [])
 
 
-def _parse_json(text):
+def _parse(text):
     text = text.strip()
     if text.startswith("```"):
         lines = text.split("\n", 1)
         text = lines[1] if len(lines) > 1 else text
         if text.endswith("```"):
             text = text[:-3]
-        text = text.strip()
-    return json.loads(text) if text else {}
+    try:
+        return json.loads(text)
+    except json.JSONDecodeError:
+        return {}
 
 
-# ── CLI ─────────────────────────────────────────────────────────
-
-
+# CLI commands
 def cmd_new(context_file=None):
-    """发起一轮新的战略推演"""
-    print("\n=== Bug is Feature —— 战略假设压力测试 ===\n")
-
-    # 加载上下文：优先从文件，否则交互输入
+    print("\n=== Bug is Feature ===\n")
     ctx = load_context()
     if context_file:
         raw = json.loads(Path(context_file).read_text())
-        company = raw.get("corporate_strategy", {}).get("direction", "")
         ctx = {
-            "company": company,
+            "company": raw.get("corporate_strategy", {}).get("direction", ""),
             "businesses": [
                 {"name": b["name"], "challenge": b.get("challenge", "")}
                 for b in raw.get("business_strategy", [])
@@ -131,8 +120,7 @@ def cmd_new(context_file=None):
         save_context(ctx)
         print(f"已从 {context_file} 加载上下文\n")
     elif not ctx:
-        print("还没有战略上下文。请先输入：")
-        ctx["company"] = input("公司方向（如：从项目制转型PaaS）：").strip()
+        ctx["company"] = input("公司方向：").strip()
         ctx["businesses"] = []
         while True:
             name = input("  业务线名称（留空结束）：").strip()
@@ -141,150 +129,93 @@ def cmd_new(context_file=None):
             challenge = input(f"  {name} 的挑战：").strip()
             ctx["businesses"].append({"name": name, "challenge": challenge})
         save_context(ctx)
-        print()
 
-    context_text = f"公司方向：{ctx['company']}\n"
-    for b in ctx["businesses"]:
-        context_text += f"业务 - {b['name']}：{b['challenge']}\n"
+    context_text = f"公司方向：{ctx['company']}\n" + "\n".join(
+        f"业务 - {b['name']}：{b['challenge']}" for b in ctx.get("businesses", [])
+    )
 
-    # System 1: 正常战略分析
-    print("🤖 System 1 —— 正常战略分析...")
+    print("System 1 -- 正常战略分析...")
     analysis, advice, rationale = system1(context_text)
     print(f"\n{'=' * 50}")
-    print(f"📊 战略分析：")
-    print(textwrap.fill(analysis, width=60))
-    print(f"\n💡 建议：")
-    print(textwrap.fill(advice, width=60))
-    print(f"\n🔍 推导逻辑：")
-    print(textwrap.fill(rationale, width=60))
+    print("分析：", textwrap.fill(analysis, width=60))
+    print("\n建议：", textwrap.fill(advice, width=60))
+    print("\n推导逻辑：", textwrap.fill(rationale, width=60))
     print(f"{'=' * 50}\n")
 
-    # System 2: 假设一定错了，审视频率〕
-    print("🤖 System 2 —— 假设上面的建议全部是错的，为什么？...")
+    print("System 2 -- 假设上面的建议是错的，审视频率】...")
     hypotheses = system2(analysis, advice, rationale)
-    print(f"\n发现 {len(hypotheses)} 个隐藏假设：\n")
+    print(f"\n发现 {len(hypotheses)} 个隐藏假设\n")
 
     validated = []
     for h in hypotheses:
-        statement = h.get("statement", "")
-        source = h.get("error") or h.get("evidence", "")
-        print(f"  假设：{statement}")
-        print(f"  为什么错：{source}")
-        while True:
-            verdict = (
-                input("  你的判断 [y=同意/n=不同意/?=不确定/s=跳过]：").strip().lower()
-            )
-            if verdict in ("y", "n", "?", "s"):
-                break
-        if verdict == "s":
-            print()
-            continue
+        s = h.get("statement", "")
+        e = h.get("error") or h.get("evidence", "")
+        print(f"  假设：{s}\n  为什么错：{e}\n")
         validated.append(
             {
-                "statement": h["statement"],
-                "evidence": source,
-                "verdict": {"y": "confirmed", "n": "rejected", "?": "uncertain"}[
-                    verdict
-                ],
+                "statement": s,
+                "evidence": e,
+                "verdict": "uncertain",
                 "date": datetime.now().strftime("%Y-%m-%d"),
             }
         )
-        print()
 
-    # Step 3: 存入假设库
     all_h = load_hypotheses()
     all_h.extend(validated)
     save_hypotheses(all_h)
-    print(f"✅ 已将 {len(validated)} 条假设存入假设库 ({HYPOTHESES_FILE})\n")
+    print(f"已保存 {len(validated)} 条假设\n")
 
 
 def cmd_list():
-    """查看假设库"""
-    hypotheses = load_hypotheses()
-    if not hypotheses:
-        print("假设库为空。运行 `new` 开始一轮推演。")
+    h = load_hypotheses()
+    if not h:
+        print("假设库为空。")
         return
-
-    print(f"\n=== 假设库 ({len(hypotheses)} 条) ===\n")
-    for i, h in enumerate(hypotheses, 1):
-        status = {"confirmed": "✅", "rejected": "❌", "uncertain": "❓"}.get(
-            h["verdict"], "❓"
+    print(f"\n假设库 ({len(h)} 条)\n")
+    for i, item in enumerate(h, 1):
+        s = {"confirmed": "Y", "rejected": "N", "uncertain": "?"}.get(
+            item.get("verdict", ""), "?"
         )
-        print(f"{status} [{h.get('date', '?')}] {h['statement']}")
-        print(f"   来源：{h['evidence'][:80]}...")
-        print()
-
-
-def cmd_context():
-    """查看/修改战略上下文"""
-    ctx = load_context()
-    if not ctx:
-        print("还没有上下文。运行 `new` 创建。")
-        return
-
-    print(f"\n公司方向：{ctx['company']}")
-    for b in ctx.get("businesses", []):
-        print(f"  {b['name']}：{b['challenge']}")
-
-    if input("\n重新输入？[y/N]：").strip().lower() == "y":
-        os.remove(CONTEXT_FILE)
-        cmd_new()
+        print(f"{s} [{item.get('date', '?')}] {item['statement']}")
+        print(f"   来源：{item.get('evidence', '')[:80]}...\n")
 
 
 def cmd_stats():
-    """查看假设库统计"""
-    hypotheses = load_hypotheses()
-    if not hypotheses:
+    h = load_hypotheses()
+    if not h:
         print("假设库为空。")
         return
-
-    confirmed = sum(1 for h in hypotheses if h["verdict"] == "confirmed")
-    rejected = sum(1 for h in hypotheses if h["verdict"] == "rejected")
-    uncertain = sum(1 for h in hypotheses if h["verdict"] == "uncertain")
-
-    print(f"\n=== 假设库统计 ===")
-    print(f"  总计：{len(hypotheses)} 条")
-    print(f"  ✅ 已确认：{confirmed}")
-    print(f"  ❌ 已排除：{rejected}")
-    print(f"  ❓ 待验证：{uncertain}")
-    print(f"  确认率：{confirmed / max(len(hypotheses), 1) * 100:.0f}%")
-    print()
+    print(f"\n总计：{len(h)} 条")
+    print(f"  Y 已确认：{sum(1 for x in h if x['verdict'] == 'confirmed')}")
+    print(f"  N 已排除：{sum(1 for x in h if x['verdict'] == 'rejected')}")
+    print(f"  ? 待验证：{sum(1 for x in h if x['verdict'] == 'uncertain')}")
 
 
 def cmd_help():
-    print("""
-Bug is Feature —— 战略假设压力测试机
+    print("""Bug is Feature -- 战略假设压力测试机
 
-用法：./docs.py <命令>
+用法：./strategy.py <命令>
 
 命令：
-  new      发起一轮推演（System 1 正常分析 → System 2 假设全错 → 提取假设 → 人类验证）
-  list     查看假设库
-  stats    假设库统计
-  context  查看/修改战略上下文
-  help     显示本帮助
-
-数据存储在 ~/.qtstrategy/，纯本地 JSON 文件。
+  new [file]  发起推演（可指定 JSON 上下文文件）
+  list        查看假设库
+  stats       假设库统计
+  help        显示帮助
 """)
 
 
 def main():
     DATA_DIR.mkdir(parents=True, exist_ok=True)
-
     if len(sys.argv) < 2 or sys.argv[1] == "help":
         cmd_help()
         return
-
     cmd = sys.argv[1]
     if cmd == "new":
-        context_file = sys.argv[2] if len(sys.argv) > 2 else None
-        cmd_new(context_file)
+        cmd_new(sys.argv[2] if len(sys.argv) > 2 else None)
     elif cmd == "list":
         cmd_list()
     elif cmd == "stats":
         cmd_stats()
-    elif cmd == "context":
-        cmd_context()
     else:
         cmd_help()
 
