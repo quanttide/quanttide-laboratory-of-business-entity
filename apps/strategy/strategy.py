@@ -50,24 +50,31 @@ def save_context(c):
 
 
 # System 1: 正常战略分析
-SYS1 = """你是一个战略顾问。基于用户的战略上下文，给出一个正常的战略分析和建议。
+SYS1 = """你是一个战略顾问。基于用户的战略上下文，给出正常的战略分析和建议。
 
 要求：
-1. 分析用户当前的战略处境
-2. 给出一个合理的战略建议
+1. 分析当前的战略处境
+2. 给出合理的建议
 3. 说明你的推导逻辑
-4. 用 JSON 输出：{"analysis": "战略分析", "advice": "建议", "rationale": "推导逻辑"}"""
+4. 输出 JSON：{"analysis": "...", "advice": "...", "rationale": "..."}"""
 
-# System 2: 假设一定错了
-SYS2 = """假设上面这份战略分析和建议完全是错的。你的任务不是修正它，而是审视它为什么是错的。
+# System 2: 提取假设
+SYS2 = """分析上面的战略分析，列出它依赖的重要假设。
 
-找出 AI 得出这个错误结论所依赖的隐藏假设。
+按内部假设（公司自身能力/资源/团队）和外部假设（市场/客户/竞争/技术）分类。
 
-输出 JSON：{"hypotheses": [{"statement": "隐藏假设是什么", "error": "为什么这个假设在现实中不成立"}]}
+不要评判对错，只需要完整列举。
 
-原始分析：ANALYSIS_PLACEHOLDER
-原始建议：ADVICE_PLACEHOLDER
-推导逻辑：RATIONALE_PLACEHOLDER"""
+输出 JSON：{"hypotheses": [{"statement": "假设内容", "type": "internal", "why_matters": "为何重要"}, {"statement": "...", "type": "external", "why_matters": "..."}]}
+
+战略分析：
+ANALYSIS_PLACEHOLDER
+
+战略建议：
+ADVICE_PLACEHOLDER
+
+推导逻辑：
+RATIONALE_PLACEHOLDER"""
 
 
 def system1(context_text):
@@ -86,9 +93,13 @@ def system2(analysis, advice, rationale):
         .replace("ADVICE_PLACEHOLDER", advice)
         .replace("RATIONALE_PLACEHOLDER", rationale)
     )
-    resp = LLM_CLIENT.complete(prompt, temperature=0.3, max_tokens=1500)
+    print(f"DEBUG: prompt length={len(prompt)}", file=sys.stderr)
+    resp = LLM_CLIENT.complete(prompt, temperature=0.5, max_tokens=2000)
+    print(f"DEBUG: raw response={resp.content[:200]}", file=sys.stderr)
     c = _parse(resp.content.strip())
-    return c.get("hypotheses", [])
+    result = c.get("hypotheses", [])
+    print(f"DEBUG: parsed hypotheses count={len(result)}", file=sys.stderr)
+    return result
 
 
 def _parse(text):
@@ -98,9 +109,12 @@ def _parse(text):
         text = lines[1] if len(lines) > 1 else text
         if text.endswith("```"):
             text = text[:-3]
+        text = text.strip()
     try:
         return json.loads(text)
-    except json.JSONDecodeError:
+    except json.JSONDecodeError as e:
+        print(f"DEBUG: JSON parse error: {e}", file=sys.stderr)
+        print(f"DEBUG: text={text[:300]}", file=sys.stderr)
         return {}
 
 
@@ -142,19 +156,22 @@ def cmd_new(context_file=None):
     print("\n推导逻辑：", textwrap.fill(rationale, width=60))
     print(f"{'=' * 50}\n")
 
-    print("System 2 -- 假设上面的建议是错的，审视频率】...")
+    print("System 2 -- 提取假设...")
     hypotheses = system2(analysis, advice, rationale)
-    print(f"\n发现 {len(hypotheses)} 个隐藏假设\n")
+    print(f"\n发现 {len(hypotheses)} 个假设\n")
 
     validated = []
     for h in hypotheses:
         s = h.get("statement", "")
-        e = h.get("error") or h.get("evidence", "")
-        print(f"  假设：{s}\n  为什么错：{e}\n")
+        t = h.get("type", "")
+        w = h.get("why_matters", "")
+        print(f"  [{t}] {s}")
+        print(f"  为什么重要：{w}\n")
         validated.append(
             {
                 "statement": s,
-                "evidence": e,
+                "type": t,
+                "why_matters": w,
                 "verdict": "uncertain",
                 "date": datetime.now().strftime("%Y-%m-%d"),
             }
@@ -176,8 +193,12 @@ def cmd_list():
         s = {"confirmed": "Y", "rejected": "N", "uncertain": "?"}.get(
             item.get("verdict", ""), "?"
         )
-        print(f"{s} [{item.get('date', '?')}] {item['statement']}")
-        print(f"   来源：{item.get('evidence', '')[:80]}...\n")
+        t = item.get("type", "")
+        print(f"{s} [{t}] [{item.get('date', '?')}] {item['statement']}")
+        w = item.get("why_matters", "")
+        if w:
+            print(f"   为什么重要：{w[:80]}...")
+        print()
 
 
 def cmd_stats():
@@ -185,7 +206,9 @@ def cmd_stats():
     if not h:
         print("假设库为空。")
         return
-    print(f"\n总计：{len(h)} 条")
+    internal = sum(1 for x in h if x.get("type", "") == "internal")
+    external = sum(1 for x in h if x.get("type", "") == "external")
+    print(f"\n总计：{len(h)} 条（内部 {internal} / 外部 {external}）")
     print(f"  Y 已确认：{sum(1 for x in h if x['verdict'] == 'confirmed')}")
     print(f"  N 已排除：{sum(1 for x in h if x['verdict'] == 'rejected')}")
     print(f"  ? 待验证：{sum(1 for x in h if x['verdict'] == 'uncertain')}")
