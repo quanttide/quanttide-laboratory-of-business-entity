@@ -52,38 +52,47 @@ def save_context(ctx):
     CONTEXT_FILE.write_text(json.dumps(ctx, ensure_ascii=False, indent=2))
 
 
-# ── 核心流程 ────────────────────────────────────────────────────
+# ── System 1：正常战略分析 ────────────────────────────────
 
-BUG_PROMPT = """你是一个战略"魔鬼代言人"。你的任务不是给出正确建议，而是基于用户的战略上下文，
-给出一个极端的、大概率错误的战略建议（Bug）。
+SYSTEM1_PROMPT = """你是一个战略顾问。基于用户的战略上下文，给出一个正常的战略分析和建议。
 
 要求：
-1. 基于用户的战略上下文，顺着市场的宏观逻辑推演到极致
-2. 输出一个具体的、可执行的建议（哪怕听起来很疯狂）
-3. 用 JSON 输出：{{"bug": "建议内容", "rationale": "你为什么这么建议——你基于什么市场假设/逻辑得出这个结论"}}
+1. 分析用户当前的战略处境
+2. 给出一个合理的战略建议
+3. 说明你的推导逻辑
+4. 用 JSON 输出：{{"analysis": "战略分析", "advice": "建议", "rationale": "推导逻辑"}}"""
 
-不要委婉，不要中庸。极端才有趣。"""
+# ── System 2：假设一定错了，审视频率────
 
-EXTRACT_PROMPT = """分析以下"魔鬼代言人"建议，提取它背后隐藏的假设。
-这些假设是 AI 得出这个荒谬结论所依赖的"公理"。
+SYSTEM2_PROMPT = """假设上面这份战略分析和建议完全是错的。你的任务不是修正它，而是审视它为什么是错的。
 
-输出 JSON：{{"hypotheses": [{{"statement": "假设描述", "evidence": "AI 的推导逻辑"}}]}}
+找出 AI 得出这个错误结论所依赖的隐藏假设。这些假设是 AI 推理链条中的薄弱环节——
+一旦这些假设在现实中不成立，整个建议就崩塌了。
 
-建议：{bug}
+输出 JSON：{{"hypotheses": [{{"statement": "隐藏假设是什么", "error": "为什么这个假设可能是错误的/在现实中不成立"}}]}}
+
+原始分析：{analysis}
+原始建议：{advice}
 推导逻辑：{rationale}"""
 
 
-def generate_bug(context_text):
-    """Step 1: 让 AI 生成一个极端建议（Bug）"""
-    prompt = f"{BUG_PROMPT}\n\n用户的战略上下文：\n{context_text}"
-    resp = LLM_CLIENT.complete(prompt, temperature=0.8, max_tokens=1500)
+def system1(context_text):
+    """System 1: 正常战略分析"""
+    prompt = f"{SYSTEM1_PROMPT}\n\n用户的战略上下文：\n{context_text}"
+    resp = LLM_CLIENT.complete(prompt, temperature=0.5, max_tokens=1500)
     content = _parse_json(resp.content.strip())
-    return content.get("bug", ""), content.get("rationale", "")
+    return (
+        content.get("analysis", ""),
+        content.get("advice", ""),
+        content.get("rationale", ""),
+    )
 
 
-def extract_hypotheses(bug, rationale):
-    """Step 2: 从 Bug 中提取背后的假设"""
-    prompt = EXTRACT_PROMPT.format(bug=bug, rationale=rationale)
+def system2(analysis, advice, rationale):
+    """System 2: 假设一定错了，审视频率〕"""
+    prompt = SYSTEM2_PROMPT.format(
+        analysis=analysis, advice=advice, rationale=rationale
+    )
     resp = LLM_CLIENT.complete(prompt, temperature=0.3, max_tokens=1500)
     content = _parse_json(resp.content.strip())
     return content.get("hypotheses", [])
@@ -138,25 +147,29 @@ def cmd_new(context_file=None):
     for b in ctx["businesses"]:
         context_text += f"业务 - {b['name']}：{b['challenge']}\n"
 
-    # Step 1: 生成 Bug
-    print("🤖 正在让 AI 扮演魔鬼代言人...")
-    bug, rationale = generate_bug(context_text)
+    # System 1: 正常战略分析
+    print("🤖 System 1 —— 正常战略分析...")
+    analysis, advice, rationale = system1(context_text)
     print(f"\n{'=' * 50}")
-    print(f"🐛 BUG（极端建议）：")
-    print(textwrap.fill(bug, width=60))
-    print(f"\n🤔 它的推导逻辑：")
+    print(f"📊 战略分析：")
+    print(textwrap.fill(analysis, width=60))
+    print(f"\n💡 建议：")
+    print(textwrap.fill(advice, width=60))
+    print(f"\n🔍 推导逻辑：")
     print(textwrap.fill(rationale, width=60))
     print(f"{'=' * 50}\n")
 
-    # Step 2: 提取假设
-    print("🔍 正在从 Bug 中解剖假设...")
-    hypotheses = extract_hypotheses(bug, rationale)
+    # System 2: 假设一定错了，审视频率〕
+    print("🤖 System 2 —— 假设上面的建议全部是错的，为什么？...")
+    hypotheses = system2(analysis, advice, rationale)
     print(f"\n发现 {len(hypotheses)} 个隐藏假设：\n")
 
     validated = []
     for h in hypotheses:
-        print(f"  假设：{h['statement']}")
-        print(f"  来源：{h['evidence']}")
+        statement = h.get("statement", "")
+        source = h.get("error") or h.get("evidence", "")
+        print(f"  假设：{statement}")
+        print(f"  为什么错：{source}")
         while True:
             verdict = (
                 input("  你的判断 [y=同意/n=不同意/?=不确定/s=跳过]：").strip().lower()
@@ -169,7 +182,7 @@ def cmd_new(context_file=None):
         validated.append(
             {
                 "statement": h["statement"],
-                "evidence": h["evidence"],
+                "evidence": source,
                 "verdict": {"y": "confirmed", "n": "rejected", "?": "uncertain"}[
                     verdict
                 ],
@@ -245,7 +258,7 @@ Bug is Feature —— 战略假设压力测试机
 用法：./docs.py <命令>
 
 命令：
-  new      发起一轮新的战略推演（AI 出极端建议 → 提取假设 → 人类验证）
+  new      发起一轮推演（System 1 正常分析 → System 2 假设全错 → 提取假设 → 人类验证）
   list     查看假设库
   stats    假设库统计
   context  查看/修改战略上下文
