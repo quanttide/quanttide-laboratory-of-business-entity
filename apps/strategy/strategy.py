@@ -41,17 +41,8 @@ def save_hypotheses(h):
     save_json(HYPOTHESES_FILE, h)
 
 
-def load_context():
-    return load_json(CONTEXT_FILE)
-
-
-def save_context(c):
-    save_json(CONTEXT_FILE, c)
-
-
 # System 1: 正常战略分析
 SYS1 = """你是一个战略顾问。基于用户的战略上下文，给出正常的战略分析和建议。
-
 要求：
 1. 分析当前的战略处境
 2. 给出合理的建议
@@ -60,19 +51,13 @@ SYS1 = """你是一个战略顾问。基于用户的战略上下文，给出正�
 
 # System 2: 提取假设
 SYS2 = """分析上面的战略分析，列出它依赖的重要假设。
-
 按内部假设（公司自身能力/资源/团队）和外部假设（市场/客户/竞争/技术）分类。
-
 不要评判对错，只需要完整列举。
-
 输出 JSON：{"hypotheses": [{"statement": "假设内容", "type": "internal", "why_matters": "为何重要"}, {"statement": "...", "type": "external", "why_matters": "..."}]}
-
 战略分析：
 ANALYSIS_PLACEHOLDER
-
 战略建议：
 ADVICE_PLACEHOLDER
-
 推导逻辑：
 RATIONALE_PLACEHOLDER"""
 
@@ -93,13 +78,9 @@ def system2(analysis, advice, rationale):
         .replace("ADVICE_PLACEHOLDER", advice)
         .replace("RATIONALE_PLACEHOLDER", rationale)
     )
-    print(f"DEBUG: prompt length={len(prompt)}", file=sys.stderr)
     resp = LLM_CLIENT.complete(prompt, temperature=0.5, max_tokens=2000)
-    print(f"DEBUG: raw response={resp.content[:200]}", file=sys.stderr)
     c = _parse(resp.content.strip())
-    result = c.get("hypotheses", [])
-    print(f"DEBUG: parsed hypotheses count={len(result)}", file=sys.stderr)
-    return result
+    return c.get("hypotheses", [])
 
 
 def _parse(text):
@@ -112,16 +93,13 @@ def _parse(text):
         text = text.strip()
     try:
         return json.loads(text)
-    except json.JSONDecodeError as e:
-        print(f"DEBUG: JSON parse error: {e}", file=sys.stderr)
-        print(f"DEBUG: text={text[:300]}", file=sys.stderr)
+    except json.JSONDecodeError:
         return {}
 
 
-# CLI commands
 def cmd_new(context_file=None):
     print("\n=== Bug is Feature ===\n")
-    ctx = load_context()
+    ctx = {}
     if context_file:
         raw = json.loads(Path(context_file).read_text())
         ctx = {
@@ -131,9 +109,8 @@ def cmd_new(context_file=None):
                 for b in raw.get("business_strategy", [])
             ],
         }
-        save_context(ctx)
         print(f"已从 {context_file} 加载上下文\n")
-    elif not ctx:
+    else:
         ctx["company"] = input("公司方向：").strip()
         ctx["businesses"] = []
         while True:
@@ -142,7 +119,6 @@ def cmd_new(context_file=None):
                 break
             challenge = input(f"  {name} 的挑战：").strip()
             ctx["businesses"].append({"name": name, "challenge": challenge})
-        save_context(ctx)
 
     context_text = f"公司方向：{ctx['company']}\n" + "\n".join(
         f"业务 - {b['name']}：{b['challenge']}" for b in ctx.get("businesses", [])
@@ -150,68 +126,159 @@ def cmd_new(context_file=None):
 
     print("System 1 -- 正常战略分析...")
     analysis, advice, rationale = system1(context_text)
-    print(f"\n{'=' * 50}")
-    print("分析：", textwrap.fill(analysis, width=60))
-    print("\n建议：", textwrap.fill(advice, width=60))
-    print("\n推导逻辑：", textwrap.fill(rationale, width=60))
-    print(f"{'=' * 50}\n")
+    print(f"\n分析：{textwrap.fill(analysis, width=60)}")
+    print(f"\n建议：{textwrap.fill(advice, width=60)}")
+    print(f"\n推导逻辑：{textwrap.fill(rationale, width=60)}\n")
 
     print("System 2 -- 提取假设...")
     hypotheses = system2(analysis, advice, rationale)
-    print(f"\n发现 {len(hypotheses)} 个假设\n")
+    print(f"发现 {len(hypotheses)} 个假设\n")
 
-    validated = []
     for h in hypotheses:
-        s = h.get("statement", "")
-        t = h.get("type", "")
-        w = h.get("why_matters", "")
+        s, t, w = h.get("statement", ""), h.get("type", ""), h.get("why_matters", "")
         print(f"  [{t}] {s}")
         print(f"  为什么重要：{w}\n")
-        validated.append(
+
+    all_h = load_hypotheses()
+    for h in hypotheses:
+        all_h.append(
             {
-                "statement": s,
-                "type": t,
-                "why_matters": w,
+                "statement": h.get("statement", ""),
+                "type": h.get("type", ""),
+                "why_matters": h.get("why_matters", ""),
                 "verdict": "uncertain",
                 "date": datetime.now().strftime("%Y-%m-%d"),
             }
         )
-
-    all_h = load_hypotheses()
-    all_h.extend(validated)
     save_hypotheses(all_h)
-    print(f"已保存 {len(validated)} 条假设\n")
+    print(f"已保存 {len(hypotheses)} 条假设。用 `review` 命令逐条判断。\n")
+
+
+def cmd_review():
+    h = load_hypotheses()
+    pending = [x for x in h if x.get("verdict") == "uncertain"]
+    done = len(h) - len(pending)
+    if not pending:
+        print(f"没有待验证的假设（共 {len(h)} 条，已判断 {done} 条）。\n")
+        return
+
+    print(f"\n待验证假设 ({len(pending)} 条，已判断 {done}/{len(h)})\n")
+    for i, item in enumerate(pending, 1):
+        print(f"--- {i}. [{item.get('type', '')}] {item['statement']} ---")
+        print(f"   为什么重要：{item.get('why_matters', '')}\n")
+        verdict = _ask_verdict()
+        if verdict == "skip":
+            print()
+            continue
+        evidence = input("  证据（什么数据支持这个判断）：").strip()
+        item["verdict"] = verdict
+        item["evidence"] = evidence
+        item["date"] = datetime.now().strftime("%Y-%m-%d")
+        if verdict == "evidence_with_difficulty":
+            item["obstacle"] = input("  障碍（什么在阻碍）：").strip()
+        print("已记录\n")
+
+    save_hypotheses(h)
+    pending_left = sum(1 for x in h if x.get("verdict") == "uncertain")
+    print(f"已更新判断。剩余待验证：{pending_left} 条\n")
+
+
+def _ask_verdict():
+    while True:
+        v = (
+            input("  判断 [y=已确认/n=已排除/d=有证据但有障碍/?=无证据/s=跳过]：")
+            .strip()
+            .lower()
+        )
+        if v == "y":
+            return "confirmed"
+        if v == "n":
+            return "rejected"
+        if v == "d":
+            return "evidence_with_difficulty"
+        if v == "?":
+            return "no_evidence"
+        if v == "s":
+            return "skip"
+
+
+def cmd_report():
+    h = load_hypotheses()
+    if not h:
+        print("假设库为空。\n")
+        return
+
+    labels = {
+        "confirmed": "已确认",
+        "rejected": "已排除",
+        "evidence_with_difficulty": "有证据但有障碍",
+        "no_evidence": "无证据",
+        "uncertain": "待验证",
+    }
+    status_count = {}
+    for x in h:
+        v = x.get("verdict", "uncertain")
+        status_count[v] = status_count.get(v, 0) + 1
+
+    print(f"\n=== 战略假设验证报告 ===\n")
+    print(f"总假设：{len(h)} 条\n")
+    for v, c in sorted(status_count.items(), key=lambda kv: -kv[1]):
+        print(f"  {labels.get(v, v)}：{c} 条")
+    print()
+
+    for item in h:
+        v = item.get("verdict", "uncertain")
+        icon = {
+            "confirmed": "Y",
+            "rejected": "N",
+            "evidence_with_difficulty": "D",
+            "no_evidence": "?",
+            "uncertain": "?",
+        }.get(v, "?")
+        print(f"{icon} [{item.get('type', '')}] {item['statement']}")
+        if item.get("evidence"):
+            print(f"   证据：{item['evidence'][:100]}...")
+        if item.get("obstacle"):
+            print(f"   障碍：{item['obstacle'][:100]}...")
+        print()
 
 
 def cmd_list():
     h = load_hypotheses()
     if not h:
-        print("假设库为空。")
+        print("假设库为空。\n")
         return
     print(f"\n假设库 ({len(h)} 条)\n")
     for i, item in enumerate(h, 1):
-        s = {"confirmed": "Y", "rejected": "N", "uncertain": "?"}.get(
-            item.get("verdict", ""), "?"
-        )
-        t = item.get("type", "")
-        print(f"{s} [{t}] [{item.get('date', '?')}] {item['statement']}")
-        w = item.get("why_matters", "")
-        if w:
-            print(f"   为什么重要：{w[:80]}...")
-        print()
+        v = item.get("verdict", "uncertain")
+        icon = {
+            "confirmed": "Y",
+            "rejected": "N",
+            "evidence_with_difficulty": "D",
+            "no_evidence": "?",
+            "uncertain": "?",
+        }.get(v, "?")
+        print(f"{icon} [{item.get('date', '?')}] {item['statement']}")
 
 
 def cmd_stats():
     h = load_hypotheses()
     if not h:
-        print("假设库为空。")
+        print("假设库为空。\n")
         return
-    internal = sum(1 for x in h if x.get("type", "") == "internal")
-    external = sum(1 for x in h if x.get("type", "") == "external")
-    print(f"\n总计：{len(h)} 条（内部 {internal} / 外部 {external}）")
-    print(f"  Y 已确认：{sum(1 for x in h if x['verdict'] == 'confirmed')}")
-    print(f"  N 已排除：{sum(1 for x in h if x['verdict'] == 'rejected')}")
-    print(f"  ? 待验证：{sum(1 for x in h if x['verdict'] == 'uncertain')}")
+    internal = sum(1 for x in h if x.get("type") == "internal")
+    external = sum(1 for x in h if x.get("type") == "external")
+    uncertain = sum(1 for x in h if x.get("verdict") == "uncertain")
+    confirmed = sum(1 for x in h if x.get("verdict") == "confirmed")
+    rejected = sum(1 for x in h if x.get("verdict") == "rejected")
+    print(f"\n假设库：{len(h)} 条（内部 {internal} / 外部 {external}）")
+    print(f"  Y 已确认：{confirmed}")
+    print(f"  N 已排除：{rejected}")
+    print(
+        f"  D 有障碍：{sum(1 for x in h if x.get('verdict') == 'evidence_with_difficulty')}"
+    )
+    print(f"  ? 无证据：{sum(1 for x in h if x.get('verdict') == 'no_evidence')}")
+    print(f"  ? 待验证：{uncertain}")
 
 
 def cmd_help():
@@ -221,6 +288,8 @@ def cmd_help():
 
 命令：
   new [file]  发起推演（可指定 JSON 上下文文件）
+  review      逐条审查待验证的假设
+  report      生成假设验证报告
   list        查看假设库
   stats       假设库统计
   help        显示帮助
@@ -233,14 +302,14 @@ def main():
         cmd_help()
         return
     cmd = sys.argv[1]
-    if cmd == "new":
-        cmd_new(sys.argv[2] if len(sys.argv) > 2 else None)
-    elif cmd == "list":
-        cmd_list()
-    elif cmd == "stats":
-        cmd_stats()
-    else:
-        cmd_help()
+    cmds = {
+        "new": lambda: cmd_new(sys.argv[2] if len(sys.argv) > 2 else None),
+        "review": cmd_review,
+        "report": cmd_report,
+        "list": cmd_list,
+        "stats": cmd_stats,
+    }
+    cmds.get(cmd, cmd_help)()
 
 
 if __name__ == "__main__":
