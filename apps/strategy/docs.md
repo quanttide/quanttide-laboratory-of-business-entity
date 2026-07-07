@@ -21,7 +21,7 @@
 
 ## 数据
 
-存储在 `~/.qtstrategy/`，纯 JSON 格式，完全本地。
+存储在 `apps/strategy/`，纯 JSON 格式。
 
 - `context.json`：你的战略上下文（公司方向 + 业务线挑战）
 - `hypotheses.json`：假设库，每一条含：假设内容、AI 来源、你的判断（confirmed/rejected/uncertain）、日期

@@ -17,7 +17,7 @@ from pathlib import Path
 from quanttide_agent import LLM
 from quanttide_agent.config import settings
 
-DATA_DIR = Path.home() / ".qtstrategy"
+DATA_DIR = Path(__file__).parent
 LLM_CLIENT = LLM(
     model=settings.llm_model or "deepseek-chat",
     base_url=settings.llm_base_url,
