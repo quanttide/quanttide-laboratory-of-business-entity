@@ -5,18 +5,18 @@
 把 AI 当辩论对手而非算命先生：
 
 1. AI 基于你的战略上下文，给出一个极端的、大概率错误的建议（**Bug**）
-2. 你解剖这个 Bug，提取它背后隐藏的市场假设（**Feature**）
-3. 你用直觉和市场经验验证每个假设——同意、排除、或存疑
+2. AI 自己解剖这个 Bug，提取它背后隐藏的市场假设（**Feature**）
+3. 你看每条假设，判断和实际情况是否一致——同意、排除、或存疑
 4. 验证结果存入本地假设库，成为可追溯的战略资产
 
 ## 用法
 
 ```bash
-./docs.py new       # 发起一轮推演
-./docs.py list      # 查看假设库
-./docs.py stats     # 假设库统计
-./docs.py context   # 查看/修改战略上下文
-./docs.py help      # 帮助
+./strategy.py new       # 发起一轮推演
+./strategy.py list      # 查看假设库
+./strategy.py stats     # 假设库统计
+./strategy.py context   # 查看/修改战略上下文
+./strategy.py help      # 帮助
 ```
 
 ## 数据
