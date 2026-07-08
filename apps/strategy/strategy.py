@@ -1,8 +1,7 @@
 #!/usr/bin/env python3
-"""Bug is Feature —— 战略假设压力测试机。"""
+"""Bug is Feature —— 战略假设压力测试机"""
 
 import json
-import os
 import sys
 import textwrap
 from datetime import datetime
@@ -12,75 +11,61 @@ from quanttide_agent import LLM
 from quanttide_agent.config import settings
 
 DATA_DIR = Path(__file__).parent
-HYPOTHESES_FILE = DATA_DIR / "hypotheses.json"
-CONTEXT_FILE = DATA_DIR / "context.json"
-
-LLM_CLIENT = LLM(
+JOURNAL_DIR = DATA_DIR / "journal"
+CLIENT = LLM(
     model=settings.llm_model or "deepseek-chat",
     base_url=settings.llm_base_url,
     api_key=settings.llm_api_key,
 )
 
+SYS1 = """你是一个战略分析师兼反事实推演专家。基于用户的战略上下文，做两件事：
 
-def load_json(path):
-    if path.exists():
-        return json.loads(path.read_text())
-    return {}
+第一，战略推演：识别核心逻辑和关键假设，指出依赖这些假设的风险。
+第二，反事实推演：对每条假设做反事实分析——"如果这条假设不成立，会怎样？"
 
+输出 JSON：
+{
+  "core_logic": "核心战略逻辑",
+  "assumptions": [
+    {
+      "statement": "假设",
+      "type": "internal/external",
+      "risk": "风险",
+      "counterfactual": "如果此假设不成立…",
+      "implication": "对战略的影响",
+      "signal_to_watch": "应关注什么信号"
+    }
+  ],
+  "summary": "总结"
+}"""
 
-def save_json(path, data):
-    DATA_DIR.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(data, ensure_ascii=False, indent=2))
+SYS2_PER = """你是一个事实校验分析师。下面是【AREA】的工作日记，请对照所有战略假设，找出日记中为每条假设提供的证据。
 
+对每条假设：
+- 支持证据：日记中有什么事实支持此假设（引用原文片段）
+- 挑战证据：日记中有什么事实挑战此假设（引用原文片段）
+- 如无直接证据则注明"无"
 
-def load_hypotheses():
-    return load_json(HYPOTHESES_FILE) if HYPOTHESES_FILE.exists() else []
+输出 JSON：{"area": "AREA", "findings": [{"index": I, "statement": "假设原文", "supporting": "支持证据或'无'", "challenging": "挑战证据或'无'"}]}
 
+战略假设：
+ASSUMPTIONS_PLACEHOLDER
 
-def save_hypotheses(h):
-    save_json(HYPOTHESES_FILE, h)
+工作日记：
+JOURNAL_PLACEHOLDER"""
 
+SYS2_SUM = """你是一个事实校验分析师。下面是所有业务线工作日记对每条战略假设的校验结果。
 
-# System 1: 正常战略分析
-SYS1 = """你是一个战略顾问。基于用户的战略上下文，给出正常的战略分析和建议。
-要求：
-1. 分析当前的战略处境
-2. 给出合理的建议
-3. 说明你的推导逻辑
-4. 输出 JSON：{"analysis": "...", "advice": "...", "rationale": "..."}"""
+汇总判断每条假设的状态：
+- confirmed：日记中有明确支持证据，且无实质性挑战
+- rejected：日记中有明确挑战证据，且无实质性支持
+- evidence_with_difficulty：既有支持也有挑战，或证据不充分
+- no_evidence：日记中无相关证据
 
-# System 2: 提取假设
-SYS2 = """分析上面的战略分析，列出它依赖的重要假设。
-按内部假设（公司自身能力/资源/团队）和外部假设（市场/客户/竞争/技术）分类。
-不要评判对错，只需要完整列举。
-输出 JSON：{"hypotheses": [{"statement": "假设内容", "type": "internal", "why_matters": "为何重要"}, {"statement": "...", "type": "external", "why_matters": "..."}]}
-战略分析：
-ANALYSIS_PLACEHOLDER
-战略建议：
-ADVICE_PLACEHOLDER
-推导逻辑：
-RATIONALE_PLACEHOLDER"""
+输出 JSON：{"verdicts": [{"assumption": "假设原文", "supporting": ["支持汇总"], "challenging": ["挑战汇总"], "verdict": "状态", "signals_to_watch": "关注信号"}], "new_signals": ["新发现的信号"], "summary": "总结"}
 
-
-def system1(context_text):
-    resp = LLM_CLIENT.complete(
-        f"{SYS1}\n\n用户的战略上下文：\n{context_text}",
-        temperature=0.5,
-        max_tokens=1500,
-    )
-    c = _parse(resp.content.strip())
-    return c.get("analysis", ""), c.get("advice", ""), c.get("rationale", "")
-
-
-def system2(analysis, advice, rationale):
-    prompt = (
-        SYS2.replace("ANALYSIS_PLACEHOLDER", analysis)
-        .replace("ADVICE_PLACEHOLDER", advice)
-        .replace("RATIONALE_PLACEHOLDER", rationale)
-    )
-    resp = LLM_CLIENT.complete(prompt, temperature=0.5, max_tokens=2000)
-    c = _parse(resp.content.strip())
-    return c.get("hypotheses", [])
+校验原始结果：
+FINDINGS_PLACEHOLDER"""
 
 
 def _parse(text):
@@ -97,9 +82,38 @@ def _parse(text):
         return {}
 
 
+def load_journal_areas():
+    if not JOURNAL_DIR.exists():
+        return []
+    areas = []
+    for area_dir in sorted(JOURNAL_DIR.iterdir()):
+        if not area_dir.is_dir() or area_dir.name.startswith("."):
+            continue
+        md_files = sorted(area_dir.glob("*.md"))
+        if not md_files:
+            continue
+        lines = [f"\n{'=' * 50}\n=== {area_dir.name} ===\n{'=' * 50}"]
+        for f in md_files[-8:]:
+            content = f.read_text().strip()
+            lines.append(f"\n--- {f.stem} ---\n{content}")
+        areas.append((area_dir.name, "\n".join(lines)))
+    return areas
+
+
+def llm_call(prompt, **kwargs):
+    """带重试的 LLM 调用，单个调用失败不中断流程"""
+    for attempt in range(3):
+        try:
+            return CLIENT.complete(prompt, retry=2, **kwargs)
+        except Exception as e:
+            if attempt < 2:
+                continue
+            raise
+
+
 def cmd_new(context_file=None):
     print("\n=== Bug is Feature ===\n")
-    ctx = {}
+
     if context_file:
         raw = json.loads(Path(context_file).read_text())
         ctx = {
@@ -111,8 +125,7 @@ def cmd_new(context_file=None):
         }
         print(f"已从 {context_file} 加载上下文\n")
     else:
-        ctx["company"] = input("公司方向：").strip()
-        ctx["businesses"] = []
+        ctx = {"company": input("公司方向：").strip(), "businesses": []}
         while True:
             name = input("  业务线名称（留空结束）：").strip()
             if not name:
@@ -124,161 +137,182 @@ def cmd_new(context_file=None):
         f"业务 - {b['name']}：{b['challenge']}" for b in ctx.get("businesses", [])
     )
 
-    print("System 1 -- 正常战略分析...")
-    analysis, advice, rationale = system1(context_text)
-    print(f"\n分析：{textwrap.fill(analysis, width=60)}")
-    print(f"\n建议：{textwrap.fill(advice, width=60)}")
-    print(f"\n推导逻辑：{textwrap.fill(rationale, width=60)}\n")
-
-    print("System 2 -- 提取假设...")
-    hypotheses = system2(analysis, advice, rationale)
-    print(f"发现 {len(hypotheses)} 个假设\n")
-
-    for h in hypotheses:
-        s, t, w = h.get("statement", ""), h.get("type", ""), h.get("why_matters", "")
-        print(f"  [{t}] {s}")
-        print(f"  为什么重要：{w}\n")
-
-    all_h = load_hypotheses()
-    for h in hypotheses:
-        all_h.append(
-            {
-                "statement": h.get("statement", ""),
-                "type": h.get("type", ""),
-                "why_matters": h.get("why_matters", ""),
-                "verdict": "uncertain",
-                "date": datetime.now().strftime("%Y-%m-%d"),
-            }
-        )
-    save_hypotheses(all_h)
-    print(f"已保存 {len(hypotheses)} 条假设。用 `review` 命令逐条判断。\n")
-
-
-def cmd_review():
-    h = load_hypotheses()
-    pending = [x for x in h if x.get("verdict") == "uncertain"]
-    done = len(h) - len(pending)
-    if not pending:
-        print(f"没有待验证的假设（共 {len(h)} 条，已判断 {done} 条）。\n")
-        return
-
-    print(f"\n待验证假设 ({len(pending)} 条，已判断 {done}/{len(h)})\n")
-    for i, item in enumerate(pending, 1):
-        print(f"--- {i}. [{item.get('type', '')}] {item['statement']} ---")
-        print(f"   为什么重要：{item.get('why_matters', '')}\n")
-        verdict = _ask_verdict()
-        if verdict == "skip":
-            print()
-            continue
-        evidence = input("  证据（什么数据支持这个判断）：").strip()
-        item["verdict"] = verdict
-        item["evidence"] = evidence
-        item["date"] = datetime.now().strftime("%Y-%m-%d")
-        if verdict == "evidence_with_difficulty":
-            item["obstacle"] = input("  障碍（什么在阻碍）：").strip()
-        print("已记录\n")
-
-    save_hypotheses(h)
-    pending_left = sum(1 for x in h if x.get("verdict") == "uncertain")
-    print(f"已更新判断。剩余待验证：{pending_left} 条\n")
-
-
-def _ask_verdict():
-    while True:
-        v = (
-            input("  判断 [y=已确认/n=已排除/d=有证据但有障碍/?=无证据/s=跳过]：")
-            .strip()
-            .lower()
-        )
-        if v == "y":
-            return "confirmed"
-        if v == "n":
-            return "rejected"
-        if v == "d":
-            return "evidence_with_difficulty"
-        if v == "?":
-            return "no_evidence"
-        if v == "s":
-            return "skip"
-
-
-def cmd_report():
-    h = load_hypotheses()
-    if not h:
-        print("假设库为空。\n")
-        return
-
-    labels = {
-        "confirmed": "已确认",
-        "rejected": "已排除",
-        "evidence_with_difficulty": "有证据但有障碍",
-        "no_evidence": "无证据",
-        "uncertain": "待验证",
-    }
-    status_count = {}
-    for x in h:
-        v = x.get("verdict", "uncertain")
-        status_count[v] = status_count.get(v, 0) + 1
-
-    print(f"\n=== 战略假设验证报告 ===\n")
-    print(f"总假设：{len(h)} 条\n")
-    for v, c in sorted(status_count.items(), key=lambda kv: -kv[1]):
-        print(f"  {labels.get(v, v)}：{c} 条")
-    print()
-
-    for item in h:
-        v = item.get("verdict", "uncertain")
-        icon = {
-            "confirmed": "Y",
-            "rejected": "N",
-            "evidence_with_difficulty": "D",
-            "no_evidence": "?",
-            "uncertain": "?",
-        }.get(v, "?")
-        print(f"{icon} [{item.get('type', '')}] {item['statement']}")
-        if item.get("evidence"):
-            print(f"   证据：{item['evidence'][:100]}...")
-        if item.get("obstacle"):
-            print(f"   障碍：{item['obstacle'][:100]}...")
-        print()
-
-
-def cmd_list():
-    h = load_hypotheses()
-    if not h:
-        print("假设库为空。\n")
-        return
-    print(f"\n假设库 ({len(h)} 条)\n")
-    for i, item in enumerate(h, 1):
-        v = item.get("verdict", "uncertain")
-        icon = {
-            "confirmed": "Y",
-            "rejected": "N",
-            "evidence_with_difficulty": "D",
-            "no_evidence": "?",
-            "uncertain": "?",
-        }.get(v, "?")
-        print(f"{icon} [{item.get('date', '?')}] {item['statement']}")
-
-
-def cmd_stats():
-    h = load_hypotheses()
-    if not h:
-        print("假设库为空。\n")
-        return
-    internal = sum(1 for x in h if x.get("type") == "internal")
-    external = sum(1 for x in h if x.get("type") == "external")
-    uncertain = sum(1 for x in h if x.get("verdict") == "uncertain")
-    confirmed = sum(1 for x in h if x.get("verdict") == "confirmed")
-    rejected = sum(1 for x in h if x.get("verdict") == "rejected")
-    print(f"\n假设库：{len(h)} 条（内部 {internal} / 外部 {external}）")
-    print(f"  Y 已确认：{confirmed}")
-    print(f"  N 已排除：{rejected}")
-    print(
-        f"  D 有障碍：{sum(1 for x in h if x.get('verdict') == 'evidence_with_difficulty')}"
+    # ---- System 1: 战略推演 + 反事实 ----
+    print("System 1 -- 战略推演 & 反事实...")
+    resp1 = llm_call(
+        f"{SYS1}\n\n用户的战略上下文：\n{context_text}",
+        temperature=0.6,
+        max_tokens=3000,
     )
-    print(f"  ? 无证据：{sum(1 for x in h if x.get('verdict') == 'no_evidence')}")
-    print(f"  ? 待验证：{uncertain}")
+    s1 = _parse(resp1.content.strip())
+    print(f"\n核心逻辑：{textwrap.fill(s1.get('core_logic', ''), width=72)}\n")
+    for a in s1.get("assumptions", []):
+        tag = "内" if a.get("type") == "internal" else "外"
+        print(f"  [{tag}] {a.get('statement', '')}")
+        print(
+            f"        风险：{textwrap.fill(a.get('risk', ''), width=66, subsequent_indent='              ')}"
+        )
+        cf = a.get("counterfactual", "")
+        if cf:
+            print(
+                f"        若不成立 → {textwrap.fill(cf, width=66, subsequent_indent='                    ')}"
+            )
+        imp = a.get("implication", "")
+        if imp:
+            print(
+                f"        战略影响：{textwrap.fill(imp, width=66, subsequent_indent='              ')}"
+            )
+        sig = a.get("signal_to_watch", "")
+        if sig:
+            print(
+                f"        关注信号：{textwrap.fill(sig, width=66, subsequent_indent='              ')}"
+            )
+        print()
+    print(f"总结：{textwrap.fill(s1.get('summary', ''), width=72)}\n")
+
+    # ---- System 2: 事实校验 ----
+    areas = load_journal_areas()
+    if not areas:
+        print("System 2 -- 跳过（未找到日记数据）")
+        return
+
+    print("System 2 -- 事实校验...")
+    assumptions_json = json.dumps(
+        [
+            {
+                "index": i,
+                "statement": a.get("statement", ""),
+                "type": a.get("type", ""),
+                "risk": a.get("risk", ""),
+            }
+            for i, a in enumerate(s1.get("assumptions", []))
+        ],
+        ensure_ascii=False,
+        indent=2,
+    )
+
+    all_findings = []
+    for area_name, area_text in areas:
+        print(f"  [{area_name}]...", end=" ", flush=True)
+        try:
+            prompt = (
+                SYS2_PER.replace("AREA", area_name)
+                .replace("ASSUMPTIONS_PLACEHOLDER", assumptions_json)
+                .replace("JOURNAL_PLACEHOLDER", area_text)
+            )
+            resp = llm_call(prompt, temperature=0.3, max_tokens=2000)
+            result = _parse(resp.content.strip())
+            findings = result.get("findings", [])
+            print(f"{len(findings)} 条")
+            all_findings.append({"area": area_name, "findings": findings})
+        except Exception as e:
+            print(f"失败 ({e})")
+            all_findings.append({"area": area_name, "findings": []})
+
+    # 保存中间结果（汇总前）
+    ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+    partial = {
+        "timestamp": ts,
+        "context": ctx,
+        "system1": s1,
+        "system2": {"per_area": all_findings, "summary": {}},
+    }
+    result_dir = DATA_DIR / "results"
+    result_dir.mkdir(parents=True, exist_ok=True)
+    result_path = result_dir / f"{ts}.json"
+    result_path.write_text(json.dumps(partial, ensure_ascii=False, indent=2))
+
+    print("  汇总判断...")
+    s2 = {}
+    try:
+        prompt_sum = SYS2_SUM.replace(
+            "FINDINGS_PLACEHOLDER",
+            json.dumps(all_findings, ensure_ascii=False, indent=2),
+        )
+        resp_sum = llm_call(prompt_sum, temperature=0.3, max_tokens=3000)
+        s2 = _parse(resp_sum.content.strip())
+    except Exception as e:
+        print(f"  汇总失败 ({e})")
+        s2 = {}
+
+    for v in s2.get("verdicts", []):
+        icon = {
+            "confirmed": "✓",
+            "rejected": "✗",
+            "evidence_with_difficulty": "△",
+            "no_evidence": "?",
+        }.get(v.get("verdict", ""), "?")
+        print(f"\n  {icon} {v.get('assumption', '')}")
+        for e in v.get("supporting", []):
+            print(
+                f"     支持：{textwrap.fill(e, width=66, subsequent_indent='           ')}"
+            )
+        for e in v.get("challenging", []):
+            print(
+                f"     挑战：{textwrap.fill(e, width=66, subsequent_indent='           ')}"
+            )
+        print(f"     判断：{v.get('verdict', '')}")
+        print(
+            f"     信号：{textwrap.fill(v.get('signals_to_watch', ''), width=66, subsequent_indent='           ')}"
+        )
+    for ns in s2.get("new_signals", []):
+        print(f"\n  [新信号] {textwrap.fill(ns, width=72)}")
+    print(f"\n  总结：{textwrap.fill(s2.get('summary', ''), width=72)}\n")
+
+    # 更新存档（含汇总）
+    result = {
+        "timestamp": ts,
+        "context": ctx,
+        "system1": s1,
+        "system2": {"per_area": all_findings, "summary": s2},
+    }
+    result_path.write_text(json.dumps(result, ensure_ascii=False, indent=2))
+    print(f"结果已保存：{result_path}\n")
+
+
+def cmd_report(name=None):
+    result_dir = DATA_DIR / "results"
+    if not result_dir.exists():
+        print("暂无保存的结果\n")
+        return
+    if name:
+        path = result_dir / name
+        if not path.exists():
+            print(f"未找到：{name}\n")
+            return
+        r = json.loads(path.read_text())
+        print(f"\n结果：{path.stem}")
+        print(f"时间：{r.get('timestamp', '')}")
+        print(f"\n--- System 1 ---")
+        print(f"核心逻辑：{r.get('system1', {}).get('core_logic', '')}")
+        for a in r.get("system1", {}).get("assumptions", []):
+            print(f"  [{a.get('type', '')}] {a.get('statement', '')}")
+            print(f"    风险：{a.get('risk', '')}")
+            print(f"    若不成立 → {a.get('counterfactual', '')}")
+            print(f"    信号：{a.get('signal_to_watch', '')}")
+        print(f"\n--- System 2 ---")
+        for v in r.get("system2", {}).get("summary", {}).get("verdicts", []):
+            print(f"  {v.get('verdict', '?')} {v.get('assumption', '')}")
+        print(f"总结：{r.get('system2', {}).get('summary', {}).get('summary', '')}\n")
+    else:
+        files = sorted(result_dir.glob("*.json"), reverse=True)
+        if not files:
+            print("暂无保存的结果\n")
+            return
+        print(f"\n保存的结果（共 {len(files)} 个）：\n")
+        for f in files:
+            r = json.loads(f.read_text())
+            ts = r.get("timestamp", f.stem)
+            ctx = r.get("context", {})
+            company = ctx.get("company", "?")
+            verdicts = r.get("system2", {}).get("summary", {}).get("verdicts", [])
+            n_rejected = sum(1 for v in verdicts if v.get("verdict") == "rejected")
+            n_confirmed = sum(1 for v in verdicts if v.get("verdict") == "confirmed")
+            print(f"  {f.name}  {ts}")
+            print(f"    公司：{company}")
+            print(
+                f"    状态：✓{n_confirmed} ✗{n_rejected} △{len(verdicts) - n_confirmed - n_rejected}\n"
+            )
 
 
 def cmd_help():
@@ -287,12 +321,9 @@ def cmd_help():
 用法：./strategy.py <命令>
 
 命令：
-  new [file]  发起推演（可指定 JSON 上下文文件）
-  review      逐条审查待验证的假设
-  report      生成假设验证报告
-  list        查看假设库
-  stats       假设库统计
-  help        显示帮助
+  new [file]           发起推演（可指定 JSON 上下文文件）
+  report [文件名]       查看保存的结果（不指定文件名则列出所有）
+  help                 显示帮助
 """)
 
 
@@ -302,14 +333,12 @@ def main():
         cmd_help()
         return
     cmd = sys.argv[1]
-    cmds = {
-        "new": lambda: cmd_new(sys.argv[2] if len(sys.argv) > 2 else None),
-        "review": cmd_review,
-        "report": cmd_report,
-        "list": cmd_list,
-        "stats": cmd_stats,
-    }
-    cmds.get(cmd, cmd_help)()
+    if cmd == "new":
+        cmd_new(sys.argv[2] if len(sys.argv) > 2 else None)
+    elif cmd == "report":
+        cmd_report(sys.argv[2] if len(sys.argv) > 2 else None)
+    else:
+        cmd_help()
 
 
 if __name__ == "__main__":
