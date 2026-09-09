@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>qtcloud_studio 用户旅程</title>
+<style>
+  :root { --ink:#2b2b33; --muted:#6e6e7a; --line:#e2e3ee; --accent:#2c5f8a; --auto:#4d9d6a; }
+  * { box-sizing: border-box; }
+  body {
+    margin:0; padding:24px 20px 64px;
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+    color:var(--ink); background:#fafafc; font-size:15px; line-height:1.8;
+  }
+  main { max-width:760px; margin:0 auto; }
+  h1 { font-size:22px; margin:0 0 6px; }
+  .sub { color:var(--muted); font-size:13px; margin:0 0 28px; }
+  .question {
+    background:#fff; border-left:4px solid var(--accent); border-radius:0 10px 10px 0;
+    padding:14px 18px; margin-bottom:8px; font-size:17px; font-weight:600;
+  }
+  .answer { color:var(--muted); margin:0 0 32px; }
+  .answer b { color:var(--ink); }
+
+  h2 { font-size:18px; margin:40px 0 4px; }
+  .h2sub { color:var(--muted); font-size:13px; margin:0 0 16px; }
+
+  .step { display:flex; gap:14px; margin-bottom:22px; }
+  .no {
+    flex:0 0 34px; height:34px; border-radius:50%; background:#eef1f6; color:var(--accent);
+    font-weight:700; font-size:15px; display:flex; align-items:center; justify-content:center;
+  }
+  .step h3 { font-size:15px; margin:2px 0 2px; }
+  .step p { margin:0; }
+  .tag { display:inline-block; font-size:12px; padding:1px 9px; border-radius:999px; margin-right:6px; vertical-align:1px; }
+  .tag.you { background:#dce9f7; color:var(--accent); }
+  .tag.auto { background:#ddf2e4; color:var(--auto); }
+  .quote { border-left:3px solid var(--line); margin:6px 0 0; padding:2px 0 2px 12px; color:var(--muted); font-size:13px; }
+
+  .closing {
+    margin-top:36px; padding:16px 18px; background:#fff; border:1px solid var(--line);
+    border-radius:12px; font-weight:600;
+  }
+  .closing small { display:block; font-weight:400; color:var(--muted); margin-top:4px; }
+  .nav { margin-top:28px; font-size:13px; color:var(--muted); }
+  .nav a { color:var(--accent); }
+</style>
+</head>
+<body>
+<main>
+  <h1>qtcloud_studio 用户旅程</h1>
+  <p class="sub">这一页回答：打开工作台，会发生什么、你要做什么。模型与代码的核对见 <a href="event-storming.html" style="color:var(--accent)">事件风暴页</a>。</p>
+
+  <p class="question">打开工作台，我该干什么？</p>
+  <p class="answer"><b>拍板。</b>工作台里的事自己往下流，你只在两种时刻出现：领属于自己的任务，以及在等你拍板的地方做决定。</p>
+
+  <h2>旅程一：写一份方案</h2>
+  <p class="h2sub">场景：《A 校数据治理项目方案》，五个执行方各管一段，你来定稿。</p>
+
+  <div class="step"><div class="no">1</div><div>
+    <h3><span class="tag you">你看</span>方案在正中，任务在旁边</h3>
+    <p>左边大半屏是方案正文（分背景、数据范围、处理流程、报价、交付计划五节，右上角是当前版本号）；右边窄栏是任务清单——谁在干什么、什么在等你，一眼扫完。</p>
+  </div></div>
+
+  <div class="step"><div class="no">2</div><div>
+    <h3><span class="tag you">你做</span>说一句话，活就派出去了</h3>
+    <p>顶部输入框说你要什么，比如「增加客户确认环节」。工作台把它拆成任务挂进流程。听不懂的话它会直说，不会偷偷塞一个假任务。</p>
+  </div></div>
+
+  <div class="step"><div class="no">3</div><div>
+    <h3><span class="tag auto">自动</span>有人开始干活，你不用管</h3>
+    <p>排到谁，谁就开工：改哪一节、改成什么样，都是它的活。你不需要去派单、催办、搬运状态。</p>
+  </div></div>
+
+  <div class="step"><div class="no">4</div><div>
+    <h3><span class="tag you">你拍板</span>修改摆到你面前，读完再决定</h3>
+    <p>活干完了，修改会直接摆在方案对应章节里：红字删除线是原文，绿字是新提议。你对着正文本身拍板——<b>通过</b>就并入正文、版本号加一；<b>驳回</b>必须写一条意见，方案一个字不动，活退回重做。</p>
+  </div></div>
+
+  <div class="step"><div class="no">5</div><div>
+    <h3><span class="tag auto">自动</span>你拍完板，下游自己动了</h3>
+    <p>上游验收通过，下一个任务自动就绪、自动开工。每处自动衔接都会标注「原为人工搬运」——提醒你这里原本需要一个人把状态搬来搬去。</p>
+  </div></div>
+
+  <div class="step"><div class="no">6</div><div>
+    <h3><span class="tag you">你做</span>最后一项是你的：定稿检查</h3>
+    <p>做完提交，顶部出现一行字：方案定稿。方案下方留有完整的版本记录——每一版是哪次任务、谁改的、什么时候。</p>
+  </div></div>
+
+  <h2>旅程二：更新今天的工作日志</h2>
+  <p class="h2sub">场景：群里的讨论要沉淀成日志。以前靠人手动拉取整理，现在工作台接管。</p>
+
+  <div class="step"><div class="no">1</div><div>
+    <h3><span class="tag you">你做</span>说「更新今天的日志」</h3>
+    <p>工作台排好四步流程：拉群消息 → 整理成稿 → 脱敏验收 → 写回日志仓库。</p>
+  </div></div>
+
+  <div class="step"><div class="no">2</div><div>
+    <h3><span class="tag auto">自动</span>拉消息、按业务线归档、整理成稿</h3>
+    <p>从飞书群拉今天的消息（群的内部编号不留存），按来源群归到对应业务线；同一个群当天的内容合并进同一段。成稿只写事实和原话，来源群和时间标在标题上。</p>
+  </div></div>
+
+  <div class="step"><div class="no">3</div><div>
+    <h3><span class="tag auto">自动</span>脱敏检查拦在你拍板之前</h3>
+    <p>内部编号、飞书链接、真实姓名、敏感经营信息——平台自动检查，命中就打回重写，到不了你面前。<b>这一步以前靠人的自觉，现在是平台的强制检查。</b></p>
+  </div></div>
+
+  <div class="step"><div class="no">4</div><div>
+    <h3><span class="tag you">你拍板</span>对照红线看一遍，再决定</h3>
+    <p>成稿以修改对照的形式呈现，你按红线清单过一遍再拍板。通过才写入日志仓库并同步主仓库记录；驳回则日志一字不动。</p>
+  </div></div>
+
+  <div class="closing">
+    全程你只出现在两种地方：领自己的任务，闸门上拍板。
+    <small>检验标准：除了拍板，还有哪一步需要人搬？答案应该是「没有」。模型与实现细节见 <a href="event-storming.html" style="color:var(--accent)">事件风暴页</a>。</small>
+  </div>
+</main>
+</body>
+</html>

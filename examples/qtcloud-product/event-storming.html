@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>qtcloud_studio 事件风暴</title>
+<style>
+  :root {
+    --ink:#2b2b33; --muted:#6e6e7a; --line:#e2e3ee;
+    --actor-bg:#fdf6d8;  --actor-bd:#c9a94e;
+    --cmd-bg:#dce9f7;    --cmd-bd:#4a7ab5;
+    --event-bg:#fde3c1;  --event-bd:#d97b2c;
+    --policy-bg:#f6e2f2; --policy-bd:#a55b9c;
+    --hot-bg:#fdecea;    --hot-bd:#c0392b;
+    --read-bg:#ddf2e4;   --read-bd:#4d9d6a;
+  }
+  * { box-sizing:border-box; }
+  body {
+    margin:0; padding:24px 20px 64px;
+    font-family:"PingFang SC","Microsoft YaHei","Noto Sans CJK SC",sans-serif;
+    color:var(--ink); background:#fafafc; font-size:14px; line-height:1.65;
+  }
+  main { max-width:860px; margin:0 auto; }
+  h1 { font-size:21px; margin:0 0 6px; }
+  .sub { color:var(--muted); font-size:13px; margin:0 0 24px; }
+  .sub a { color:#2c5f8a; }
+  h2 { font-size:17px; margin:36px 0 4px; }
+  .desc { color:var(--muted); font-size:13px; margin:0 0 14px; }
+
+  .legend { display:flex; flex-wrap:wrap; gap:8px; margin:0 0 20px; }
+  .legend span { font-size:12px; padding:3px 10px; border-radius:999px; border:1.5px solid; }
+
+  /* 时间线 */
+  .flow { position:relative; margin:0 0 8px 18px; padding-left:22px; border-left:2px solid var(--line); }
+  .agg-head {
+    margin:18px 0 10px -40px; font-size:13px; font-weight:600; color:#6c3483;
+    background:#fff; display:inline-block; padding:2px 10px; border:1.5px dashed #a569bd; border-radius:999px;
+  }
+  .agg-head:first-child { margin-top:0; }
+  .row { display:flex; flex-wrap:wrap; align-items:center; gap:6px 4px; margin-bottom:10px; }
+  .note {
+    display:inline-block; padding:6px 11px; border-radius:4px; border:1.5px solid;
+    font-size:13px; box-shadow:1px 2px 3px rgba(40,40,60,.08); line-height:1.5;
+  }
+  .note small { display:block; color:var(--muted); font-size:12px; }
+  .note b { font-weight:600; }
+  .actor { background:var(--actor-bg);  border-color:var(--actor-bd); }
+  .cmd   { background:var(--cmd-bg);    border-color:var(--cmd-bd); }
+  .event { background:var(--event-bg);  border-color:var(--event-bd); }
+  .policy{ background:var(--policy-bg); border-color:var(--policy-bd); }
+  .read  { background:var(--read-bg);   border-color:var(--read-bd); }
+  .planned { border-style:dashed; opacity:.75; }
+  .arrow { color:#9a9aa8; }
+
+  /* 热点 */
+  .hot {
+    margin:4px 0 14px; padding:9px 13px; background:var(--hot-bg);
+    border:1.5px solid var(--hot-bd); border-radius:8px; font-size:13px;
+  }
+  .hot b { color:var(--hot-bd); }
+  .hot .code { font-family:"SF Mono",Consolas,monospace; font-size:12px; background:#fff; padding:1px 5px; border-radius:4px; }
+
+  table { border-collapse:collapse; width:100%; background:#fff; font-size:13px; margin-top:8px; }
+  th,td { border:1px solid var(--line); padding:7px 10px; text-align:left; vertical-align:top; }
+  th { background:#f1f1f5; font-weight:600; }
+  code { font-family:"SF Mono",Consolas,monospace; font-size:12px; background:#f1f1f5; padding:1px 5px; border-radius:4px; }
+  .src { color:var(--muted); font-size:12px; margin-top:24px; }
+</style>
+</head>
+<body>
+<main>
+  <h1>qtcloud_studio 事件风暴</h1>
+  <p class="sub">这一页给想核对模型与代码的人：两条业务流按时间自上而下，事件用过去式回放代码里真实发生的状态迁移。人能看懂的故事版本见 <a href="journey.html">用户旅程页</a>。</p>
+
+  <div class="legend">
+    <span class="actor">执行者（人 / 云）</span>
+    <span class="cmd">命令</span>
+    <span class="event">领域事件</span>
+    <span class="policy">策略</span>
+    <span class="read">读模型</span>
+    <span class="event planned" style="background:#fff">虚线 = 规划中</span>
+  </div>
+
+  <h2>流 A · 方案协作（已实现）</h2>
+  <p class="desc">人只在闸门出现，其余衔接由规则自动推进；每处自动衔接都指认「原为人工搬运」。</p>
+
+  <div class="flow">
+    <div class="agg-head">聚合 Workflow · 意图与编排</div>
+    <div class="row">
+      <span class="note actor">用户<small>说一句话</small></span><span class="arrow">→</span>
+      <span class="note cmd">派活 <b>dispatchIntent</b><small>意图库匹配，听不懂返回 null</small></span><span class="arrow">→</span>
+      <span class="note event">任务已创建<small>pending，挂上 dependsOn 依赖</small></span>
+    </div>
+    <div class="row">
+      <span class="note policy">就绪判定 <b>isReady</b><small>待办 且 上游全部验收通过</small></span><span class="arrow">→</span>
+      <span class="note policy">自动衔接 <b>readyCloudTasks</b><small>就绪且执行者是云</small></span><span class="arrow">→</span>
+      <span class="note cmd">开工 <b>Task.start</b></span><span class="arrow">→</span>
+      <span class="note event">任务已开工<small>pending → running · 原为人工派单</small></span>
+    </div>
+    <div class="row">
+      <span class="note cmd">交付 <b>Task.deliver</b><small>云自动交付；人的任务须填交付说明</small></span><span class="arrow">→</span>
+      <span class="note event">修改已交付<small>running → reviewing</small></span><span class="arrow">→</span>
+      <span class="note read">内联 diff<small>红删绿增，验收有对象</small></span>
+    </div>
+    <div class="row">
+      <span class="note actor">用户<small>在闸门拍板</small></span><span class="arrow">→</span>
+      <span class="note cmd">验收通过 <b>approve</b></span><span class="arrow">→</span>
+      <span class="note event">修改已合入 · 版本已递增<small>reviewing → done · 章节正文更新</small></span><span class="arrow">→</span>
+      <span class="note event">版本刻度已记录<small>Revision 入版本轴，版本号不撒谎</small></span>
+    </div>
+    <div class="row">
+      <span class="note actor">用户<small>驳回须写意见</small></span><span class="arrow">→</span>
+      <span class="note cmd">驳回 <b>Task.reject(note)</b></span><span class="arrow">→</span>
+      <span class="note event">任务已驳回<small>reviewing → running（唯一回流）· 方案一字不动</small></span><span class="arrow">→</span>
+      <span class="note event">按意见修改后重新交付<small>云任务自动改稿重交（界面已实现）</small></span>
+    </div>
+  </div>
+
+  <h2>流 B · 日志更新平台化（收编中，连接器落位待定）</h2>
+  <p class="desc">fetch-chat-logs 技能的平台化收编：流程已由技能验证，只做收编不改写法。除红线检查与段落结构已实现外，其余环节尚未接线，一律虚线。</p>
+
+  <div class="flow">
+    <div class="agg-head">聚合 Workflow · 日志流程编排</div>
+    <div class="row">
+      <span class="note actor">用户<small>「更新今天的日志」</small></span><span class="arrow">→</span>
+      <span class="note cmd planned">派活 · 日志分支 <b>dispatchIntent</b><small>意图库新增分支</small></span><span class="arrow">→</span>
+      <span class="note event planned">日志流程已派发<small>拉取 → 成稿 → 脱敏验收 → 写回 四步编排</small></span>
+    </div>
+    <div class="row">
+      <span class="note actor">日志云<small>lark-cli 能力收编</small></span><span class="arrow">→</span>
+      <span class="note cmd planned">拉取群消息<small>按群名解析 chat_id，不落库</small></span><span class="arrow">→</span>
+      <span class="note event planned">群消息已拉取<small>时段正序 · 翻页到 has_more 为止</small></span>
+    </div>
+    <div class="agg-head">JournalSection → DocSection · 段落结构（已实现）</div>
+    <div class="row">
+      <span class="note policy">来源群分流 <b>journalLineFor</b><small>实训基地→qtclass · 闲聊水库→按内容 · 兜底 default</small></span><span class="arrow">→</span>
+      <span class="note cmd planned">分流成稿<small>事实 + 原话，一个来源群一段</small></span><span class="arrow">→</span>
+      <span class="note event planned">段落已成稿<small>同群同日合并 = 段落末尾追加</small></span>
+    </div>
+    <div class="row">
+      <span class="note policy">红线自检 <b>RedLineChecker.check</b><small>oc_/ou_ ID · 飞书链接 · 敏感词 · 平台侧注入姓名</small></span><span class="arrow">→</span>
+      <span class="note read">检查结果<small>命中清单，命中即打回成稿</small></span>
+    </div>
+    <div class="row">
+      <span class="note actor">用户<small>脱敏验收：对照红线看内联 diff</small></span><span class="arrow">→</span>
+      <span class="note cmd planned">验收通过 / 驳回<b></b><small>闸门机制已实现，日志流未接</small></span><span class="arrow">→</span>
+      <span class="note event planned">日志修改已合入<small>驳回则 journal 一字不动</small></span>
+    </div>
+    <div class="row">
+      <span class="note actor">日志云</span><span class="arrow">→</span>
+      <span class="note cmd planned">写回 journal <b>serializeJournal</b><small>序列化已实现；仓库写入待落位</small></span><span class="arrow">→</span>
+      <span class="note event planned">日志已写回 · 指针已同步<small>journal 仓库提交 + 主仓库指针</small></span>
+    </div>
+  </div>
+
+  <h2>热点（模型上有争议或存在缺口的地方）</h2>
+  <div class="hot"><b>热点 1 ·</b> 红线自检的输出是「领域事件」还是检查结果？现按检查结果处理（上图绿色）——它不产生状态迁移，命中后的「打回成稿」才是待建模的行为。</div>
+  <div class="hot"><b>热点 2 ·</b> <span class="code">Doc.apply</span> 只能修改既有章节，不能新增章节；而日志流「同日新来源群」需要新段落。现实现用 <span class="code">mergeJournalSection</span> 直接组装段落绕开了 Doc——「工作物 = Doc」目前是概念复用，不是机制复用。要么给 Doc 增加新增章节的合入语义，要么承认 journal 是另一种工作物。</div>
+  <div class="hot"><b>热点 3 ·</b> 「意图」未建模：<span class="code">dispatchIntent</span> 是正则硬编码剧本。接 LLM 拆解前，Intent 是否成为一等概念需要决策。</div>
+  <div class="hot"><b>热点 4 ·</b> 连接器落位未定：lark-cli 拉取与 journal 仓库写回收编到 provider 服务端还是本地 agent 进程，决定流 B 虚线部分的执行位置。</div>
+
+  <h2>附录 · 模型关系</h2>
+  <table>
+    <tr><th>关系</th><th>从 → 到</th><th>语义</th><th>代码落点</th></tr>
+    <tr><td>拥有</td><td>Workspace → Doc、Workflow</td><td>空间是容器</td><td><code>Workspace</code> 构造参数</td></tr>
+    <tr><td>引用</td><td>Workflow → Artifact</td><td>依赖抽象，不依赖具体工作物</td><td><code>Workflow.artifact</code></td></tr>
+    <tr><td>编排</td><td>Workflow → Task</td><td>任务按 dependsOn 组成 DAG</td><td><code>Workflow.tasks</code> / <code>isReady</code></td></tr>
+    <tr><td>提案</td><td>Task → Change</td><td>output 提案，验收通过即合入</td><td><code>Task.output</code></td></tr>
+    <tr><td>寻址</td><td>Change → DocSection</td><td>target = 章节 id；before 空 = 末尾追加</td><td><code>Doc.apply</code></td></tr>
+    <tr><td>合入留痕</td><td>Change → Doc → Revision</td><td>版本 +1，刻度入版本轴</td><td><code>Workflow.approve</code></td></tr>
+    <tr><td>成稿映射</td><td>JournalSection → DocSection</td><td>寻址键 = 来源群（见热点 2）</td><td><code>JournalSection.section</code></td></tr>
+  </table>
+
+  <p class="src">代码：<code>apps/qtcloud/src/studio</code>（lib/models/ + lib/journal/）· 流程基准：<code>data/journal/.agents/skills/fetch-chat-logs/SKILL.md</code> · 设计原则：qtcloud 仓库 AGENTS.md</p>
+</main>
+</body>
+</html>
